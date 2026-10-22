@@ -1,0 +1,22 @@
+{
+  "name": "Honores de Ordenanza",
+  "short_name": "Honores",
+  "description": "Ceremonial y Honores de Ordenanza de la Armada Española",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070d1e",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./img/banderaespana.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "./img/banderaespana.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

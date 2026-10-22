@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Honores de Ordenanza · Armada Española</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#070d1e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Honores">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="img/banderaespana.jpg">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: #070d1e; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; }
+    
+    header {
+      background: #0f172a; border-bottom: 2px solid #1e3a8a; padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand img { width: 38px; height: 38px; border-radius: 6px; object-fit: cover; border: 1.5px solid #38bdf8; }
+    .brand-title { font-size: 15px; font-weight: 800; color: #38bdf8; line-height: 1.15; }
+    .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+
+    .nav-bar {
+      display: flex; background: #0b152d; border-bottom: 1px solid #1e3a8a; overflow-x: auto;
+      padding: 4px 8px; gap: 6px; -webkit-overflow-scrolling: touch;
+    }
+    .nav-btn {
+      background: transparent; border: none; color: #94a3b8; padding: 8px 12px; font-size: 11px;
+      font-weight: 800; border-radius: 6px; cursor: pointer; white-space: nowrap; text-transform: uppercase;
+    }
+    .nav-btn.active { background: #0284c7; color: white; box-shadow: 0 2px 6px rgba(2,132,199,0.4); }
+
+    main { flex: 1; padding: 14px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    .card {
+      background: #0f172a; border: 1px solid #1e3a8a; border-radius: 10px; padding: 14px; margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .card-title {
+      font-size: 13px; font-weight: 800; color: #38bdf8; text-transform: uppercase; margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; padding-bottom: 6px;
+    }
+
+    .btn-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    @media (min-width: 480px) { .btn-grid { grid-template-columns: 1fr 1fr; } }
+
+    .action-btn {
+      background: #1e293b; border: 1.5px solid #334155; color: #f8fafc; padding: 12px 14px; border-radius: 8px;
+      font-size: 12.5px; font-weight: 800; cursor: pointer; text-align: left; display: flex; align-items: center;
+      justify-content: space-between; transition: 0.15s; min-height: 48px;
+    }
+    .action-btn:active { transform: scale(0.98); background: #0284c7; border-color: #38bdf8; }
+    .action-btn.danger { background: #450a0a; border-color: #ef4444; color: #fca5a5; }
+    .action-btn.danger:active { background: #dc2626; color: white; }
+    .action-btn.primary { background: #0c4a6e; border-color: #0284c7; color: #e0f2fe; }
+
+    .auth-select {
+      width: 100%; padding: 12px; background: #070d1e; border: 1.5px solid #0284c7; border-radius: 8px;
+      color: #f8fafc; font-size: 13.5px; font-weight: 700; margin-bottom: 12px; outline: none;
+    }
+
+    .status-bar {
+      background: #022c22; border: 1px solid #059669; border-radius: 6px; padding: 8px 12px;
+      color: #34d399; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; display: flex;
+      align-items: center; justify-content: space-between;
+    }
+
+    .install-banner {
+      background: #1e3a8a; border: 1px solid #38bdf8; border-radius: 8px; padding: 10px 14px;
+      color: #e0f2fe; font-size: 11px; margin-bottom: 14px; display: flex; align-items: center;
+      justify-content: space-between; gap: 8px;
+    }
+
+    footer {
+      background: #070d1e; border-top: 1px solid #1e293b; padding: 12px; text-align: center;
+      font-size: 11px; color: #64748b; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <img src="img/banderaespana.jpg" alt="Armada" />
+      <div>
+        <div class="brand-title">Honores de Ordenanza</div>
+        <div class="brand-sub">Armada Española · PWA Web App</div>
+      </div>
+    </div>
+    <div>
+      <button class="action-btn danger" style="min-height:34px; padding:6px 12px; font-size:11px;" onclick="stopAllAudio()">🛑 ALTO</button>
+    </div>
+  </header>
+
+  <div class="nav-bar">
+    <button class="nav-btn active" id="navPortalon" onclick="showView('portalon')">🚪 Portalón</button>
+    <button class="nav-btn" id="navBuques" onclick="showView('buques')">⚓ Buques</button>
+    <button class="nav-btn" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
+    <button class="nav-btn" id="navIzado" onclick="showView('izado')">🌅 Izado/Arriado</button>
+    <button class="nav-btn" id="navMusica" onclick="showView('musica')">🎺 Música / Himnos</button>
+  </div>
+
+  <main>
+    <!-- BANNER PWA IOS / ANDROID -->
+    <div class="install-banner" id="pwaBanner">
+      <span>📱 <b>Instalar en iPhone/Android:</b> Añadir a pantalla de inicio para usar 100% offline en la mar.</span>
+      <span style="cursor:pointer; font-weight:900;" onclick="document.getElementById('pwaBanner').style.display='none'">✕</span>
+    </div>
+
+    <!-- ESTADO DE AUDIO -->
+    <div class="status-bar" id="audioStatusBar" style="display:none;">
+      <span id="audioStatusText">Reproduciendo toque...</span>
+      <span style="cursor:pointer;" onclick="stopAllAudio()">✕ Detener</span>
+    </div>
+
+    <!-- VISTA 1: PORTALÓN -->
+    <div class="view-section active" id="viewPortalon">
+      <div class="card">
+        <div class="card-title">Chifle en el Portalón (Ceremonial Naval)</div>
+        <div class="btn-grid">
+          <button class="action-btn primary" onclick="playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante')">
+            <span>CHIFLE Almirante o Comte</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn primary" onclick="playAudio('audio/Retiradadehonores_AudioDenoise.mp3', 'CHIFLE: Retirada Almte / Comte')">
+            <span>CHIFLE Retirada Almte/Comte</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Oficiales')">
+            <span>CHIFLE Oficiales</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn danger" onclick="stopAllAudio()">
+            <span>PARAR SONIDO</span>
+            <span>🛑</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 2: HONORES ENTRE BUQUES -->
+    <div class="view-section" id="viewBuques">
+      <div class="card">
+        <div class="card-title">Honores entre Buques en la Mar</div>
+        <div class="btn-grid">
+          <button class="action-btn" style="background:#450a0a; border-color:#ef4444; color:#fca5a5;" onclick="playAudio('audio/Honoresporbabor_AudioDenoise.mp3', 'HONORES POR BABOR (Luz Roja)')">
+            <span>🔴 HONORES POR BABOR</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" style="background:#022c22; border-color:#10b981; color:#a7f3d0;" onclick="playAudio('audio/Honoresporestribor_AudioDenoise.mp3', 'HONORES POR ESTRIBOR (Luz Verde)')">
+            <span>🟢 HONORES POR ESTRIBOR</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn primary" onclick="playAudio('audio/Retiradadehonores_AudioDenoise.mp3', 'RETIRADA DE HONORES')">
+            <span>RETIRADA DE HONORES</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn danger" onclick="stopAllAudio()">
+            <span>PARAR SONIDO</span>
+            <span>🛑</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 3: HONORES A AUTORIDADES -->
+    <div class="view-section" id="viewAuth">
+      <div class="card">
+        <div class="card-title">Honores a Autoridades Civiles y Militares</div>
+        <select class="auth-select" id="authoritySelect" onchange="onAuthorityChanged()">
+          <option value="">-- Seleccione Autoridad --</option>
+          <option value="REY" data-salvas="21" data-vivas="7" data-himno="Himno_nacional_de_Espana.mp3">SM El Rey (21 Salvas · Himno Nacional)</option>
+          <option value="REINA" data-salvas="21" data-vivas="7" data-himno="Himno_nacional_de_Espana.mp3">SM La Reina (21 Salvas · Himno Nacional)</option>
+          <option value="PRINCESA" data-salvas="19" data-vivas="5" data-himno="Espania_corto.mp3">SAR Princesa de Asturias (19 Salvas)</option>
+          <option value="INFANTA" data-salvas="17" data-vivas="4" data-himno="Espania_corto.mp3">SAR Infanta de España (17 Salvas)</option>
+          <option value="PRESIDENTE" data-salvas="19" data-vivas="5" data-himno="Espania_corto.mp3">Presidente del Gobierno (19 Salvas)</option>
+          <option value="MINISTRO" data-salvas="19" data-vivas="5" data-himno="Espania_corto.mp3">Ministra de Defensa (19 Salvas)</option>
+          <option value="ALMIRANTE" data-salvas="17" data-vivas="4" data-himno="MarchadeInfantes.mp3">Almirante General (AJEMA / JEMAD - 17 Salvas)</option>
+          <option value="VICEALMIRANTE" data-salvas="15" data-vivas="3" data-himno="MarchadeInfantes.mp3">Vicealmirante (15 Salvas)</option>
+          <option value="CONTRAALMIRANTE" data-salvas="13" data-vivas="2" data-himno="MarchadeInfantes.mp3">Contraalmirante (13 Salvas)</option>
+          <option value="COMANDANTE" data-salvas="0" data-vivas="0" data-himno="">Comandante del Buque / Capitán de Navío</option>
+        </select>
+
+        <div id="authDetailsCard" style="display:none; background:#070d1e; border:1px solid #334155; border-radius:8px; padding:12px; margin-bottom:12px;">
+          <div style="font-size:12px; font-weight:800; color:#38bdf8; margin-bottom:6px;" id="authSelectedName">Autoridad</div>
+          <div style="font-size:11px; color:#cbd5e1; line-height:1.6;" id="authRulesText">Salvas y honores reglamentarios.</div>
+          <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="action-btn primary" id="btnEjecutarSecuenciaAuth" onclick="executeAuthSequence()" style="flex:1; min-height:40px; font-size:11.5px;">
+              ▶️ Ejecutar Secuencia Reglamentaria
+            </button>
+          </div>
+        </div>
+
+        <div class="btn-grid">
+          <button class="action-btn" onclick="playAudio('audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3', 'Toque: FIRMES (Autoridad Principal)')">
+            <span>Toque Firmes</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/cornetapresentenarmas.wav', 'Toque: PRESENTEN ARMAS')">
+            <span>Presenten Armas</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/CORNETASOBREELHOMBRO.mp3', 'Toque: SOBRE EL HOMBRO')">
+            <span>Sobre el Hombro</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/Cornetadescanso.wav', 'Toque: DESCANSO')">
+            <span>Descanso</span>
+            <span>🎺</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 4: IZADO Y ARRIADO -->
+    <div class="view-section" id="viewIzado">
+      <div class="card">
+        <div class="card-title">Izado y Arriado de la Bandera</div>
+        <div class="btn-grid">
+          <button class="action-btn primary" onclick="playAudio('audio/CornetaHimnonacionalacorneta-reducido.wav', 'IZADO: Himno Nacional a Corneta')">
+            <span>🌅 IZADO DE BANDERA (08:00h)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn primary" onclick="playAudio('audio/CornetaToquedeOracion.wav', 'ARRIADO: Toque de Oración (Ocaso)')">
+            <span>🌇 ARRIADO AL OCASO (Oración)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/08Oraciondelanoche.mp3', 'Oración de la Noche')">
+            <span>Oración de la Noche</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
+            <span>Salve Marinera</span>
+            <span>🌊</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 5: MÚSICA Y HIMNOS -->
+    <div class="view-section" id="viewMusica">
+      <div class="card">
+        <div class="card-title">Música Militar e Himnos de las Fuerzas Armadas</div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="playAudio('audio/Himno_nacional_de_Espana.mp3', 'Himno Nacional de España (Completo)')">
+            <span>Himno Nacional (Banda)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/MarchadeInfantes.mp3', 'Marcha de Infantes')">
+            <span>Marcha de Infantes</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
+            <span>Salve Marinera</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/Espania_corto.mp3', 'Marcha Real (Versión Breve)')">
+            <span>Marcha Real (Breve)</span>
+            <span>🇪🇸</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Honores de Ordenanza · Ceremonial Militar de la Armada © TDF 2026<br>
+    Desarrollo Web PWA · Funcional en iOS, Android y PC sin peajes de tienda
+  </footer>
+
+  <script>
+    // Audio Player Controller
+    let currentAudio = null;
+
+    function playAudio(src, label) {
+      stopAllAudio();
+      const statusBox = document.getElementById('audioStatusBar');
+      const statusText = document.getElementById('audioStatusText');
+      
+      currentAudio = new Audio(src);
+      currentAudio.play().then(() => {
+        statusBox.style.display = 'flex';
+        statusText.textContent = `▶️ ${label}`;
+      }).catch(err => {
+        console.error('Audio play error:', err);
+        // iOS requires user gesture first time
+        alert(`Pulse para reproducir: ${label}`);
+      });
+
+      currentAudio.onended = () => {
+        statusBox.style.display = 'none';
+      };
+    }
+
+    function stopAllAudio() {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+      }
+      document.getElementById('audioStatusBar').style.display = 'none';
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      const targetView = document.getElementById(`view${viewId.charAt(0).toUpperCase() + viewId.slice(1)}`);
+      const targetBtn = document.getElementById(`nav${viewId.charAt(0).toUpperCase() + viewId.slice(1)}`);
+      if (targetView) targetView.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+    }
+
+    function onAuthorityChanged() {
+      const sel = document.getElementById('authoritySelect');
+      const opt = sel.options[sel.selectedIndex];
+      const card = document.getElementById('authDetailsCard');
+      if (!sel.value) {
+        card.style.display = 'none';
+        return;
+      }
+
+      card.style.display = 'block';
+      document.getElementById('authSelectedName').textContent = opt.textContent;
+      const salvas = opt.dataset.salvas;
+      const vivas = opt.dataset.vivas;
+      const himno = opt.dataset.himno;
+
+      let desc = `• <b>Salvas de Ordenanza:</b> ${salvas > 0 ? salvas + ' cañonazos' : 'Sin salvas'}<br>`;
+      desc += `• <b>Vivas reglamentarios:</b> ${vivas > 0 ? vivas + ' vivas a España' : 'Sin vivas'}<br>`;
+      desc += `• <b>Música de honores:</b> ${himno ? himno.replace('.mp3','').replace('.wav','') : 'Toque de ordenanza'}`;
+      document.getElementById('authRulesText').innerHTML = desc;
+    }
+
+    function executeAuthSequence() {
+      const sel = document.getElementById('authoritySelect');
+      const opt = sel.options[sel.selectedIndex];
+      if (!opt.value) return;
+
+      const himno = opt.dataset.himno;
+      if (himno) {
+        playAudio(`audio/${himno}`, `Honores reglamentarios a ${opt.textContent}`);
+      } else {
+        playAudio('audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3', `Honores a ${opt.textContent}`);
+      }
+    }
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA ServiceWorker registrado:', reg.scope))
+          .catch(err => console.log('Error ServiceWorker:', err));
+      });
+    }
+
+    // Keep screen awake (WakeLock API standard para reemplazar la extension de Android)
+    if ('wakeLock' in navigator) {
+      let wakeLock = null;
+      async function requestWakeLock() {
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+          console.log('WakeLock activo: Pantalla encendida');
+        } catch (err) {
+          console.log('WakeLock no disponible:', err);
+        }
+      }
+      document.addEventListener('visibilitychange', () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+          requestWakeLock();
+        }
+      });
+      requestWakeLock();
+    }
+  </script>
+</body>
+</html>
