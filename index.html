@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792793598';
+    const APP_VERSION = 'v1792794326';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -515,7 +515,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792793598</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792794326</div>
 </footer>
 
   <script>
@@ -969,7 +969,7 @@ function _legacy_execAuth() {
           if (orderExp) orderExp.innerHTML = '<strong>Regla protocolaria:</strong> 1º Himno Extranjero ➔ 2º Himno de España (' + versionH + ') con salvas simultáneas.';
         } else {
           if (anthemTitle) anthemTitle.textContent = '🎵 Himno del Organismo Internacional:';
-          if (orderExp) orderExp.innerHTML = '<strong>Regla protocolaria:</strong> 1º Himno de España (' + versionH + ') ➔ 2º Himno del Organismo con salvas simultáneas.';
+          if (orderExp) orderExp.innerHTML = '<strong>Regla protocolaria:</strong> 1º Himno del Organismo con salvas simultáneas ➔ 2º Himno de España (' + versionH + ').';
         }
 
         let def = ANTHEMS_CATALOG.find(a => a.name.toLowerCase().includes((auth.defaultAnthem || '').toLowerCase()));
@@ -1047,7 +1047,14 @@ function _legacy_execAuth() {
       if (!list) return;
       list.innerHTML = '';
       const q = (query || '').toLowerCase().trim();
-      const filtered = ANTHEMS_CATALOG.filter(a => a.name.toLowerCase().includes(q));
+
+      // En Organismos Internacionales, limitar estrictamente a OTAN y UE
+      let baseCatalog = ANTHEMS_CATALOG;
+      if (selectedAuth && selectedAuth.isOrganismo) {
+        baseCatalog = ANTHEMS_CATALOG.filter(a => a.name === 'OTAN' || a.name === 'UE' || a.name === 'EU');
+      }
+
+      const filtered = baseCatalog.filter(a => a.name.toLowerCase().includes(q));
       filtered.forEach(item => {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -1148,24 +1155,16 @@ function _legacy_execAuth() {
           ? 'HIMNO DE ESPAÑA (completo)'
           : (selectedAuth.esMarchaInfantes ? 'MARCHA DE INFANTES' : 'HIMNO DE ESPAÑA (breve)');
 
-        if (selectedAuth.isExtranjero) {
+        if (selectedAuth.isExtranjero || selectedAuth.isOrganismo) {
           if (selectedForeignAnthem) {
             elExt = document.getElementById('audHimnoExtranjero');
             if (elExt) {
               elExt.src = selectedForeignAnthem.url;
-              himnosQueue.push({ el: elExt, label: '1º HIMNO EXTRANJERO: ' + selectedForeignAnthem.name });
+              let orgOrExt = selectedAuth.isOrganismo ? 'HIMNO ORGANISMO: ' : 'HIMNO EXTRANJERO: ';
+              himnosQueue.push({ el: elExt, label: '1º ' + orgOrExt + selectedForeignAnthem.name });
             }
           }
           himnosQueue.push({ el: elEspana, label: '2º ' + labelEsp });
-        } else if (selectedAuth.isOrganismo) {
-          himnosQueue.push({ el: elEspana, label: '1º ' + labelEsp });
-          if (selectedForeignAnthem) {
-            elExt = document.getElementById('audHimnoExtranjero');
-            if (elExt) {
-              elExt.src = selectedForeignAnthem.url;
-              himnosQueue.push({ el: elExt, label: '2º HIMNO ORGANISMO: ' + selectedForeignAnthem.name });
-            }
-          }
         } else {
           himnosQueue.push({ el: elEspana, label: labelEsp });
         }
