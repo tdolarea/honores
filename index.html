@@ -153,7 +153,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792782134';
+    const APP_VERSION = 'v1792782300914';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -510,7 +510,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792782134</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792782300914</div>
 </footer>
 
   <script>
@@ -844,7 +844,7 @@ function _legacy_execAuth() {
     const AUTHORITIES = [
       // Corona (Himno Largo)
       { id: 'REY', cat: 'corona', name: 'SM El Rey', salvas: 21, vivas: 7, himno: 'Espania_largo.mp3', himnoLabel: 'Himno Nacional completo', esMarchaInfantes: false },
-      { id: 'REINA', cat: 'corona', name: 'SM La Reina', salvas: 21, vivas: 7, himno: 'Espania_largo.mp3', himnoLabel: 'Himno Nacional completo', esMarchaInfantes: false },
+      { id: 'REINA', cat: 'corona', name: 'SM La Reina', salvas: 0, vivas: 0, himno: 'Espania_largo.mp3', himnoLabel: 'Himno Nacional completo', esMarchaInfantes: false, armaDefecto: 'presenten' },
       { id: 'PRINCESA', cat: 'corona', name: 'SAR Princesa de Asturias', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real breve', esMarchaInfantes: false },
       { id: 'INFANTA', cat: 'corona', name: 'SAR Infanta de España', salvas: 17, vivas: 4, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real breve', esMarchaInfantes: false },
       
