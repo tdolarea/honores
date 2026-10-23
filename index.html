@@ -385,113 +385,102 @@
     // Audio Player Controller
     
     
+    
     // ==========================================
-    // MOTOR DE AUDIO REUTILIZABLE (HTML5 AUDIO DOM)
+    // MOTOR DE AUDIO PROFESIONAL (HTML5 DOM AUDIO)
     // ==========================================
     const audioPlayer = document.getElementById('appAudioPlayer');
     let mandoChifleActivo = false;
-    let sonidoEnMarcha = false;
     let ultimoToque = null;
-    let safetyTimer = null;
+    let lockTimer = null;
+
+    // Configurar listeners permanentes en el elemento de audio
+    if (audioPlayer) {
+      audioPlayer.addEventListener('ended', onAudioFinished);
+      audioPlayer.addEventListener('error', (e) => {
+        console.error('Audio error event:', e);
+        onAudioFinished();
+      });
+      // Listener de seguridad: si el audio llega al final (por si 'ended' se pierde en Safari)
+      audioPlayer.addEventListener('timeupdate', () => {
+        if (audioPlayer.duration && audioPlayer.currentTime >= audioPlayer.duration - 0.15) {
+          onAudioFinished();
+        }
+      });
+    }
+
+    function onAudioFinished() {
+      if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
+      const statusBox = document.getElementById('audioStatusBar');
+      if (statusBox) statusBox.style.display = 'none';
+      desbloquearSegunCeremonial();
+    }
 
     function stopAllAudio() {
-      if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
+      if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
       if (audioPlayer) {
         try {
           audioPlayer.pause();
           audioPlayer.currentTime = 0;
         } catch (e) {
-          console.error('Error stopping audio:', e);
+          console.error('Error stopping:', e);
         }
       }
-      const statusBox = document.getElementById('audioStatusBar');
-      if (statusBox) statusBox.style.display = 'none';
-
-      sonidoEnMarcha = false;
-      desbloquearSegunCeremonial();
+      onAudioFinished();
     }
 
     function playAudio(src, label) {
-      if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
+      if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
       const statusBox = document.getElementById('audioStatusBar');
       const statusText = document.getElementById('audioStatusText');
 
       try {
-        // Pausar y cambiar fuente sobre el mismo elemento del DOM (vital para Safari/Android)
-        audioPlayer.pause();
-        audioPlayer.src = src;
-        audioPlayer.load();
-
         if (statusBox) statusBox.style.display = 'flex';
         if (statusText) statusText.textContent = `▶️ ${label}`;
 
-        // Evento cuando termina de sonar
-        audioPlayer.onended = () => {
-          if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
-          if (statusBox) statusBox.style.display = 'none';
-          sonidoEnMarcha = false;
-          desbloquearSegunCeremonial();
-        };
+        // Asignar fuente y reproducir directamente dentro del evento táctil del usuario
+        audioPlayer.src = src;
+        const playPromise = audioPlayer.play();
 
-        audioPlayer.onerror = (e) => {
-          console.error('Audio load error:', e, src);
-          if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
-          if (statusBox) statusBox.style.display = 'none';
-          sonidoEnMarcha = false;
-          desbloquearSegunCeremonial();
-        };
-
-        // Fallback de seguridad por duración (por si el navegador móvil no lanza 'onended')
-        audioPlayer.onloadedmetadata = () => {
-          const durationSec = audioPlayer.duration;
-          if (durationSec && !isNaN(durationSec) && durationSec > 0) {
-            safetyTimer = setTimeout(() => {
-              if (sonidoEnMarcha) {
-                console.log('Safety fallback timer triggered');
-                if (statusBox) statusBox.style.display = 'none';
-                sonidoEnMarcha = false;
-                desbloquearSegunCeremonial();
-              }
-            }, (durationSec + 0.8) * 1000);
-          }
-        };
-
-        const promise = audioPlayer.play();
-        if (promise !== undefined) {
-          promise.catch(err => {
-            console.error('Audio play promise rejected:', err);
-            // Si el móvil requirió reintento
-            sonidoEnMarcha = false;
-            desbloquearSegunCeremonial();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.error('Play failed:', err);
+            onAudioFinished();
           });
         }
+
+        // Temporizador de seguridad máximo (12 segundos para toques de chifle)
+        lockTimer = setTimeout(() => {
+          if (!audioPlayer.paused) {
+            console.log('Timeout de seguridad alcanzado');
+            onAudioFinished();
+          }
+        }, 12000);
+
       } catch (err) {
-        console.error('Fatal audio player error:', err);
-        sonidoEnMarcha = false;
-        desbloquearSegunCeremonial();
+        console.error('playAudio catch:', err);
+        onAudioFinished();
       }
     }
 
     function tocarChifleMando() {
-      if (sonidoEnMarcha) return;
+      if (!audioPlayer.paused && audioPlayer.currentTime > 0) return; // Si ya está sonando, evitar solape
       ultimoToque = 'mando';
-      sonidoEnMarcha = true;
       bloquearTodosBotonesPortalon();
       playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante');
     }
 
     function tocarChifleOficiales() {
-      if (sonidoEnMarcha) return;
+      if (!audioPlayer.paused && audioPlayer.currentTime > 0) return;
       ultimoToque = 'oficiales';
-      sonidoEnMarcha = true;
       bloquearTodosBotonesPortalon();
       playAudio('audio/oficiales.mp3', 'CHIFLE: Oficiales');
     }
 
     function tocarChifleRetirada() {
-      if (sonidoEnMarcha || !mandoChifleActivo) return;
+      if (!audioPlayer.paused && audioPlayer.currentTime > 0) return;
+      if (!mandoChifleActivo) return;
       ultimoToque = 'retirada';
-      sonidoEnMarcha = true;
       bloquearTodosBotonesPortalon();
       playAudio('audio/retiradaComteoAlmte.mp3', 'CHIFLE: Retirada Almte / Comte');
     }
@@ -506,17 +495,16 @@
     }
 
     function desbloquearSegunCeremonial() {
-      sonidoEnMarcha = false;
       const btnMando = document.getElementById('btnChifleMando');
       const btnOficiales = document.getElementById('btnChifleOficiales');
       const btnRet = document.getElementById('btnChifleRetirada');
       const badge = document.getElementById('badgeRetirada');
 
-      // Mando y Oficiales siempre vuelven a estar operativos
+      // Mando y Oficiales siempre operativos
       if (btnMando) { btnMando.classList.remove('disabled'); btnMando.disabled = false; }
       if (btnOficiales) { btnOficiales.classList.remove('disabled'); btnOficiales.disabled = false; }
 
-      // Retirada solo tras Mando
+      // Retirada solo tras Almirante/Comandante
       if (ultimoToque === 'mando') {
         mandoChifleActivo = true;
         if (btnRet) { btnRet.classList.remove('disabled'); btnRet.disabled = false; }
