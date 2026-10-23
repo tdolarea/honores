@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792786136';
+    const APP_VERSION = 'v1792786600';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -513,7 +513,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792786136</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792786600</div>
 </footer>
 
   <script>
@@ -1237,42 +1237,66 @@ function _legacy_execAuth() {
         return;
       }
 
-      // Arrancar Salvas (si las hay)
+      let salvasTerminadas = !elSalva; // Si no hay salvas, ya están terminadas
+      let himnosTerminados = (!himnosQueue || himnosQueue.length === 0); // Si no hay himno, ya están terminados
+
+      function verificarFinPaso5() {
+        if (!secuenciaActiva) return;
+        if (salvasTerminadas && himnosTerminados) {
+          if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
+          setTimeout(() => {
+            reproducirPaso6(elDescanso, useCorneta, labelDescanso);
+          }, 800);
+        }
+      }
+
+      // 1. Arrancar Salvas de Ordenanza (si las hay)
       if (elSalva) {
         try {
           elSalva.currentTime = 0;
           elSalva.muted = false;
+          elSalva.onended = () => {
+            salvasTerminadas = true;
+            verificarFinPaso5();
+          };
           let pSalva = elSalva.play();
           if (pSalva !== undefined) {
-            pSalva.catch(err => console.warn('Salvas play warning:', err));
+            pSalva.catch(err => {
+              console.warn('Salvas play warning:', err);
+              salvasTerminadas = true;
+              verificarFinPaso5();
+            });
           }
         } catch(e) {
-          console.warn('Salvas exception:', e);
+          salvasTerminadas = true;
+          verificarFinPaso5();
         }
       }
 
-      // Disparar secuencia de himnos
+      // 2. Arrancar Secuencia de Himnos
       if (himnosQueue && himnosQueue.length > 0) {
-        // Retardo ceremonial breve de 150ms para que entre coordinado
         setTimeout(() => {
           if (!secuenciaActiva) return;
           reproducirHimnosSecuencia(himnosQueue, elSalva, () => {
-            reproducirPaso6(elDescanso, useCorneta, labelDescanso);
+            himnosTerminados = true;
+            verificarFinPaso5();
           });
         }, 150);
       } else {
-        // Caso de solo salvas sin himno
-        let durSalva = (elSalva && elSalva.duration && !isNaN(elSalva.duration)) ? (elSalva.duration * 1000 + 1000) : 15000;
-        timerPasoSeguro = setTimeout(() => {
-          reproducirPaso6(elDescanso, useCorneta, labelDescanso);
-        }, durSalva);
-        if (elSalva) {
-          elSalva.onended = () => {
-            if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
-            reproducirPaso6(elDescanso, useCorneta, labelDescanso);
-          };
-        }
+        himnosTerminados = true;
+        verificarFinPaso5();
       }
+
+      // Reloj de seguridad maestro por si algún evento onended se pierde en móvil
+      let durTotalEstimada = 60000;
+      if (elSalva && elSalva.duration && !isNaN(elSalva.duration)) {
+        durTotalEstimada = Math.max(durTotalEstimada, elSalva.duration * 1000 + 2000);
+      }
+      timerPasoSeguro = setTimeout(() => {
+        salvasTerminadas = true;
+        himnosTerminados = true;
+        verificarFinPaso5();
+      }, durTotalEstimada);
     }
 
     function reproducirHimnosSecuencia(queue, elSalva, onFinished) {
@@ -1292,17 +1316,18 @@ function _legacy_execAuth() {
       function avanzar() {
         if (finalizado) return;
         finalizado = true;
-        if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
         setTimeout(() => {
           reproducirHimnosSecuencia(queue, elSalva, onFinished);
-        }, 1000);
+        }, 800);
       }
 
       item.el.onended = avanzar;
 
       let pHimno = item.el.play();
       let durMs = (item.el.duration && !isNaN(item.el.duration)) ? (item.el.duration * 1000 + 1500) : 45000;
-      timerPasoSeguro = setTimeout(avanzar, durMs);
+      setTimeout(() => {
+        if (!finalizado) avanzar();
+      }, durMs);
 
       if (pHimno !== undefined) {
         pHimno.catch(err => {
