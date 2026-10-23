@@ -382,39 +382,147 @@
 
   <script>
     // Audio Player Controller
+    
+    // ==========================================
+    // MOTOR DE AUDIO PROFESIONAL MULTIPLATAFORMA
+    // ==========================================
     let currentAudio = null;
+    let mandoChifleActivo = false;
+    let sonidoEnMarcha = false;
+    let ultimoToque = null; // 'mando', 'oficiales', 'retirada'
+
+    function stopAllAudio(triggerReset = true) {
+      if (currentAudio) {
+        try {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        } catch (e) {
+          console.error('Error pausing audio:', e);
+        }
+        currentAudio = null;
+      }
+      const statusBox = document.getElementById('audioStatusBar');
+      if (statusBox) statusBox.style.display = 'none';
+
+      if (triggerReset) {
+        sonidoEnMarcha = false;
+        desbloquearSegunCeremonial();
+      }
+    }
 
     function playAudio(src, label) {
-      stopAllAudio();
+      // Detener audio previo SIN resetear el estado ceremonial en marcha
+      stopAllAudio(false);
+
       const statusBox = document.getElementById('audioStatusBar');
       const statusText = document.getElementById('audioStatusText');
-      
-      currentAudio = new Audio(src);
-      currentAudio.play().then(() => {
-        statusBox.style.display = 'flex';
-        statusText.textContent = `▶️ ${label}`;
-      }).catch(err => {
-        console.error('Audio play error:', err);
-        // iOS requires user gesture first time
-        alert(`Pulse para reproducir: ${label}`);
-      });
 
-      currentAudio.onended = () => {
-        statusBox.style.display = 'none';
+      try {
+        currentAudio = new Audio(src);
+        currentAudio.preload = 'auto';
+
+        currentAudio.onplay = () => {
+          if (statusBox) statusBox.style.display = 'flex';
+          if (statusText) statusText.textContent = `▶️ ${label}`;
+        };
+
+        currentAudio.onended = () => {
+          if (statusBox) statusBox.style.display = 'none';
+          currentAudio = null;
+          sonidoEnMarcha = false;
+          desbloquearSegunCeremonial();
+        };
+
+        currentAudio.onerror = (e) => {
+          console.error('Audio load error:', e, src);
+          alert('Error al reproducir audio: ' + src);
+          if (statusBox) statusBox.style.display = 'none';
+          currentAudio = null;
+          sonidoEnMarcha = false;
+          desbloquearSegunCeremonial();
+        };
+
+        const playPromise = currentAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.error('Playback failed:', err);
+            // Si el navegador bloqueó el autoplay
+            alert('Toque de nuevo la pantalla para activar el audio (' + label + ')');
+            if (statusBox) statusBox.style.display = 'none';
+            currentAudio = null;
+            sonidoEnMarcha = false;
+            desbloquearSegunCeremonial();
+          });
+        }
+      } catch (err) {
+        console.error('Audio init error:', err);
+        sonidoEnMarcha = false;
         desbloquearSegunCeremonial();
-      };
+      }
     }
 
-    function stopAllAudio() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio = null;
-      
-      desbloquearSegunCeremonial();
+    function tocarChifleMando() {
+      if (sonidoEnMarcha) return;
+      ultimoToque = 'mando';
+      sonidoEnMarcha = true;
+      bloquearTodosBotonesPortalon();
+      playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante');
     }
-      document.getElementById('audioStatusBar').style.display = 'none';
+
+    function tocarChifleOficiales() {
+      if (sonidoEnMarcha) return;
+      ultimoToque = 'oficiales';
+      sonidoEnMarcha = true;
+      bloquearTodosBotonesPortalon();
+      playAudio('audio/oficiales.mp3', 'CHIFLE: Oficiales');
     }
+
+    function tocarChifleRetirada() {
+      if (sonidoEnMarcha || !mandoChifleActivo) return;
+      ultimoToque = 'retirada';
+      sonidoEnMarcha = true;
+      bloquearTodosBotonesPortalon();
+      playAudio('audio/retiradaComteoAlmte.mp3', 'CHIFLE: Retirada Almte / Comte');
+    }
+
+    function bloquearTodosBotonesPortalon() {
+      const btnMando = document.getElementById('btnChifleMando');
+      const btnOficiales = document.getElementById('btnChifleOficiales');
+      const btnRet = document.getElementById('btnChifleRetirada');
+      if (btnMando) btnMando.classList.add('disabled');
+      if (btnOficiales) btnOficiales.classList.add('disabled');
+      if (btnRet) btnRet.classList.add('disabled');
+    }
+
+    function desbloquearSegunCeremonial() {
+      sonidoEnMarcha = false;
+      const btnMando = document.getElementById('btnChifleMando');
+      const btnOficiales = document.getElementById('btnChifleOficiales');
+      const btnRet = document.getElementById('btnChifleRetirada');
+      const badge = document.getElementById('badgeRetirada');
+
+      if (btnMando) btnMando.classList.remove('disabled');
+      if (btnOficiales) btnOficiales.classList.remove('disabled');
+
+      if (ultimoToque === 'mando') {
+        mandoChifleActivo = true;
+        if (btnRet) btnRet.classList.remove('disabled');
+        if (badge) {
+          badge.style.background = '#0284c7';
+          badge.style.color = '#ffffff';
+          badge.textContent = 'Habilitado';
+        }
+      } else {
+        mandoChifleActivo = false;
+        if (btnRet) btnRet.classList.add('disabled');
+        if (badge) {
+          badge.style.background = '#334155';
+          badge.style.color = '#94a3b8';
+          badge.textContent = 'Bloqueado';
+        }
+      }
+    }
+
 
     function showView(viewId) {
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -491,82 +599,7 @@ function _legacy_execAuth() {
     }
   
     // ==========================================
-    // LÓGICA CEREMONIAL DEL PORTALÓN (ENCLAVAMIENTO DE SEGURIDAD)
-    // ==========================================
-    let mandoChifleActivo = false;
-    let sonidoEnMarcha = false;
-    let ultimoToque = null; // 'mando', 'oficiales', 'retirada'
-
-    function tocarChifleMando() {
-      if (sonidoEnMarcha) return;
-      ultimoToque = 'mando';
-      bloquearTodosBotonesPortalon();
-      playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante');
-    }
-
-    function tocarChifleOficiales() {
-      if (sonidoEnMarcha) return;
-      ultimoToque = 'oficiales';
-      bloquearTodosBotonesPortalon();
-      playAudio('audio/oficiales.mp3', 'CHIFLE: Oficiales');
-    }
-
-    function tocarChifleRetirada() {
-      if (sonidoEnMarcha || !mandoChifleActivo) return;
-      ultimoToque = 'retirada';
-      bloquearTodosBotonesPortalon();
-      playAudio('audio/retiradaComteoAlmte.mp3', 'CHIFLE: Retirada Almte / Comte');
-    }
-
-    function bloquearTodosBotonesPortalon() {
-      sonidoEnMarcha = true;
-      const btnMando = document.getElementById('btnChifleMando');
-      const btnOficiales = document.getElementById('btnChifleOficiales');
-      const btnRet = document.getElementById('btnChifleRetirada');
-      if (btnMando) btnMando.classList.add('disabled');
-      if (btnOficiales) btnOficiales.classList.add('disabled');
-      if (btnRet) btnRet.classList.add('disabled');
-    }
-
-    function desbloquearSegunCeremonial() {
-      sonidoEnMarcha = false;
-      const btnMando = document.getElementById('btnChifleMando');
-      const btnOficiales = document.getElementById('btnChifleOficiales');
-      const btnRet = document.getElementById('btnChifleRetirada');
-      const badge = document.getElementById('badgeRetirada');
-
-      // Los dos iniciales (Mando y Oficiales) siempre se activan al terminar
-      if (btnMando) btnMando.classList.remove('disabled');
-      if (btnOficiales) btnOficiales.classList.remove('disabled');
-
-      // Regla de Retirada:
-      // Si el que ha sonado es Almirante/Comandante -> se activan los TRES (Retirada habilitada)
-      // Si ha sonado Oficiales o Retirada (o parada de emergencia) -> se activan solo los dos iniciales
-      if (ultimoToque === 'mando') {
-        mandoChifleActivo = true;
-        if (btnRet) btnRet.classList.remove('disabled');
-        if (badge) {
-          badge.style.background = '#0284c7';
-          badge.style.color = '#ffffff';
-          badge.textContent = 'Habilitado';
-        }
-      } else {
-        mandoChifleActivo = false;
-        if (btnRet) btnRet.classList.add('disabled');
-        if (badge) {
-          badge.style.background = '#334155';
-          badge.style.color = '#94a3b8';
-          badge.textContent = 'Bloqueado';
-        }
-      }
-    } else {
-        btn.classList.add('disabled');
-        badge.style.background = '#334155';
-        badge.style.color = '#94a3b8';
-        badge.textContent = 'Bloqueado';
-      }
-    }
-
+    
   </script>
 </body>
 </html>
