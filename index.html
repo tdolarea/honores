@@ -207,7 +207,7 @@
           </button>
           <button class="action-btn primary disabled" id="btnChifleRetirada" style="padding:16px;" onclick="tocarChifleRetirada()">
             <span style="font-size:14px;">🎺 CHIFLE Retirada Almte / Comte</span>
-            <span id="badgeRetirada" style="font-size:10px; background:#334155; padding:2px 6px; border-radius:4px; color:#94a3b8;">Bloqueado</span>
+            
           </button>
           <button class="action-btn primary" id="btnChifleOficiales" style="padding:16px;" onclick="tocarChifleOficiales()">
             <span style="font-size:14px;">🎺 CHIFLE Oficiales</span>
@@ -250,7 +250,7 @@
             style="padding:16px; width:100%; justify-content:space-between;" 
             onclick="tocarHonoresRetirada()">
             <span style="font-size:14px; font-weight:700;">🎺 RETIRADA DE HONORES</span>
-            <span id="badgeBuqueRetirada" style="font-size:10px; background:#334155; padding:2px 8px; border-radius:4px; color:#94a3b8;">Bloqueado</span>
+            
           </button>
         </div>
 
@@ -544,27 +544,14 @@
       const btnMando = document.getElementById('btnChifleMando');
       const btnOficiales = document.getElementById('btnChifleOficiales');
       const btnRet = document.getElementById('btnChifleRetirada');
-      const badge = document.getElementById('badgeRetirada');
-
-      if (btnMando) { btnMando.classList.remove('disabled'); btnMando.disabled = false; }
-      if (btnOficiales) { btnOficiales.classList.remove('disabled'); btnOficiales.disabled = false; }
-
       if (ultimoToque === 'mando') {
         mandoChifleActivo = true;
         if (btnRet) { btnRet.classList.remove('disabled'); btnRet.disabled = false; }
-        if (badge) {
-          badge.style.background = '#0284c7';
-          badge.style.color = '#ffffff';
-          badge.textContent = 'Habilitado';
-        }
+        
       } else {
         mandoChifleActivo = false;
         if (btnRet) { btnRet.classList.add('disabled'); btnRet.disabled = true; }
-        if (badge) {
-          badge.style.background = '#334155';
-          badge.style.color = '#94a3b8';
-          badge.textContent = 'Bloqueado';
-        }
+        
       }
     }
 
@@ -730,21 +717,13 @@ function _legacy_execAuth() {
         if (btnBR) { btnBR.classList.add('disabled'); btnBR.disabled = true; }
         if (btnER) { btnER.classList.add('disabled'); btnER.disabled = true; }
         if (btnRet) { btnRet.classList.remove('disabled'); btnRet.disabled = false; }
-        if (badge) {
-          badge.style.background = '#0284c7';
-          badge.style.color = '#ffffff';
-          badge.textContent = 'Habilitado';
-        }
+        
       } else {
         // Estado inicial o tras Retirada: activos Babor y Estribor, bloqueada Retirada
         if (btnBR) { btnBR.classList.remove('disabled'); btnBR.disabled = false; }
         if (btnER) { btnER.classList.remove('disabled'); btnER.disabled = false; }
         if (btnRet) { btnRet.classList.add('disabled'); btnRet.disabled = true; }
-        if (badge) {
-          badge.style.background = '#334155';
-          badge.style.color = '#94a3b8';
-          badge.textContent = 'Bloqueado';
-        }
+        
       }
     }
 
