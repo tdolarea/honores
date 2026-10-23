@@ -148,34 +148,12 @@
 </head>
 <body>
 
-  <!-- Reproductores estáticos dedicados para Autoridades (Garantía 100% móvil) -->
-  <audio id="audCorFirmes" src="audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3" preload="auto" playsinline></audio>
-  <audio id="audCorPresenten" src="audio/cornetapresentenarmas.wav" preload="auto" playsinline></audio>
-  <audio id="audCorHombro" src="audio/CORNETASOBREELHOMBRO.mp3" preload="auto" playsinline></audio>
-  <audio id="audCorEjecutivaHimno" src="audio/cornetaordenhimnonacional.wav" preload="auto" playsinline></audio>
-  <audio id="audCorEjecutivaMarcha" src="audio/cornetaejecutivamarchadeinfantes.wav" preload="auto" playsinline></audio>
-  <audio id="audCorDescanso" src="audio/Cornetadescanso.wav" preload="auto" playsinline></audio>
+  <!-- Dos canales de audio dedicados para Autoridades -->
+  <audio id="playerSecuencia" preload="auto" playsinline></audio>
+  <audio id="playerSalvas" preload="auto" playsinline></audio>
 
-  <!-- Salvas estáticas -->
-  <audio id="audSalva21" src="audio/salvasdeordenanza21salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
-  <audio id="audSalva19" src="audio/salvasdeordenanza19salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
-  <audio id="audSalva17" src="audio/salvasdeordenanza17salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
-  <audio id="audSalva15" src="audio/salvasdeordenanza15salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
-  <audio id="audSalva13" src="audio/salvasdeordenanza13salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
 
-  <!-- Vivas estáticos -->
-  <audio id="audViva7" src="audio/vivaespana07.mp3" preload="auto" playsinline></audio>
-  <audio id="audViva5" src="audio/vivaespana05.mp3" preload="auto" playsinline></audio>
-  <audio id="audViva4" src="audio/vivaespana04.mp3" preload="auto" playsinline></audio>
-  <audio id="audViva3" src="audio/vivaespana03.mp3" preload="auto" playsinline></audio>
-  <audio id="audViva2" src="audio/vivaespana02.mp3" preload="auto" playsinline></audio>
-  <audio id="audViva1" src="audio/vivaaespana01.mp3" preload="auto" playsinline></audio>
-
-  <!-- Himnos estáticos -->
-  <audio id="audEspanaLargo" src="audio/Espania_largo.mp3" preload="auto" playsinline></audio>
-  <audio id="audEspanaCorto" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
-  <audio id="audMarchaInf" src="audio/MarchadeInfantes.mp3" preload="auto" playsinline></audio>
-  <audio id="audExtranjeroStream" preload="auto" playsinline></audio>
+  
 
 
   <!-- Reproductores de audio estáticos predefinidos para Portalón -->
@@ -1027,221 +1005,156 @@ function _legacy_execAuth() {
     }
 
     
+    
     // ==========================================
-    // EJECUCIÓN SECUENCIAL EXACTA (ELEMENTOS ESTÁTICOS)
+    // MOTOR DE EJECUCIÓN DIRECTA PARA AUTORIDADES (2 CANALES)
     // ==========================================
-    let secuenciaPasoActual = 0;
-    let secuenciaCancelada = false;
+    let colaSecuencia = [];
+    let audioSalvasAsociado = null;
+    let ejecucionEnCurso = false;
 
     function executeConfiguredAuth() {
       if (!selectedAuth) return;
       stopAllAudio();
-      secuenciaCancelada = false;
+      ejecucionEnCurso = true;
+
+      const pSec = document.getElementById('playerSecuencia');
+      const pSalvas = document.getElementById('playerSalvas');
 
       const useSalvas = document.getElementById('chkSalvas').checked && selectedAuth.salvas > 0;
       const useVivas = document.getElementById('chkVivas').checked && selectedAuth.vivas > 0;
       const useMusica = document.getElementById('chkMusica').checked;
       const useCorneta = document.getElementById('chkCorneta').checked;
 
-      // PRIMING DE AUDIO DIRECTO EN EL GESTO TÁCTIL (Desbloquea el motor de audio de Android/iOS)
-      const allPool = document.querySelectorAll('audio');
-      allPool.forEach(el => {
-        try {
-          // Un play+pause síncrono autoriza el elemento en el navegador móvil
-          let p = el.play();
-          if (p !== undefined) {
-            p.then(() => { el.pause(); el.currentTime = 0; }).catch(() => {});
-          }
-        } catch(e){}
-      });
+      colaSecuencia = [];
+      audioSalvasAsociado = null;
 
-      // 1. Elegir elemento de salvas
-      let elSalva = null;
-      if (useSalvas) {
-        if (selectedAuth.salvas === 21) elSalva = document.getElementById('audSalva21');
-        else if (selectedAuth.salvas === 19) elSalva = document.getElementById('audSalva19');
-        else if (selectedAuth.salvas === 17) elSalva = document.getElementById('audSalva17');
-        else if (selectedAuth.salvas === 15) elSalva = document.getElementById('audSalva15');
-        else if (selectedAuth.salvas === 13) elSalva = document.getElementById('audSalva13');
+      // PASO 1: Toque de Corneta de FIRMES largo
+      if (useCorneta) {
+        colaSecuencia.push({ src: 'audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3', label: '1/6 CORNETA: Toque de FIRMES' });
       }
 
-      // 2. Elegir elemento de vivas
-      let elViva = null;
+      // PASO 2: Toque de Corneta de POSICIÓN DEL ARMA
+      if (useCorneta) {
+        if (posicionArmaSeleccionada === 'presenten') {
+          colaSecuencia.push({ src: 'audio/cornetapresentenarmas.wav', label: '2/6 CORNETA: PRESENTEN ARMAS' });
+        } else if (posicionArmaSeleccionada === 'hombro') {
+          colaSecuencia.push({ src: 'audio/CORNETASOBREELHOMBRO.mp3', label: '2/6 CORNETA: SOBRE EL HOMBRO' });
+        }
+      }
+
+      // PASO 3: Toque de Corneta de EJECUTIVA de Marcha o Himno
+      if (useCorneta) {
+        if (selectedAuth.esMarchaInfantes) {
+          colaSecuencia.push({ src: 'audio/cornetaejecutivamarchadeinfantes.wav', label: '3/6 CORNETA: Ejecutiva Marcha de Infantes' });
+        } else {
+          colaSecuencia.push({ src: 'audio/cornetaordenhimnonacional.wav', label: '3/6 CORNETA: Ejecutiva Himno Nacional' });
+        }
+      }
+
+      // PASO 4: VOCES DE VIVA ESPAÑA (si corresponden)
       if (useVivas) {
-        if (selectedAuth.vivas === 7) elViva = document.getElementById('audViva7');
-        else if (selectedAuth.vivas === 5) elViva = document.getElementById('audViva5');
-        else if (selectedAuth.vivas === 4) elViva = document.getElementById('audViva4');
-        else if (selectedAuth.vivas === 3) elViva = document.getElementById('audViva3');
-        else if (selectedAuth.vivas === 2) elViva = document.getElementById('audViva2');
-        else if (selectedAuth.vivas === 1) elViva = document.getElementById('audViva1');
+        let vivaFile = 'audio/vivaespana0' + selectedAuth.vivas + '.mp3';
+        if (selectedAuth.vivas === 1) vivaFile = 'audio/vivaaespana01.mp3';
+        let cant = (selectedAuth.vivas === 1 ? '1 Voz de Viva España' : selectedAuth.vivas + ' Voces de Viva España');
+        colaSecuencia.push({ src: vivaFile, label: '4/6 VOCES: ' + cant });
       }
 
-      // 3. Elegir elementos de himno
-      let playlistHimnoEls = [];
+      // PASO 5: MÚSICA / HIMNOS + SALVAS SIMULTÁNEAS
+      if (useSalvas) {
+        let salvaFile = 'audio/salvasdeordenanza' + selectedAuth.salvas + 'salvas(mp3cut.net).mp3';
+        if (selectedAuth.salvas === 21) salvaFile = 'audio/salvasdeordenanza21salvas(mp3cut.net).mp3';
+        audioSalvasAsociado = salvaFile;
+      }
+
+      const espanaSrc = selectedAuth.himnoEspana ? ('audio/' + selectedAuth.himnoEspana) : (selectedAuth.himno ? ('audio/' + selectedAuth.himno) : 'audio/Espania_corto.mp3');
+      const espanaLabel = (selectedAuth.himnoEspana === 'Espania_largo.mp3' || selectedAuth.himno === 'Espania_largo.mp3') ? 'HIMNO DE ESPAÑA (completo)' : (selectedAuth.esMarchaInfantes ? 'MARCHA DE INFANTES' : 'HIMNO DE ESPAÑA (breve)');
+
       if (useMusica) {
-        let elEspana = (selectedAuth.himnoEspana === 'Espania_largo.mp3' || selectedAuth.himno === 'Espania_largo.mp3')
-          ? document.getElementById('audEspanaLargo')
-          : (selectedAuth.esMarchaInfantes ? document.getElementById('audMarchaInf') : document.getElementById('audEspanaCorto'));
-
-        let labelEspana = (selectedAuth.himnoEspana === 'Espania_largo.mp3' || selectedAuth.himno === 'Espania_largo.mp3')
-          ? 'HIMNO DE ESPAÑA (completo)'
-          : (selectedAuth.esMarchaInfantes ? 'MARCHA DE INFANTES' : 'HIMNO DE ESPAÑA (breve)');
-
         if (selectedAuth.isExtranjero) {
           if (selectedForeignAnthem) {
-            let elExt = document.getElementById('audExtranjeroStream');
-            if (elExt) {
-              elExt.src = selectedForeignAnthem.url;
-              playlistHimnoEls.push({ el: elExt, label: '1º HIMNO EXTRANJERO: ' + selectedForeignAnthem.name });
-            }
+            colaSecuencia.push({ src: selectedForeignAnthem.url, label: '5/6 MÚSICA: 1º HIMNO EXTRANJERO (' + selectedForeignAnthem.name + ')', disparaSalvas: true });
           }
-          playlistHimnoEls.push({ el: elEspana, label: '2º ' + labelEspana });
+          colaSecuencia.push({ src: espanaSrc, label: '5/6 MÚSICA: 2º ' + espanaLabel, disparaSalvas: !selectedForeignAnthem });
         } else if (selectedAuth.isOrganismo) {
-          playlistHimnoEls.push({ el: elEspana, label: '1º ' + labelEspana });
+          colaSecuencia.push({ src: espanaSrc, label: '5/6 MÚSICA: 1º ' + espanaLabel, disparaSalvas: true });
           if (selectedForeignAnthem) {
-            let elExt = document.getElementById('audExtranjeroStream');
-            if (elExt) {
-              elExt.src = selectedForeignAnthem.url;
-              playlistHimnoEls.push({ el: elExt, label: '2º HIMNO ORGANISMO: ' + selectedForeignAnthem.name });
-            }
+            colaSecuencia.push({ src: selectedForeignAnthem.url, label: '5/6 MÚSICA: 2º HIMNO ORGANISMO (' + selectedForeignAnthem.name + ')' });
           }
         } else {
-          playlistHimnoEls.push({ el: elEspana, label: labelEspana });
+          colaSecuencia.push({ src: espanaSrc, label: '5/6 MÚSICA: ' + espanaLabel, disparaSalvas: true });
         }
+      } else if (useSalvas && audioSalvasAsociado) {
+        // Si no hay música pero sí salvas, las salvas suenan como paso 5
+        colaSecuencia.push({ src: audioSalvasAsociado, label: '5/6 SALVAS: ' + selectedAuth.salvas + ' Salvas de Ordenanza' });
+        audioSalvasAsociado = null;
       }
 
-      // 4. Elementos de corneta
-      const elFirmes = document.getElementById('audCorFirmes');
-      let elArma = null;
-      let elDescanso = document.getElementById('audCorDescanso');
-      if (posicionArmaSeleccionada === 'presenten') {
-        elArma = document.getElementById('audCorPresenten');
-      } else if (posicionArmaSeleccionada === 'hombro') {
-        elArma = document.getElementById('audCorHombro');
+      // PASO 6: Toque de Corneta para DESCANSAR EL ARMA
+      if (useCorneta && posicionArmaSeleccionada !== 'ninguno') {
+        colaSecuencia.push({ src: 'audio/Cornetadescanso.wav', label: '6/6 CORNETA: DESCANSO' });
       }
 
-      let elEjecutiva = selectedAuth.esMarchaInfantes
-        ? document.getElementById('audCorEjecutivaMarcha')
-        : document.getElementById('audCorEjecutivaHimno');
-
-      // ARRANQUE PASO 1:
-      // Paso 1: Corneta Firmes largo
-      if (useCorneta && elFirmes) {
-        tocarPistaConCallback(elFirmes, '1/6 CORNETA: FIRMES', () => {
-          // Paso 2: Posición del arma
-          if (elArma) {
-            let txtArma = (posicionArmaSeleccionada === 'presenten') ? 'PRESENTEN ARMAS' : 'SOBRE EL HOMBRO';
-            tocarPistaConCallback(elArma, '2/6 CORNETA: ' + txtArma, () => {
-              // Paso 3: Ejecutiva de himno o marcha
-              tocarPaso3Ejecutiva(elEjecutiva, elViva, elSalva, playlistHimnoEls, elDescanso, useCorneta);
-            });
-          } else {
-            // En firmes sin armas
-            tocarPaso3Ejecutiva(elEjecutiva, elViva, elSalva, playlistHimnoEls, elDescanso, useCorneta);
-          }
-        });
-      } else {
-        // Sin corneta previa, arrancar desde vivas o himnos
-        tocarPaso4Vivas(elViva, elSalva, playlistHimnoEls, elDescanso, useCorneta);
+      if (colaSecuencia.length === 0) {
+        alert('Active al menos una opción reglamentaria.');
+        return;
       }
+
+      // DISPARO INMEDIATO DIRECTO DEL PRIMER AUDIO (SÍNCRONO CON EL CLICK)
+      reproducirSiguientePasoDeCola();
     }
 
-    function tocarPaso3Ejecutiva(elEjecutiva, elViva, elSalva, playlistHimnoEls, elDescanso, useCorneta) {
-      if (secuenciaCancelada) return;
-      let txtEj = selectedAuth.esMarchaInfantes ? 'Ejecutiva Marcha de Infantes' : 'Ejecutiva Himno Nacional';
-      tocarPistaConCallback(elEjecutiva, '3/6 CORNETA: ' + txtEj, () => {
-        tocarPaso4Vivas(elViva, elSalva, playlistHimnoEls, elDescanso, useCorneta);
-      });
-    }
-
-    function tocarPaso4Vivas(elViva, elSalva, playlistHimnoEls, elDescanso, useCorneta) {
-      if (secuenciaCancelada) return;
-      if (elViva) {
-        let cant = (selectedAuth.vivas === 1 ? '1 Voz de Viva España' : selectedAuth.vivas + ' Voces de Viva España');
-        tocarPistaConCallback(elViva, '4/6 VOCES: ' + cant, () => {
-          tocarPaso5HimnosYSalvas(elSalva, playlistHimnoEls, elDescanso, useCorneta);
-        });
-      } else {
-        tocarPaso5HimnosYSalvas(elSalva, playlistHimnoEls, elDescanso, useCorneta);
+    function reproducirSiguientePasoDeCola() {
+      if (!ejecucionEnCurso || colaSecuencia.length === 0) {
+        cerrarStatus();
+        ejecucionEnCurso = false;
+        return;
       }
-    }
 
-    function tocarPaso5HimnosYSalvas(elSalva, playlistHimnoEls, elDescanso, useCorneta) {
-      if (secuenciaCancelada) return;
+      const pSec = document.getElementById('playerSecuencia');
+      const pSalvas = document.getElementById('playerSalvas');
+      const item = colaSecuencia.shift();
 
-      // Disparar salvas en paralelo
-      if (elSalva) {
+      let tagSalva = '';
+      // Si este paso debe arrancar las salvas simultáneas
+      if (item.disparaSalvas && audioSalvasAsociado && pSalvas) {
         try {
-          elSalva.currentTime = 0;
-          elSalva.play().catch(e => console.error('Salvas err:', e));
+          pSalvas.src = audioSalvasAsociado;
+          pSalvas.currentTime = 0;
+          pSalvas.play().catch(e => console.error('Salvas play error:', e));
+          tagSalva = ' [💥 Salvas de Ordenanza]';
         } catch(e){}
       }
 
-      // Disparar himnos
-      if (playlistHimnoEls.length > 0) {
-        reproducirColaHimnos(playlistHimnoEls, elSalva, () => {
-          tocarPaso6Descanso(elDescanso, useCorneta);
+      actualizarStatus(item.label + tagSalva);
+
+      if (pSec) {
+        pSec.src = item.src;
+        pSec.currentTime = 0;
+        pSec.play().then(() => {
+          pSec.onended = () => {
+            setTimeout(reproducirSiguientePasoDeCola, 1000);
+          };
+        }).catch(err => {
+          console.error('Error pista secuencia:', item.src, err);
+          // Si el archivo no carga o falla, avanzar al siguiente paso
+          setTimeout(reproducirSiguientePasoDeCola, 800);
         });
-      } else {
-        if (elSalva) {
-          elSalva.onended = () => { tocarPaso6Descanso(elDescanso, useCorneta); };
-        } else {
-          tocarPaso6Descanso(elDescanso, useCorneta);
+      }
+    }
+
+    function stopAllAudio() {
+      ejecucionEnCurso = false;
+      colaSecuencia = [];
+      const allAudios = document.querySelectorAll('audio');
+      allAudios.forEach(a => {
+        if (a) {
+          try { a.pause(); a.currentTime = 0; } catch(e){}
         }
-      }
-    }
-
-    function reproducirColaHimnos(queue, elSalva, onFinishAll) {
-      if (secuenciaCancelada || queue.length === 0) {
-        onFinishAll();
-        return;
-      }
-
-      const item = queue.shift();
-      let tagSalva = (elSalva && !elSalva.paused) ? ' [💥 Salvas de Ordenanza]' : '';
-      actualizarStatus('5/6 MÚSICA: ' + item.label + tagSalva);
-
-      item.el.currentTime = 0;
-      item.el.play().then(() => {
-        item.el.onended = () => {
-          setTimeout(() => {
-            reproducirColaHimnos(queue, elSalva, onFinishAll);
-          }, 1200);
-        };
-      }).catch(err => {
-        console.error('Himno play error:', err);
-        setTimeout(() => { reproducirColaHimnos(queue, elSalva, onFinishAll); }, 800);
       });
-    }
-
-    function tocarPaso6Descanso(elDescanso, useCorneta) {
-      if (secuenciaCancelada || !useCorneta || !elDescanso || posicionArmaSeleccionada === 'ninguno') {
-        cerrarStatus();
-        return;
-      }
-      tocarPistaConCallback(elDescanso, '6/6 CORNETA: DESCANSO', () => {
-        cerrarStatus();
-      });
-    }
-
-    function tocarPistaConCallback(audioEl, label, onEnded) {
-      if (secuenciaCancelada) return;
-      if (!audioEl) {
-        setTimeout(onEnded, 600);
-        return;
-      }
-
-      actualizarStatus(label);
-      audioEl.currentTime = 0;
-      audioEl.play().then(() => {
-        audioEl.onended = () => {
-          setTimeout(onEnded, 1000);
-        };
-      }).catch(e => {
-        console.error('Error playing track:', label, e);
-        // Si el navegador bloquea esta pista individual, continuar la secuencia
-        setTimeout(onEnded, 800);
-      });
+      cerrarStatus();
+      if (typeof onAudioTerminado === 'function') onAudioTerminado();
+      if (typeof onBuqueAudioFin === 'function') onBuqueAudioFin();
     }
 
 
