@@ -153,7 +153,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792783113';
+    const APP_VERSION = 'v1792783577';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -511,7 +511,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792783113</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792783577</div>
 </footer>
 
   <script>
@@ -2000,22 +2000,22 @@ function _legacy_execAuth() {
         }
       }
 
-      // 7. Toque final de descanse el arma según la posición adoptada:
-      // Si adoptó Presenten -> Toque de Descanso de armas desde presenten (audDescanso)
-      // Si adoptó Sobre el hombro -> Toque reglamentario sobre el hombro (audDescansoHombro)
+      // 7. Toque final de descanse el arma según la posición adoptada (doctrina del Comandante):
+      // Para descansen armas desde presenten: es el mismo toque de Presenten Armas (audPresenten)
+      // Para sobre el hombro: es el mismo toque de Sobre el Hombro (audHombro)
       let elDescanso = null;
       let labelDescanso = 'DESCANSO';
       if (posicionArmaSeleccionada === 'presenten') {
-        elDescanso = document.getElementById('audDescanso');
-        labelDescanso = 'DESCANSO (DESDE PRESENTEN)';
+        elDescanso = document.getElementById('audPresenten');
+        labelDescanso = 'DESCANSO (PRESENTEN ARMAS)';
       } else if (posicionArmaSeleccionada === 'hombro') {
-        elDescanso = document.getElementById('audDescansoHombro') || document.getElementById('audDescanso');
+        elDescanso = document.getElementById('audHombro');
         labelDescanso = 'DESCANSO (SOBRE EL HOMBRO)';
       } else {
         elDescanso = document.getElementById('audDescanso');
         labelDescanso = 'DESCANSO';
       }
-
+      
       // DESBLOQUEO SEGURO EN MÓVILES SIN PAUSE INMEDIATO RIESGOSO:
       // Usamos .load() para que el navegador móvil precargue los metadatos de los elementos sin cancelar las promesas de play
       const todos = [elArma, elEjecutiva, elViva, elSalva, elEspana, elExt, elDescanso];
