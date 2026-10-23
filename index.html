@@ -167,25 +167,22 @@
     </div>
 
     <!-- VISTA 1: PORTALÓN -->
+        <!-- VISTA 1: PORTALÓN -->
     <div class="view-section active" id="viewPortalon">
       <div class="card">
         <div class="card-title">Chifle en el Portalón (Ceremonial Naval)</div>
-        <div class="btn-grid">
-          <button class="action-btn primary" onclick="playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante')">
-            <span>CHIFLE Almirante o Comte</span>
-            <span>🎺</span>
+        <div class="btn-grid" style="grid-template-columns: 1fr;">
+          <button class="action-btn primary" style="padding:16px;" onclick="playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante')">
+            <span style="font-size:14px;">🎺 CHIFLE Almirante o Comandante</span>
+            <span>⚓</span>
           </button>
-          <button class="action-btn primary" onclick="playAudio('audio/Retiradadehonores_AudioDenoise.mp3', 'CHIFLE: Retirada Almte / Comte')">
-            <span>CHIFLE Retirada Almte/Comte</span>
-            <span>🎺</span>
+          <button class="action-btn primary" style="padding:16px;" onclick="playAudio('audio/retiradaComteoAlmte.mp3', 'CHIFLE: Retirada Almte / Comte')">
+            <span style="font-size:14px;">🎺 CHIFLE Retirada Almte / Comte</span>
+            <span>⚓</span>
           </button>
-          <button class="action-btn" onclick="playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Oficiales')">
-            <span>CHIFLE Oficiales</span>
-            <span>🎺</span>
-          </button>
-          <button class="action-btn danger" onclick="stopAllAudio()">
-            <span>PARAR SONIDO</span>
-            <span>🛑</span>
+          <button class="action-btn" style="padding:16px;" onclick="playAudio('audio/oficiales.mp3', 'CHIFLE: Oficiales')">
+            <span style="font-size:14px;">🎺 CHIFLE Oficiales</span>
+            <span>⚓</span>
           </button>
         </div>
       </div>
