@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792790001';
+    const APP_VERSION = 'v1792792085';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -513,7 +513,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792790001</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792792085</div>
 </footer>
 
   <script>
@@ -1237,7 +1237,7 @@ function _legacy_execAuth() {
       }
 
       let salvasTerminadas = !elSalva; // Si no hay salvas, ya están terminadas
-      let himnosTerminados = (!himnosQueue || himnosQueue.length === 0); // Si no hay himno, ya están terminados
+      let himnosTerminados = (!himnosQueue || himnosQueue.length === 0);
 
       function verificarFinPaso5() {
         if (!secuenciaActiva) return;
@@ -1245,7 +1245,7 @@ function _legacy_execAuth() {
           if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
           setTimeout(() => {
             reproducirPaso6(elDescanso, useCorneta, labelDescanso);
-          }, 800);
+          }, 1000);
         }
       }
 
@@ -1272,7 +1272,7 @@ function _legacy_execAuth() {
         }
       }
 
-      // 2. Arrancar Secuencia de Himnos
+      // 2. Arrancar Secuencia de Himnos (1º Extranjero ➔ 2º España)
       if (himnosQueue && himnosQueue.length > 0) {
         setTimeout(() => {
           if (!secuenciaActiva) return;
@@ -1280,26 +1280,16 @@ function _legacy_execAuth() {
             himnosTerminados = true;
             verificarFinPaso5();
           });
-        }, 150);
+        }, 200);
       } else {
         himnosTerminados = true;
         verificarFinPaso5();
       }
-
-      // Reloj de seguridad maestro por si algún evento onended se pierde en móvil
-      let durTotalEstimada = 60000;
-      if (elSalva && elSalva.duration && !isNaN(elSalva.duration)) {
-        durTotalEstimada = Math.max(durTotalEstimada, elSalva.duration * 1000 + 2000);
-      }
-      timerPasoSeguro = setTimeout(() => {
-        salvasTerminadas = true;
-        himnosTerminados = true;
-        verificarFinPaso5();
-      }, durTotalEstimada);
     }
 
     function reproducirHimnosSecuencia(queue, elSalva, onFinished) {
-      if (!secuenciaActiva || queue.length === 0) {
+      if (!secuenciaActiva) return;
+      if (!queue || queue.length === 0) {
         onFinished();
         return;
       }
@@ -1312,26 +1302,23 @@ function _legacy_execAuth() {
       item.el.muted = false;
       let finalizado = false;
 
-      function avanzar() {
+      function avanzarSiguienteHimno() {
         if (finalizado) return;
         finalizado = true;
+        // Pausa solemne entre el himno extranjero y el de España (1.2 segundos)
         setTimeout(() => {
+          if (!secuenciaActiva) return;
           reproducirHimnosSecuencia(queue, elSalva, onFinished);
-        }, 800);
+        }, 1200);
       }
 
-      item.el.onended = avanzar;
+      item.el.onended = avanzarSiguienteHimno;
 
       let pHimno = item.el.play();
-      let durMs = (item.el.duration && !isNaN(item.el.duration)) ? (item.el.duration * 1000 + 1500) : 45000;
-      setTimeout(() => {
-        if (!finalizado) avanzar();
-      }, durMs);
-
       if (pHimno !== undefined) {
         pHimno.catch(err => {
-          console.warn('Himno play error:', err);
-          avanzar();
+          console.warn('Error reproduciendo himno:', item.label, err);
+          avanzarSiguienteHimno();
         });
       }
     }
