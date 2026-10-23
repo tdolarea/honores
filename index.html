@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792784741';
+    const APP_VERSION = 'v1792785275';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -513,7 +513,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792784741</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792785275</div>
 </footer>
 
   <script>
@@ -1926,7 +1926,7 @@ function _legacy_execAuth() {
     let timerPasoSeguro = null;
 
     
-    let timerPasoSeguro = null;
+    // timerPasoSeguro already declared
 
     function executeConfiguredAuth() {
       if (!selectedAuth) {
