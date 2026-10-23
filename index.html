@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792792085';
+    const APP_VERSION = 'v1792792815';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -352,6 +352,8 @@
             </button>
           </div>
 
+          
+
           <!-- SELECTOR DE HIMNO (EXTRANJEROS Y ORGANISMOS) -->
           <div id="anthemPickerBox" style="display:none; background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:10px; margin-bottom:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -513,7 +515,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792792085</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792792815</div>
 </footer>
 
   <script>
@@ -1045,7 +1047,7 @@ function _legacy_execAuth() {
       list.innerHTML = '';
       const q = (query || '').toLowerCase().trim();
       const filtered = ANTHEMS_CATALOG.filter(a => a.name.toLowerCase().includes(q));
-      filtered.slice(0, 20).forEach(item => {
+      filtered.forEach(item => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'action-btn';
@@ -1406,4 +1408,6 @@ function _legacy_execAuth() {
 
   </script>
 </body>
-</html>
+</html
+
+          >
