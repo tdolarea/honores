@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792792815';
+    const APP_VERSION = 'v1792793055';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -355,22 +355,6 @@
           
 
           <!-- SELECTOR DE HIMNO (EXTRANJEROS Y ORGANISMOS) -->
-          <div id="anthemPickerBox" style="display:none; background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:10px; margin-bottom:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-size:12px; font-weight:700; color:#f8fafc;" id="lblAnthemPickerTitle">🎵 Seleccione Himno:</span>
-              <span style="font-size:11px; color:#38bdf8; font-weight:800;" id="selectedAnthemName">Francia</span>
-            </div>
-            <input type="text" id="txtAnthemSearch" placeholder="🔍 Buscar país u organismo (156 disponibles)..." 
-              style="width:100%; padding:8px 10px; background:#0b152d; border:1px solid #334155; border-radius:6px; color:#fff; font-size:12px; margin-bottom:8px;"
-              oninput="onSearchAnthemInput(this.value)">
-            <div id="anthemResultsList" style="max-height:130px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;">
-              <!-- Lista de resultados -->
-            </div>
-            <div style="font-size:10.5px; color:#94a3b8; margin-top:6px; font-style:italic;" id="anthemOrderExplanation">
-              Orden protocolario: 1º Himno Extranjero ➔ 2º Himno Nacional de España.
-            </div>
-          </div>
-
           <!-- CONFIGURACIÓN DE LA SECUENCIA CEREMONIAL -->
           
           <!-- 1. TOQUES DE CORNETA (FIRMES + EJECUTIVA + DESCANSO) -->
@@ -429,6 +413,22 @@
           </div>
 
           <!-- 5. MÚSICA / HIMNOS -->
+          <div id="anthemPickerBox" style="display:none; background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:10px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:12px; font-weight:700; color:#f8fafc;" id="lblAnthemPickerTitle">🎵 Seleccione Himno:</span>
+              <span style="font-size:11px; color:#38bdf8; font-weight:800;" id="selectedAnthemName">Francia</span>
+            </div>
+            <input type="text" id="txtAnthemSearch" placeholder="🔍 Buscar país u organismo (156 disponibles)..." 
+              style="width:100%; padding:8px 10px; background:#0b152d; border:1px solid #334155; border-radius:6px; color:#fff; font-size:12px; margin-bottom:8px;"
+              oninput="onSearchAnthemInput(this.value)">
+            <div id="anthemResultsList" style="max-height:130px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;">
+              <!-- Lista de resultados -->
+            </div>
+            <div style="font-size:10.5px; color:#94a3b8; margin-top:6px; font-style:italic;" id="anthemOrderExplanation">
+              Orden protocolario: 1º Himno Extranjero ➔ 2º Himno Nacional de España.
+            </div>
+          </div>
+
           <div class="toggle-row" id="rowMusica">
             <div>
               <div class="toggle-label" id="lblMusica">🎺 Música / Himnos</div>
@@ -515,7 +515,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792792815</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792793055</div>
 </footer>
 
   <script>
