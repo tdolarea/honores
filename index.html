@@ -268,6 +268,7 @@
         <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
         <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
         <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
+        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
     <div class="view-section" id="viewAuth">
       <div class="card">
         <div class="card-title">
@@ -286,7 +287,7 @@
         </div>
 
         <!-- LISTA DE AUTORIDADES LIMPIA (SOLO NOMBRE) -->
-        <div id="authListContainer" style="max-height:280px; overflow-y:auto; padding-right:4px;">
+        <div id="authListContainer" style="max-height:260px; overflow-y:auto; padding-right:4px;">
           <!-- Generado dinámicamente -->
         </div>
 
@@ -319,7 +320,52 @@
             </div>
           </div>
 
-          <!-- INTERRUPTORES ON/OFF PARA CADA ELEMENTO -->
+          <!-- CONFIGURACIÓN DE LA SECUENCIA CEREMONIAL -->
+          
+          <!-- 1. TOQUES DE CORNETA (FIRMES + EJECUTIVA + DESCANSO) -->
+          <div class="toggle-row" id="rowCorneta">
+            <div>
+              <div class="toggle-label">🎺 Toques de Corneta</div>
+              <div class="toggle-desc">Firmes, Ejecutiva de Marcha/Himno y Descanso</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkCorneta" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- 2. SELECTOR POSICIÓN DEL ARMA -->
+          <div class="toggle-row" id="rowArma" style="flex-direction:column; align-items:flex-start; gap:8px;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <div class="toggle-label">🎖️ Posición del Arma:</div>
+              <span style="font-size:11px; color:#38bdf8; font-weight:700;" id="lblArmaActual">Presenten Armas</span>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; width:100%;">
+              <button type="button" class="action-btn primary" id="btnArmaPresenten" style="font-size:11px; padding:8px 4px; justify-content:center; text-align:center;" onclick="seleccionarPosicionArma('presenten')">
+                Presenten
+              </button>
+              <button type="button" class="action-btn" id="btnArmaHombro" style="font-size:11px; padding:8px 4px; justify-content:center; text-align:center;" onclick="seleccionarPosicionArma('hombro')">
+                Sobre Hombro
+              </button>
+              <button type="button" class="action-btn" id="btnArmaFirmes" style="font-size:11px; padding:8px 4px; justify-content:center; text-align:center;" onclick="seleccionarPosicionArma('ninguno')">
+                En Firmes
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. VOCES DE VIVA ESPAÑA -->
+          <div class="toggle-row" id="rowVivas">
+            <div>
+              <div class="toggle-label" id="lblVivas">🗣️ Saludo a la voz</div>
+              <div class="toggle-desc" id="descVivas">7 Voces de Viva España</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkVivas" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- 4. SALVAS DE ORDENANZA -->
           <div class="toggle-row" id="rowSalvas">
             <div>
               <div class="toggle-label" id="lblSalvas">💥 Salvas de Ordenanza</div>
@@ -331,17 +377,7 @@
             </label>
           </div>
 
-          <div class="toggle-row" id="rowVivas">
-            <div>
-              <div class="toggle-label" id="lblVivas">🗣️ Saludo a la voz (Voces de Viva España)</div>
-              <div class="toggle-desc" id="descVivas">7 Voces de Viva España</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="chkVivas" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-
+          <!-- 5. MÚSICA / HIMNOS -->
           <div class="toggle-row" id="rowMusica">
             <div>
               <div class="toggle-label" id="lblMusica">🎺 Música / Himnos</div>
@@ -353,18 +389,7 @@
             </label>
           </div>
 
-          <div class="toggle-row" id="rowCorneta">
-            <div>
-              <div class="toggle-label">🎺 Toques de Corneta / Voz</div>
-              <div class="toggle-desc">Firmes y Presenten Armas</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="chkCorneta" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <!-- BOTONES DE DISPARO -->
+          <!-- BOTONES DE ACCIÓN -->
           <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
             <button class="action-btn primary" style="background:#0284c7; border-color:#38bdf8; justify-content:center; font-size:14px; font-weight:800; padding:14px;" onclick="executeConfiguredAuth()">
               <span>▶️ Ejecutiva</span>
@@ -766,42 +791,46 @@ function _legacy_execAuth() {
     
     // ==========================================
     // HONORES A AUTORIDADES (REGLAS Y SIMULTANEIDAD)
+    
+    // ==========================================
+    // HONORES A AUTORIDADES (SECUENCIA CEREMONIAL EXACTA)
     // ==========================================
     const ANTHEMS_CATALOG = [{"id": "Afghanistan", "name": "Afghanistan", "file": "Afghanistan.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Afghanistan.mp3"}, {"id": "Albania", "name": "Albania", "file": "Albania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Albania.mp3"}, {"id": "Alemania", "name": "Alemania", "file": "Alemania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Alemania.mp3"}, {"id": "Angola", "name": "Angola", "file": "Angola.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Angola.mp3"}, {"id": "Antigua_Barbuda", "name": "Antigua Barbuda", "file": "Antigua_Barbuda.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Antigua_Barbuda.mp3"}, {"id": "Antillas_Holandesas", "name": "Antillas Holandesas", "file": "Antillas_Holandesas.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Antillas_Holandesas.mp3"}, {"id": "Arabia_Saudita", "name": "Arabia Saudita", "file": "Arabia_Saudita.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Arabia_Saudita.mp3"}, {"id": "Argelia", "name": "Argelia", "file": "Argelia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Argelia.mp3"}, {"id": "Argentina", "name": "Argentina", "file": "Argentina.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Argentina.mp3"}, {"id": "Armenia", "name": "Armenia", "file": "Armenia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Armenia.mp3"}, {"id": "Aruba", "name": "Aruba", "file": "Aruba.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Aruba.mp3"}, {"id": "Australia", "name": "Australia", "file": "Australia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Australia.mp3"}, {"id": "Austria", "name": "Austria", "file": "Austria.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Austria.mp3"}, {"id": "Azerbaiyan", "name": "Azerbaiyan", "file": "Azerbaiyan.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Azerbaiyan.mp3"}, {"id": "Bahamas", "name": "Bahamas", "file": "Bahamas.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Bahamas.mp3"}, {"id": "Bahrein", "name": "Bahrein", "file": "Bahrein.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Bahrein.mp3"}, {"id": "Banglades", "name": "Banglades", "file": "Banglades.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Banglades.mp3"}, {"id": "Barbados", "name": "Barbados", "file": "Barbados.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Barbados.mp3"}, {"id": "Belgica", "name": "Belgica", "file": "Belgica.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Belgica.mp3"}, {"id": "Belice", "name": "Belice", "file": "Belice.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Belice.mp3"}, {"id": "Benin", "name": "Benin", "file": "Benin.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Benin.mp3"}, {"id": "Bielorusia", "name": "Bielorusia", "file": "Bielorusia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Bielorusia.mp3"}, {"id": "Bolivia", "name": "Bolivia", "file": "Bolivia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Bolivia.mp3"}, {"id": "Bosnia_H", "name": "Bosnia H", "file": "Bosnia_H.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Bosnia_H.mp3"}, {"id": "Botsuana", "name": "Botsuana", "file": "Botsuana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Botsuana.mp3"}, {"id": "Brasil", "name": "Brasil", "file": "Brasil.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Brasil.mp3"}, {"id": "Brunei", "name": "Brunei", "file": "Brunei.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Brunei.mp3"}, {"id": "Bulgaria", "name": "Bulgaria", "file": "Bulgaria.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Bulgaria.mp3"}, {"id": "Cabo_Verde", "name": "Cabo Verde", "file": "Cabo_Verde.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Cabo_Verde.mp3"}, {"id": "Camboya", "name": "Camboya", "file": "Camboya.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Camboya.mp3"}, {"id": "Camerun", "name": "Camerun", "file": "Camerun.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Camerun.mp3"}, {"id": "Canada", "name": "Canada", "file": "Canada.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Canada.mp3"}, {"id": "Chad", "name": "Chad", "file": "Chad.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Chad.mp3"}, {"id": "Chile", "name": "Chile", "file": "Chile.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Chile.mp3"}, {"id": "China", "name": "China", "file": "China.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/China.mp3"}, {"id": "Colombia", "name": "Colombia", "file": "Colombia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Colombia.mp3"}, {"id": "Congo", "name": "Congo", "file": "Congo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Congo.mp3"}, {"id": "Corea_Sur", "name": "Corea Sur", "file": "Corea_Sur.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Corea_Sur.mp3"}, {"id": "Costa_Marfil", "name": "Costa Marfil", "file": "Costa_Marfil.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Costa_Marfil.mp3"}, {"id": "Costa_Rica", "name": "Costa Rica", "file": "Costa_Rica.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Costa_Rica.mp3"}, {"id": "Croacia", "name": "Croacia", "file": "Croacia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Croacia.mp3"}, {"id": "Cuba", "name": "Cuba", "file": "Cuba.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Cuba.mp3"}, {"id": "Dinamarca", "name": "Dinamarca", "file": "Dinamarca.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Dinamarca.mp3"}, {"id": "Dinamarca_MR", "name": "Dinamarca MR", "file": "Dinamarca_MR.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Dinamarca_MR.mp3"}, {"id": "Dominica", "name": "Dominica", "file": "Dominica.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Dominica.mp3"}, {"id": "EEUU", "name": "EEUU", "file": "EEUU.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/EEUU.mp3"}, {"id": "EU", "name": "EU", "file": "EU.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/EU.mp3"}, {"id": "Ecuador", "name": "Ecuador", "file": "Ecuador.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Ecuador.mp3"}, {"id": "Egipto", "name": "Egipto", "file": "Egipto.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Egipto.mp3"}, {"id": "Emiratos", "name": "Emiratos", "file": "Emiratos.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Emiratos.mp3"}, {"id": "Eritrea", "name": "Eritrea", "file": "Eritrea.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Eritrea.mp3"}, {"id": "Eslovaquia", "name": "Eslovaquia", "file": "Eslovaquia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Eslovaquia.mp3"}, {"id": "Eslovenia", "name": "Eslovenia", "file": "Eslovenia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Eslovenia.mp3"}, {"id": "Espania_corto", "name": "Espania corto", "file": "Espania_corto.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Espania_corto.mp3"}, {"id": "Espania_largo", "name": "Espania largo", "file": "Espania_largo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Espania_largo.mp3"}, {"id": "Estonia", "name": "Estonia", "file": "Estonia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Estonia.mp3"}, {"id": "Filipinas", "name": "Filipinas", "file": "Filipinas.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Filipinas.mp3"}, {"id": "Finlandia", "name": "Finlandia", "file": "Finlandia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Finlandia.mp3"}, {"id": "Francia", "name": "Francia", "file": "Francia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Francia.mp3"}, {"id": "Gabon", "name": "Gabon", "file": "Gabon.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Gabon.mp3"}, {"id": "Gambia", "name": "Gambia", "file": "Gambia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Gambia.mp3"}, {"id": "Georgia", "name": "Georgia", "file": "Georgia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Georgia.mp3"}, {"id": "Ghana", "name": "Ghana", "file": "Ghana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Ghana.mp3"}, {"id": "Grecia", "name": "Grecia", "file": "Grecia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Grecia.mp3"}, {"id": "Guatemala", "name": "Guatemala", "file": "Guatemala.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Guatemala.mp3"}, {"id": "Guayana", "name": "Guayana", "file": "Guayana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Guayana.mp3"}, {"id": "Guinea", "name": "Guinea", "file": "Guinea.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Guinea.mp3"}, {"id": "Guinea_Bissau", "name": "Guinea Bissau", "file": "Guinea_Bissau.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Guinea_Bissau.mp3"}, {"id": "Guinea_Ecuatorial", "name": "Guinea Ecuatorial", "file": "Guinea_Ecuatorial.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Guinea_Ecuatorial.mp3"}, {"id": "Haiti", "name": "Haiti", "file": "Haiti.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Haiti.mp3"}, {"id": "Honduras", "name": "Honduras", "file": "Honduras.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Honduras.mp3"}, {"id": "Hungria", "name": "Hungria", "file": "Hungria.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Hungria.mp3"}, {"id": "India", "name": "India", "file": "India.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/India.mp3"}, {"id": "Indonesia", "name": "Indonesia", "file": "Indonesia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Indonesia.mp3"}, {"id": "Irak", "name": "Irak", "file": "Irak.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Irak.mp3"}, {"id": "Irlanda", "name": "Irlanda", "file": "Irlanda.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Irlanda.mp3"}, {"id": "Islandia", "name": "Islandia", "file": "Islandia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Islandia.mp3"}, {"id": "Israel", "name": "Israel", "file": "Israel.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Israel.mp3"}, {"id": "Italia", "name": "Italia", "file": "Italia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Italia.mp3"}, {"id": "Jamaica", "name": "Jamaica", "file": "Jamaica.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Jamaica.mp3"}, {"id": "Japon", "name": "Japon", "file": "Japon.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Japon.mp3"}, {"id": "Jordania", "name": "Jordania", "file": "Jordania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Jordania.mp3"}, {"id": "Kazajistan", "name": "Kazajistan", "file": "Kazajistan.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Kazajistan.mp3"}, {"id": "Kenia", "name": "Kenia", "file": "Kenia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Kenia.mp3"}, {"id": "Kuwait", "name": "Kuwait", "file": "Kuwait.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Kuwait.mp3"}, {"id": "Laos", "name": "Laos", "file": "Laos.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Laos.mp3"}, {"id": "Lesoto", "name": "Lesoto", "file": "Lesoto.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Lesoto.mp3"}, {"id": "Letonia", "name": "Letonia", "file": "Letonia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Letonia.mp3"}, {"id": "Libano", "name": "Libano", "file": "Libano.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Libano.mp3"}, {"id": "Liberia", "name": "Liberia", "file": "Liberia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Liberia.mp3"}, {"id": "Libia", "name": "Libia", "file": "Libia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Libia.mp3"}, {"id": "Liechtenstein", "name": "Liechtenstein", "file": "Liechtenstein.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Liechtenstein.mp3"}, {"id": "Lituania", "name": "Lituania", "file": "Lituania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Lituania.mp3"}, {"id": "Luxemburgo", "name": "Luxemburgo", "file": "Luxemburgo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Luxemburgo.mp3"}, {"id": "Macedonia", "name": "Macedonia", "file": "Macedonia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Macedonia.mp3"}, {"id": "Madagascar", "name": "Madagascar", "file": "Madagascar.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Madagascar.mp3"}, {"id": "Malasia", "name": "Malasia", "file": "Malasia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Malasia.mp3"}, {"id": "Maldivas", "name": "Maldivas", "file": "Maldivas.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Maldivas.mp3"}, {"id": "Mali", "name": "Mali", "file": "Mali.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Mali.mp3"}, {"id": "Malta", "name": "Malta", "file": "Malta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Malta.mp3"}, {"id": "Marruecos", "name": "Marruecos", "file": "Marruecos.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Marruecos.mp3"}, {"id": "Mauricio", "name": "Mauricio", "file": "Mauricio.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Mauricio.mp3"}, {"id": "Mauritania", "name": "Mauritania", "file": "Mauritania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Mauritania.mp3"}, {"id": "Mejico", "name": "Mejico", "file": "Mejico.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Mejico.mp3"}, {"id": "Moldavia", "name": "Moldavia", "file": "Moldavia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Moldavia.mp3"}, {"id": "Monaco", "name": "Monaco", "file": "Monaco.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Monaco.mp3"}, {"id": "Montenegro", "name": "Montenegro", "file": "Montenegro.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Montenegro.mp3"}, {"id": "Mozambique", "name": "Mozambique", "file": "Mozambique.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Mozambique.mp3"}, {"id": "Myanmar", "name": "Myanmar", "file": "Myanmar.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Myanmar.mp3"}, {"id": "Namibia", "name": "Namibia", "file": "Namibia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Namibia.mp3"}, {"id": "Nepal", "name": "Nepal", "file": "Nepal.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Nepal.mp3"}, {"id": "Nicaragua", "name": "Nicaragua", "file": "Nicaragua.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Nicaragua.mp3"}, {"id": "Ninguno", "name": "Ninguno", "file": "Ninguno.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Ninguno.mp3"}, {"id": "Noruega", "name": "Noruega", "file": "Noruega.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Noruega.mp3"}, {"id": "Nueva_Zelanda", "name": "Nueva Zelanda", "file": "Nueva_Zelanda.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Nueva_Zelanda.mp3"}, {"id": "OTAN", "name": "OTAN", "file": "OTAN.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/OTAN.mp3"}, {"id": "Oman", "name": "Oman", "file": "Oman.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Oman.mp3"}, {"id": "Paises_Bajos", "name": "Paises Bajos", "file": "Paises_Bajos.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Paises_Bajos.mp3"}, {"id": "Pakistan", "name": "Pakistan", "file": "Pakistan.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Pakistan.mp3"}, {"id": "Panama", "name": "Panama", "file": "Panama.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Panama.mp3"}, {"id": "Peru", "name": "Peru", "file": "Peru.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Peru.mp3"}, {"id": "Polonia", "name": "Polonia", "file": "Polonia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Polonia.mp3"}, {"id": "Portugal", "name": "Portugal", "file": "Portugal.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Portugal.mp3"}, {"id": "Puerto_Rico", "name": "Puerto Rico", "file": "Puerto_Rico.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Puerto_Rico.mp3"}, {"id": "Qatar", "name": "Qatar", "file": "Qatar.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Qatar.mp3"}, {"id": "RC_Africana", "name": "RC Africana", "file": "RC_Africana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/RC_Africana.mp3"}, {"id": "Reino_Unido", "name": "Reino Unido", "file": "Reino_Unido.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Reino_Unido.mp3"}, {"id": "Rep_Checa", "name": "Rep Checa", "file": "Rep_Checa.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Rep_Checa.mp3"}, {"id": "Republica_Dominicana", "name": "Republica Dominicana", "file": "Republica_Dominicana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Republica_Dominicana.mp3"}, {"id": "Ruanda", "name": "Ruanda", "file": "Ruanda.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Ruanda.mp3"}, {"id": "Rumania", "name": "Rumania", "file": "Rumania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Rumania.mp3"}, {"id": "Rusia", "name": "Rusia", "file": "Rusia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Rusia.mp3"}, {"id": "SOM_Malta", "name": "SOM Malta", "file": "SOM_Malta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/SOM_Malta.mp3"}, {"id": "Salvador", "name": "Salvador", "file": "Salvador.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Salvador.mp3"}, {"id": "Serbia", "name": "Serbia", "file": "Serbia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Serbia.mp3"}, {"id": "Seychelles", "name": "Seychelles", "file": "Seychelles.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Seychelles.mp3"}, {"id": "Sierra_Leona", "name": "Sierra Leona", "file": "Sierra_Leona.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Sierra_Leona.mp3"}, {"id": "Singapur", "name": "Singapur", "file": "Singapur.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Singapur.mp3"}, {"id": "Somalia", "name": "Somalia", "file": "Somalia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Somalia.mp3"}, {"id": "Sri_Lanka", "name": "Sri Lanka", "file": "Sri_Lanka.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Sri_Lanka.mp3"}, {"id": "Sudan", "name": "Sudan", "file": "Sudan.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Sudan.mp3"}, {"id": "Suecia", "name": "Suecia", "file": "Suecia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Suecia.mp3"}, {"id": "Suiza", "name": "Suiza", "file": "Suiza.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Suiza.mp3"}, {"id": "Tanzania", "name": "Tanzania", "file": "Tanzania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Tanzania.mp3"}, {"id": "Timor_Oriental", "name": "Timor Oriental", "file": "Timor_Oriental.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Timor_Oriental.mp3"}, {"id": "Trinidad_Tobago", "name": "Trinidad Tobago", "file": "Trinidad_Tobago.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Trinidad_Tobago.mp3"}, {"id": "Tunez", "name": "Tunez", "file": "Tunez.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Tunez.mp3"}, {"id": "Turquia", "name": "Turquia", "file": "Turquia.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Turquia.mp3"}, {"id": "UE", "name": "UE", "file": "UE.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/UE.mp3"}, {"id": "Ucrania", "name": "Ucrania", "file": "Ucrania.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Ucrania.mp3"}, {"id": "Uganda", "name": "Uganda", "file": "Uganda.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Uganda.mp3"}, {"id": "Uruguay", "name": "Uruguay", "file": "Uruguay.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Uruguay.mp3"}, {"id": "Vaticano", "name": "Vaticano", "file": "Vaticano.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Vaticano.mp3"}, {"id": "Venezuela", "name": "Venezuela", "file": "Venezuela.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Venezuela.mp3"}, {"id": "Yemen", "name": "Yemen", "file": "Yemen.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Yemen.mp3"}, {"id": "Yibuti", "name": "Yibuti", "file": "Yibuti.mp3", "url": "https://raw.githubusercontent.com/tdolarea/anthemsnew/main/Yibuti.mp3"}];
 
     const AUTHORITIES = [
-      // Corona
-      { id: 'REY', cat: 'corona', name: 'SM El Rey', salvas: 21, vivas: 7, himno: 'Espania_largo.mp3', himnoLabel: 'Himno Nacional (versión completa)' },
-      { id: 'REINA', cat: 'corona', name: 'SM La Reina', salvas: 21, vivas: 7, himno: 'Espania_largo.mp3', himnoLabel: 'Himno Nacional (versión completa)' },
-      { id: 'PRINCESA', cat: 'corona', name: 'SAR Princesa de Asturias', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (versión breve)' },
-      { id: 'INFANTA', cat: 'corona', name: 'SAR Infanta de España', salvas: 17, vivas: 4, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (versión breve)' },
+      // Corona (Himno Largo)
+      { id: 'REY', cat: 'corona', name: 'SM El Rey', salvas: 21, vivas: 7, himno: 'Espania_largo.mp3', himnoLabel: 'Himno Nacional completo', esMarchaInfantes: false },
+      { id: 'REINA', cat: 'corona', name: 'SM La Reina', salvas: 21, vivas: 7, himno: 'Espania_largo.mp3', himnoLabel: 'Himno Nacional completo', esMarchaInfantes: false },
+      { id: 'PRINCESA', cat: 'corona', name: 'SAR Princesa de Asturias', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real breve', esMarchaInfantes: false },
+      { id: 'INFANTA', cat: 'corona', name: 'SAR Infanta de España', salvas: 17, vivas: 4, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real breve', esMarchaInfantes: false },
       
-      // Gobierno y Estado
-      { id: 'PRESIDENTE', cat: 'gobierno', name: 'Presidente del Gobierno', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (versión breve)' },
-      { id: 'MINISTRO', cat: 'gobierno', name: 'Ministra de Defensa', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (versión breve)' },
-      { id: 'EMBAJADOR', cat: 'gobierno', name: 'Embajador de España en el extranjero', salvas: 19, vivas: 0, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (versión breve)' },
+      // Gobierno y Estado (Himno Corto)
+      { id: 'PRESIDENTE', cat: 'gobierno', name: 'Presidente del Gobierno', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real breve', esMarchaInfantes: false },
+      { id: 'MINISTRO', cat: 'gobierno', name: 'Ministra de Defensa', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real breve', esMarchaInfantes: false },
+      { id: 'EMBAJADOR', cat: 'gobierno', name: 'Embajador de España en el extranjero', salvas: 19, vivas: 0, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real breve', esMarchaInfantes: false },
 
-      // Mando Naval / Militar
-      { id: 'ALMIRANTE_GRAL', cat: 'mando', name: 'Almirante General (AJEMA / JEMAD)', salvas: 17, vivas: 4, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'ALMIRANTE', cat: 'mando', name: 'Almirante / Teniente General', salvas: 17, vivas: 3, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'VICEALM', cat: 'mando', name: 'Vicealmirante / General de División', salvas: 15, vivas: 2, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'CONTRAALM', cat: 'mando', name: 'Contraalmirante / General de Brigada', salvas: 13, vivas: 1, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'COMANDANTE', cat: 'mando', name: 'Comandante del Buque / Capitán de Navío', salvas: 0, vivas: 0, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
+      // Mando Naval / Militar (Marcha de Infantes)
+      { id: 'ALMIRANTE_GRAL', cat: 'mando', name: 'Almirante General (AJEMA / JEMAD)', salvas: 17, vivas: 4, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes', esMarchaInfantes: true },
+      { id: 'ALMIRANTE', cat: 'mando', name: 'Almirante / Teniente General', salvas: 17, vivas: 3, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes', esMarchaInfantes: true },
+      { id: 'VICEALM', cat: 'mando', name: 'Vicealmirante / General de División', salvas: 15, vivas: 2, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes', esMarchaInfantes: true },
+      { id: 'CONTRAALM', cat: 'mando', name: 'Contraalmirante / General de Brigada', salvas: 13, vivas: 1, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes', esMarchaInfantes: true },
+      { id: 'COMANDANTE', cat: 'mando', name: 'Comandante del Buque / Capitán de Navío', salvas: 0, vivas: 0, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes', esMarchaInfantes: true },
 
       // Autoridades Extranjeras (1º Himno Extranjero, 2º Himno Español)
-      { id: 'JEFE_EXT', cat: 'extranjeras', name: 'Jefe de Estado Extranjero', salvas: 21, vivas: 0, isExtranjero: true, himnoEspana: 'Espania_largo.mp3', defaultAnthem: 'Francia' },
-      { id: 'PM_EXT', cat: 'extranjeras', name: 'Primer Ministro Extranjero', salvas: 19, vivas: 0, isExtranjero: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'Reino Unido' },
-      { id: 'ALM_EXT', cat: 'extranjeras', name: 'Almirante / General Extranjero', salvas: 17, vivas: 0, isExtranjero: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'Estados Unidos' },
+      { id: 'JEFE_EXT', cat: 'extranjeras', name: 'Jefe de Estado Extranjero', salvas: 21, vivas: 0, isExtranjero: true, himnoEspana: 'Espania_largo.mp3', defaultAnthem: 'Francia', esMarchaInfantes: false },
+      { id: 'PM_EXT', cat: 'extranjeras', name: 'Primer Ministro Extranjero', salvas: 19, vivas: 0, isExtranjero: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'Reino Unido', esMarchaInfantes: false },
+      { id: 'ALM_EXT', cat: 'extranjeras', name: 'Almirante / General Extranjero', salvas: 17, vivas: 0, isExtranjero: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'Estados Unidos', esMarchaInfantes: false },
 
-      // Organismos Internacionales (1º Himno Español CORTO, 2º Himno del Organismo)
-      { id: 'ORG_OTAN', cat: 'organismos', name: 'Autoridad OTAN (NATO)', salvas: 19, vivas: 0, isOrganismo: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'OTAN' },
-      { id: 'ORG_UE', cat: 'organismos', name: 'Autoridad Unión Europea (UE)', salvas: 19, vivas: 0, isOrganismo: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'UE' },
-      { id: 'ORG_ONU', cat: 'organismos', name: 'Autoridad ONU / Internacional', salvas: 19, vivas: 0, isOrganismo: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'OTAN' }
+      // Organismos Internacionales (1º Himno Español, 2º Himno del Organismo)
+      { id: 'ORG_OTAN', cat: 'organismos', name: 'Autoridad OTAN (NATO)', salvas: 19, vivas: 0, isOrganismo: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'OTAN', esMarchaInfantes: false },
+      { id: 'ORG_UE', cat: 'organismos', name: 'Autoridad Unión Europea (UE)', salvas: 19, vivas: 0, isOrganismo: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'UE', esMarchaInfantes: false },
+      { id: 'ORG_ONU', cat: 'organismos', name: 'Autoridad ONU / Internacional', salvas: 19, vivas: 0, isOrganismo: true, himnoEspana: 'Espania_corto.mp3', defaultAnthem: 'OTAN', esMarchaInfantes: false }
     ];
 
     let currentAuthCat = 'todas';
     let selectedAuth = null;
     let selectedForeignAnthem = null;
+    let posicionArmaSeleccionada = 'presenten'; // 'presenten', 'hombro', 'ninguno'
 
     function renderAuthList() {
       const container = document.getElementById('authListContainer');
@@ -833,6 +862,27 @@ function _legacy_execAuth() {
       renderAuthList();
     }
 
+    function seleccionarPosicionArma(pos) {
+      posicionArmaSeleccionada = pos;
+      const btnP = document.getElementById('btnArmaPresenten');
+      const btnH = document.getElementById('btnArmaHombro');
+      const btnF = document.getElementById('btnArmaFirmes');
+      const lbl = document.getElementById('lblArmaActual');
+
+      [btnP, btnH, btnF].forEach(b => { if (b) b.classList.remove('primary'); });
+
+      if (pos === 'presenten') {
+        if (btnP) btnP.classList.add('primary');
+        if (lbl) lbl.textContent = 'Presenten Armas';
+      } else if (pos === 'hombro') {
+        if (btnH) btnH.classList.add('primary');
+        if (lbl) lbl.textContent = 'Sobre el Hombro';
+      } else {
+        if (btnF) btnF.classList.add('primary');
+        if (lbl) lbl.textContent = 'En Firmes (sin armas)';
+      }
+    }
+
     function selectAuthority(auth) {
       selectedAuth = auth;
       renderAuthList();
@@ -842,6 +892,9 @@ function _legacy_execAuth() {
 
       document.getElementById('cfgAuthName').textContent = auth.name;
       document.getElementById('cfgAuthSub').textContent = 'Ceremonial de Honores de Ordenanza';
+
+      // Posición del arma por defecto: Presenten
+      seleccionarPosicionArma('presenten');
 
       // Gestión de Extranjero / Organismo e Himnos
       const anthemBox = document.getElementById('anthemPickerBox');
@@ -868,7 +921,7 @@ function _legacy_execAuth() {
         selectedForeignAnthem = null;
       }
 
-      // Salvas (Texto reglamentario exacto)
+      // Salvas
       const rowSalvas = document.getElementById('rowSalvas');
       const chkSalvas = document.getElementById('chkSalvas');
       if (auth.salvas > 0) {
@@ -880,7 +933,7 @@ function _legacy_execAuth() {
         chkSalvas.checked = false;
       }
 
-      // Vivas (Texto reglamentario exacto: Voces de Viva España)
+      // Vivas
       const rowVivas = document.getElementById('rowVivas');
       const chkVivas = document.getElementById('chkVivas');
       if (auth.vivas > 0) {
@@ -958,7 +1011,13 @@ function _legacy_execAuth() {
     }
 
     // ==========================================
-    // EJECUCIÓN MULTICANAL: HIMNO + SALVAS SIMULTÁNEAS
+    // EJECUCIÓN SECUENCIAL EXACTA DEL COMANDANTE
+    // 1. Corneta Firmes largo
+    // 2. Corneta Posición del arma (Presenten, Sobre el hombro o ninguno)
+    // 3. Corneta Ejecutiva de Himno o Marcha de Infantes
+    // 4. Voces de Viva España (si corresponden y activadas)
+    // 5. Salvas de ordenanza simultáneas con el inicio de los himnos
+    // 6. Corneta Descansar el arma (mismo que punto 2)
     // ==========================================
     function executeConfiguredAuth() {
       if (!selectedAuth) return;
@@ -973,11 +1032,10 @@ function _legacy_execAuth() {
       const useMusica = document.getElementById('chkMusica').checked;
       const useCorneta = document.getElementById('chkCorneta').checked;
 
-      // Determinar archivo de España exacto (largo vs corto)
-      const espanaSrc = selectedAuth.himnoEspana ? ('audio/' + selectedAuth.himnoEspana) : 'audio/Espania_corto.mp3';
-      const espanaLabel = (selectedAuth.himnoEspana === 'Espania_largo.mp3') ? 'HIMNO DE ESPAÑA (completo)' : 'HIMNO DE ESPAÑA (breve)';
+      // 1. Determinar himnos
+      const espanaSrc = selectedAuth.himnoEspana ? ('audio/' + selectedAuth.himnoEspana) : (selectedAuth.himno ? ('audio/' + selectedAuth.himno) : 'audio/Espania_corto.mp3');
+      const espanaLabel = (selectedAuth.himnoEspana === 'Espania_largo.mp3' || selectedAuth.himno === 'Espania_largo.mp3') ? 'HIMNO DE ESPAÑA (completo)' : (selectedAuth.esMarchaInfantes ? 'MARCHA DE INFANTES' : 'HIMNO DE ESPAÑA (breve)');
 
-      // Lista de himnos en orden reglamentario
       let playlistHimnos = [];
       if (useMusica) {
         if (selectedAuth.isExtranjero) {
@@ -991,100 +1049,168 @@ function _legacy_execAuth() {
             playlistHimnos.push({ src: selectedForeignAnthem.url, label: '2º HIMNO ORGANISMO: ' + selectedForeignAnthem.name });
           }
         } else {
-          if (selectedAuth.himno) {
-            playlistHimnos.push({ src: 'audio/' + selectedAuth.himno, label: 'MÚSICA: ' + selectedAuth.himnoLabel });
-          }
+          playlistHimnos.push({ src: espanaSrc, label: espanaLabel });
         }
       }
 
-      // Archivo de salvas
+      // 2. Archivo de salvas
       let salvaSrc = null;
       if (useSalvas) {
         salvaSrc = 'audio/salvasdeordenanza' + selectedAuth.salvas + 'salvas(mp3cut.net).mp3';
         if (selectedAuth.salvas === 21) salvaSrc = 'audio/salvasdeordenanza21salvas(mp3cut.net).mp3';
       }
 
-      // Archivo de vivas
+      // 3. Archivo de vivas
       let vivaSrc = null;
       if (useVivas) {
         vivaSrc = 'audio/vivaespana0' + selectedAuth.vivas + '.mp3';
         if (selectedAuth.vivas === 1) vivaSrc = 'audio/vivaaespana01.mp3';
       }
 
-      // DESBLOQUEO SÍNCRONO DEL MOTOR DE AUDIO EN MÓVIL (CRUCIAL PARA ANDROID/SAFARI)
-      // Se prepara cada elemento directamente dentro del gesto táctil del usuario
+      // 4. Archivos de toques de corneta
+      // Paso 1: Firmes largo
+      const cornetaFirmesSrc = 'audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3';
+
+      // Paso 2: Posición del arma
+      let cornetaArmaSrc = null;
+      let cornetaDescansoSrc = null;
+      if (posicionArmaSeleccionada === 'presenten') {
+        cornetaArmaSrc = 'audio/cornetapresentenarmas.wav';
+        cornetaDescansoSrc = 'audio/Cornetadescanso.wav';
+      } else if (posicionArmaSeleccionada === 'hombro') {
+        cornetaArmaSrc = 'audio/CORNETASOBREELHOMBRO.mp3';
+        cornetaDescansoSrc = 'audio/Cornetadescanso.wav';
+      }
+
+      // Paso 3: Ejecutiva de Marcha o Himno
+      let cornetaEjecutivaSrc = selectedAuth.esMarchaInfantes 
+        ? 'audio/cornetaejecutivamarchadeinfantes.wav' 
+        : 'audio/cornetaordenhimnonacional.wav';
+
+      // DESBLOQUEO SÍNCRONO DEL CONTEXTO DE AUDIO EN MÓVIL
       [audMusica, audSalvas, audCorneta].forEach(el => {
         if (el) {
-          try {
-            el.pause();
-            el.currentTime = 0;
-          } catch(e){}
+          try { el.pause(); el.currentTime = 0; } catch(e){}
         }
       });
 
-      // FASE 1: Toques de Corneta (Firmes y Presenten Armas)
-      if (useCorneta && audCorneta) {
-        reproducirCornetaFase(audCorneta, () => {
-          iniciarHimnosYSalvas(audMusica, audSalvas, audCorneta, playlistHimnos, salvaSrc, vivaSrc);
-        });
-      } else {
-        iniciarHimnosYSalvas(audMusica, audSalvas, audCorneta, playlistHimnos, salvaSrc, vivaSrc);
-      }
-    }
-
-    function reproducirCornetaFase(audCorneta, onFinishCallback) {
-      const statusBox = document.getElementById('audioStatusBar');
-      const statusText = document.getElementById('audioStatusText');
-      if (statusBox) statusBox.style.display = 'flex';
-      if (statusText) statusText.textContent = '▶️ 1/2 FIRMES (' + selectedAuth.name + ')';
-
-      audCorneta.src = 'audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3';
-      audCorneta.currentTime = 0;
-      audCorneta.play().catch(e => {
-        console.error('Corneta error:', e);
-        // Si falla corneta en móvil, saltar directamente a himnos
-        onFinishCallback();
+      // INICIAR SECUENCIA PASO A PASO
+      ejecutarSecuenciaPaso1_Firmes(audCorneta, audMusica, audSalvas, {
+        useCorneta,
+        cornetaFirmesSrc,
+        cornetaArmaSrc,
+        cornetaEjecutivaSrc,
+        cornetaDescansoSrc,
+        vivaSrc,
+        playlistHimnos,
+        salvaSrc
       });
-
-      audCorneta.onended = () => {
-        setTimeout(() => {
-          if (statusText) statusText.textContent = '▶️ 2/2 PRESENTEN ARMAS';
-          audCorneta.src = 'audio/cornetapresentenarmas.wav';
-          audCorneta.currentTime = 0;
-          audCorneta.play().catch(e => {
-            console.error('Presenten error:', e);
-            onFinishCallback();
-          });
-          audCorneta.onended = () => {
-            setTimeout(onFinishCallback, 1000);
-          };
-        }, 1000);
-      };
     }
 
-    function iniciarHimnosYSalvas(audMusica, audSalvas, audCorneta, playlistHimnos, salvaSrc, vivaSrc) {
-      const statusBox = document.getElementById('audioStatusBar');
-      const statusText = document.getElementById('audioStatusText');
+    // PASO 1: Toque de corneta de firmes largo
+    function ejecutarSecuenciaPaso1_Firmes(audCorneta, audMusica, audSalvas, cfg) {
+      if (!cfg.useCorneta) {
+        ejecutarSecuenciaPaso4_Vivas(audCorneta, audMusica, audSalvas, cfg);
+        return;
+      }
 
-      // A) CANAL SALVAS: Arrancan exactamente al mismo tiempo que el himno
-      if (salvaSrc && audSalvas) {
-        audSalvas.src = salvaSrc;
+      actualizarStatus('1/6 CORNETA: Toque de FIRMES');
+      reproducirPistaCorneta(audCorneta, cfg.cornetaFirmesSrc, () => {
+        ejecutarSecuenciaPaso2_Arma(audCorneta, audMusica, audSalvas, cfg);
+      });
+    }
+
+    // PASO 2: Toque de Corneta de posición del arma
+    function ejecutarSecuenciaPaso2_Arma(audCorneta, audMusica, audSalvas, cfg) {
+      if (!cfg.cornetaArmaSrc) {
+        // En firmes sin armas: pasar directo al paso 3
+        ejecutarSecuenciaPaso3_Ejecutiva(audCorneta, audMusica, audSalvas, cfg);
+        return;
+      }
+
+      const txt = (posicionArmaSeleccionada === 'presenten') ? 'PRESENTEN ARMAS' : 'SOBRE EL HOMBRO';
+      actualizarStatus('2/6 CORNETA: ' + txt);
+      reproducirPistaCorneta(audCorneta, cfg.cornetaArmaSrc, () => {
+        ejecutarSecuenciaPaso3_Ejecutiva(audCorneta, audMusica, audSalvas, cfg);
+      });
+    }
+
+    // PASO 3: Toque de corneta de ejecutiva de marcha o himno
+    function ejecutarSecuenciaPaso3_Ejecutiva(audCorneta, audMusica, audSalvas, cfg) {
+      const txt = selectedAuth.esMarchaInfantes ? 'Ejecutiva Marcha de Infantes' : 'Ejecutiva Himno Nacional';
+      actualizarStatus('3/6 CORNETA: ' + txt);
+      reproducirPistaCorneta(audCorneta, cfg.cornetaEjecutivaSrc, () => {
+        ejecutarSecuenciaPaso4_Vivas(audCorneta, audMusica, audSalvas, cfg);
+      });
+    }
+
+    // PASO 4: Voces de Viva a España (si corresponden y están activadas)
+    function ejecutarSecuenciaPaso4_Vivas(audCorneta, audMusica, audSalvas, cfg) {
+      if (!cfg.vivaSrc) {
+        ejecutarSecuenciaPaso5_HimnosYSalvas(audCorneta, audMusica, audSalvas, cfg);
+        return;
+      }
+
+      let cantVoz = (selectedAuth.vivas === 1 ? '1 Voz de Viva España' : selectedAuth.vivas + ' Voces de Viva España');
+      actualizarStatus('4/6 VOCES: ' + cantVoz);
+
+      reproducirPistaCorneta(audCorneta, cfg.vivaSrc, () => {
+        ejecutarSecuenciaPaso5_HimnosYSalvas(audCorneta, audMusica, audSalvas, cfg);
+      });
+    }
+
+    // PASO 5: Salvas de ordenanza y empiezan los himnos (SIMULTÁNEAS)
+    function ejecutarSecuenciaPaso5_HimnosYSalvas(audCorneta, audMusica, audSalvas, cfg) {
+      // Arrancar Salvas simultáneas
+      if (cfg.salvaSrc && audSalvas) {
+        audSalvas.src = cfg.salvaSrc;
         audSalvas.currentTime = 0;
         audSalvas.play().catch(e => console.error('Error salvas:', e));
       }
 
-      // B) CANAL HIMNOS: Arranca a la vez que las salvas
-      if (playlistHimnos.length > 0 && audMusica) {
-        reproducirPlaylist(audMusica, audSalvas, playlistHimnos, () => {
-          ejecutarVivas(audCorneta, vivaSrc);
+      // Arrancar Himnos
+      if (cfg.playlistHimnos.length > 0 && audMusica) {
+        reproducirPlaylist(audMusica, audSalvas, cfg.playlistHimnos, () => {
+          ejecutarSecuenciaPaso6_Descanso(audCorneta, cfg);
         });
       } else {
-        if (salvaSrc && audSalvas) {
-          audSalvas.onended = () => { ejecutarVivas(audCorneta, vivaSrc); };
+        if (cfg.salvaSrc && audSalvas) {
+          audSalvas.onended = () => { ejecutarSecuenciaPaso6_Descanso(audCorneta, cfg); };
         } else {
-          ejecutarVivas(audCorneta, vivaSrc);
+          ejecutarSecuenciaPaso6_Descanso(audCorneta, cfg);
         }
       }
+    }
+
+    // PASO 6: Toque de corneta para descansar el arma
+    function ejecutarSecuenciaPaso6_Descanso(audCorneta, cfg) {
+      if (!cfg.useCorneta || !cfg.cornetaDescansoSrc) {
+        cerrarStatus();
+        return;
+      }
+
+      actualizarStatus('6/6 CORNETA: DESCANSO');
+      reproducirPistaCorneta(audCorneta, cfg.cornetaDescansoSrc, () => {
+        cerrarStatus();
+      });
+    }
+
+    function reproducirPistaCorneta(audCorneta, src, onEndedCallback) {
+      if (!audCorneta || !src) {
+        setTimeout(onEndedCallback, 800);
+        return;
+      }
+
+      audCorneta.src = src;
+      audCorneta.currentTime = 0;
+      audCorneta.play().catch(e => {
+        console.error('Corneta play err:', e, src);
+        setTimeout(onEndedCallback, 800);
+      });
+
+      audCorneta.onended = () => {
+        setTimeout(onEndedCallback, 1000);
+      };
     }
 
     function reproducirPlaylist(audMusica, audSalvas, playlist, onAllFinished) {
@@ -1094,12 +1220,8 @@ function _legacy_execAuth() {
       }
 
       const item = playlist.shift();
-      const statusBox = document.getElementById('audioStatusBar');
-      const statusText = document.getElementById('audioStatusText');
-
-      if (statusBox) statusBox.style.display = 'flex';
       let salvasTag = (audSalvas && !audSalvas.paused) ? ' [💥 Salvas de Ordenanza]' : '';
-      if (statusText) statusText.textContent = '▶️ ' + item.label + salvasTag;
+      actualizarStatus('5/6 MÚSICA: ' + item.label + salvasTag);
 
       audMusica.src = item.src;
       audMusica.currentTime = 0;
@@ -1115,26 +1237,16 @@ function _legacy_execAuth() {
       };
     }
 
-    function ejecutarVivas(audCorneta, vivaSrc) {
-      if (!vivaSrc || !audCorneta) {
-        const statusBox = document.getElementById('audioStatusBar');
-        if (statusBox) statusBox.style.display = 'none';
-        return;
-      }
-
+    function actualizarStatus(txt) {
       const statusBox = document.getElementById('audioStatusBar');
       const statusText = document.getElementById('audioStatusText');
       if (statusBox) statusBox.style.display = 'flex';
-      let cantVoz = (selectedAuth.vivas === 1 ? '1 Voz de Viva España' : selectedAuth.vivas + ' Voces de Viva España');
-      if (statusText) statusText.textContent = '▶️ ' + cantVoz;
+      if (statusText) statusText.textContent = '▶️ ' + txt;
+    }
 
-      audCorneta.src = vivaSrc;
-      audCorneta.currentTime = 0;
-      audCorneta.play().catch(e => console.error(e));
-
-      audCorneta.onended = () => {
-        if (statusBox) statusBox.style.display = 'none';
-      };
+    function cerrarStatus() {
+      const statusBox = document.getElementById('audioStatusBar');
+      if (statusBox) statusBox.style.display = 'none';
     }
 
     // Inicializar lista al arrancar
