@@ -147,6 +147,7 @@
   </style>
 </head>
 <body>
+  <audio id="appAudioPlayer" preload="auto" playsinline webkit-playsinline></audio>
 
   <header>
     <div class="brand">
@@ -383,79 +384,89 @@
   <script>
     // Audio Player Controller
     
+    
     // ==========================================
-    // MOTOR DE AUDIO PROFESIONAL MULTIPLATAFORMA
+    // MOTOR DE AUDIO REUTILIZABLE (HTML5 AUDIO DOM)
     // ==========================================
-    let currentAudio = null;
+    const audioPlayer = document.getElementById('appAudioPlayer');
     let mandoChifleActivo = false;
     let sonidoEnMarcha = false;
-    let ultimoToque = null; // 'mando', 'oficiales', 'retirada'
+    let ultimoToque = null;
+    let safetyTimer = null;
 
-    function stopAllAudio(triggerReset = true) {
-      if (currentAudio) {
+    function stopAllAudio() {
+      if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
+      if (audioPlayer) {
         try {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
+          audioPlayer.pause();
+          audioPlayer.currentTime = 0;
         } catch (e) {
-          console.error('Error pausing audio:', e);
+          console.error('Error stopping audio:', e);
         }
-        currentAudio = null;
       }
       const statusBox = document.getElementById('audioStatusBar');
       if (statusBox) statusBox.style.display = 'none';
 
-      if (triggerReset) {
-        sonidoEnMarcha = false;
-        desbloquearSegunCeremonial();
-      }
+      sonidoEnMarcha = false;
+      desbloquearSegunCeremonial();
     }
 
     function playAudio(src, label) {
-      // Detener audio previo SIN resetear el estado ceremonial en marcha
-      stopAllAudio(false);
-
+      if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
       const statusBox = document.getElementById('audioStatusBar');
       const statusText = document.getElementById('audioStatusText');
 
       try {
-        currentAudio = new Audio(src);
-        currentAudio.preload = 'auto';
+        // Pausar y cambiar fuente sobre el mismo elemento del DOM (vital para Safari/Android)
+        audioPlayer.pause();
+        audioPlayer.src = src;
+        audioPlayer.load();
 
-        currentAudio.onplay = () => {
-          if (statusBox) statusBox.style.display = 'flex';
-          if (statusText) statusText.textContent = `▶️ ${label}`;
-        };
+        if (statusBox) statusBox.style.display = 'flex';
+        if (statusText) statusText.textContent = `▶️ ${label}`;
 
-        currentAudio.onended = () => {
+        // Evento cuando termina de sonar
+        audioPlayer.onended = () => {
+          if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
           if (statusBox) statusBox.style.display = 'none';
-          currentAudio = null;
           sonidoEnMarcha = false;
           desbloquearSegunCeremonial();
         };
 
-        currentAudio.onerror = (e) => {
+        audioPlayer.onerror = (e) => {
           console.error('Audio load error:', e, src);
-          alert('Error al reproducir audio: ' + src);
+          if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
           if (statusBox) statusBox.style.display = 'none';
-          currentAudio = null;
           sonidoEnMarcha = false;
           desbloquearSegunCeremonial();
         };
 
-        const playPromise = currentAudio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(err => {
-            console.error('Playback failed:', err);
-            // Si el navegador bloqueó el autoplay
-            alert('Toque de nuevo la pantalla para activar el audio (' + label + ')');
-            if (statusBox) statusBox.style.display = 'none';
-            currentAudio = null;
+        // Fallback de seguridad por duración (por si el navegador móvil no lanza 'onended')
+        audioPlayer.onloadedmetadata = () => {
+          const durationSec = audioPlayer.duration;
+          if (durationSec && !isNaN(durationSec) && durationSec > 0) {
+            safetyTimer = setTimeout(() => {
+              if (sonidoEnMarcha) {
+                console.log('Safety fallback timer triggered');
+                if (statusBox) statusBox.style.display = 'none';
+                sonidoEnMarcha = false;
+                desbloquearSegunCeremonial();
+              }
+            }, (durationSec + 0.8) * 1000);
+          }
+        };
+
+        const promise = audioPlayer.play();
+        if (promise !== undefined) {
+          promise.catch(err => {
+            console.error('Audio play promise rejected:', err);
+            // Si el móvil requirió reintento
             sonidoEnMarcha = false;
             desbloquearSegunCeremonial();
           });
         }
       } catch (err) {
-        console.error('Audio init error:', err);
+        console.error('Fatal audio player error:', err);
         sonidoEnMarcha = false;
         desbloquearSegunCeremonial();
       }
@@ -489,9 +500,9 @@
       const btnMando = document.getElementById('btnChifleMando');
       const btnOficiales = document.getElementById('btnChifleOficiales');
       const btnRet = document.getElementById('btnChifleRetirada');
-      if (btnMando) btnMando.classList.add('disabled');
-      if (btnOficiales) btnOficiales.classList.add('disabled');
-      if (btnRet) btnRet.classList.add('disabled');
+      if (btnMando) { btnMando.classList.add('disabled'); btnMando.disabled = true; }
+      if (btnOficiales) { btnOficiales.classList.add('disabled'); btnOficiales.disabled = true; }
+      if (btnRet) { btnRet.classList.add('disabled'); btnRet.disabled = true; }
     }
 
     function desbloquearSegunCeremonial() {
@@ -501,12 +512,14 @@
       const btnRet = document.getElementById('btnChifleRetirada');
       const badge = document.getElementById('badgeRetirada');
 
-      if (btnMando) btnMando.classList.remove('disabled');
-      if (btnOficiales) btnOficiales.classList.remove('disabled');
+      // Mando y Oficiales siempre vuelven a estar operativos
+      if (btnMando) { btnMando.classList.remove('disabled'); btnMando.disabled = false; }
+      if (btnOficiales) { btnOficiales.classList.remove('disabled'); btnOficiales.disabled = false; }
 
+      // Retirada solo tras Mando
       if (ultimoToque === 'mando') {
         mandoChifleActivo = true;
-        if (btnRet) btnRet.classList.remove('disabled');
+        if (btnRet) { btnRet.classList.remove('disabled'); btnRet.disabled = false; }
         if (badge) {
           badge.style.background = '#0284c7';
           badge.style.color = '#ffffff';
@@ -514,7 +527,7 @@
         }
       } else {
         mandoChifleActivo = false;
-        if (btnRet) btnRet.classList.add('disabled');
+        if (btnRet) { btnRet.classList.add('disabled'); btnRet.disabled = true; }
         if (badge) {
           badge.style.background = '#334155';
           badge.style.color = '#94a3b8';
