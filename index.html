@@ -149,6 +149,12 @@
 <body>
 
   <!-- Reproductores de audio estáticos predefinidos para Portalón -->
+
+  <!-- Reproductores estáticos para Honores entre Buques -->
+  <audio id="audBuqueBabor" src="audio/Honoresporbabor_AudioDenoise.mp3" preload="auto" playsinline></audio>
+  <audio id="audBuqueEstribor" src="audio/Honoresporestribor_AudioDenoise.mp3" preload="auto" playsinline></audio>
+  <audio id="audBuqueRetirada" src="audio/Retiradadehonores_AudioDenoise.mp3" preload="auto" playsinline></audio>
+
   <audio id="audMando" src="audio/ComteoAlmte.mp3" preload="auto" playsinline></audio>
   <audio id="audOficiales" src="audio/oficiales.mp3" preload="auto" playsinline></audio>
   <audio id="audRetirada" src="audio/retiradaComteoAlmte.mp3" preload="auto" playsinline></audio>
@@ -212,27 +218,42 @@
     </div>
 
     <!-- VISTA 2: HONORES ENTRE BUQUES -->
+        <!-- VISTA 2: HONORES ENTRE BUQUES -->
     <div class="view-section" id="viewBuques">
       <div class="card">
         <div class="card-title">Honores entre Buques en la Mar</div>
-        <div class="btn-grid">
-          <button class="action-btn" style="background:#450a0a; border-color:#ef4444; color:#fca5a5;" onclick="playAudio('audio/Honoresporbabor_AudioDenoise.mp3', 'HONORES POR BABOR (Luz Roja)')">
-            <span>🔴 HONORES POR BABOR</span>
-            <span>⚓</span>
+        
+        <!-- CUADRÍCULA DE 2 COLUMNAS A LA MISMA ALTURA: BABOR (ROJO) Y ESTRIBOR (VERDE) -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <!-- BABOR (ROJO, IZQUIERDA, DOBLE ALTURA) -->
+          <button class="action-btn" id="btnBuqueBabor" 
+            style="background:#7f1d1d; border:2px solid #ef4444; color:#fee2e2; min-height:120px; flex-direction:column; justify-content:center; gap:8px; text-align:center; padding:12px;" 
+            onclick="tocarHonoresBabor()">
+            <span style="font-size:24px;">🔴</span>
+            <span style="font-size:14px; font-weight:800; line-height:1.2;">HONORES POR<br>BABOR</span>
+            <span style="font-size:11px; opacity:0.8;">Luz Roja</span>
           </button>
-          <button class="action-btn" style="background:#022c22; border-color:#10b981; color:#a7f3d0;" onclick="playAudio('audio/Honoresporestribor_AudioDenoise.mp3', 'HONORES POR ESTRIBOR (Luz Verde)')">
-            <span>🟢 HONORES POR ESTRIBOR</span>
-            <span>⚓</span>
-          </button>
-          <button class="action-btn primary" onclick="playAudio('audio/Retiradadehonores_AudioDenoise.mp3', 'RETIRADA DE HONORES')">
-            <span>RETIRADA DE HONORES</span>
-            <span>🎺</span>
-          </button>
-          <button class="action-btn danger" onclick="stopAllAudio()">
-            <span>PARAR SONIDO</span>
-            <span>🛑</span>
+
+          <!-- ESTRIBOR (VERDE, DERECHA, DOBLE ALTURA) -->
+          <button class="action-btn" id="btnBuqueEstribor" 
+            style="background:#064e3b; border:2px solid #10b981; color:#d1fae5; min-height:120px; flex-direction:column; justify-content:center; gap:8px; text-align:center; padding:12px;" 
+            onclick="tocarHonoresEstribor()">
+            <span style="font-size:24px;">🟢</span>
+            <span style="font-size:14px; font-weight:800; line-height:1.2;">HONORES POR<br>ESTRIBOR</span>
+            <span style="font-size:11px; opacity:0.8;">Luz Verde</span>
           </button>
         </div>
+
+        <!-- BOTÓN RETIRADA DE HONORES (ANCHO COMPLETO, BLOQUEADO HASTA TOCAR BR O ER) -->
+        <div style="margin-top:6px;">
+          <button class="action-btn primary disabled" id="btnBuqueRetirada" 
+            style="padding:16px; width:100%; justify-content:space-between;" 
+            onclick="tocarHonoresRetirada()">
+            <span style="font-size:14px; font-weight:700;">🎺 RETIRADA DE HONORES</span>
+            <span id="badgeBuqueRetirada" style="font-size:10px; background:#334155; padding:2px 8px; border-radius:4px; color:#94a3b8;">Bloqueado</span>
+          </button>
+        </div>
+
       </div>
     </div>
 
@@ -419,9 +440,14 @@
     }
 
     function stopAllAudio() {
-      [audMando, audOficiales, audRetirada, audGeneral].forEach(a => {
+      [audMando, audOficiales, audRetirada, audGeneral, audBuqueBabor, audBuqueEstribor, audBuqueRetirada].forEach(a => {
         if (a) {
           try { a.pause(); a.currentTime = 0; } catch(e){}
+        }
+      });
+      onAudioTerminado();
+      onBuqueAudioFin();
+    } catch(e){}
         }
       });
       onAudioTerminado();
@@ -612,6 +638,109 @@ function _legacy_execAuth() {
   
     // ==========================================
     
+  
+    // ==========================================
+    // LÓGICA HONORES ENTRE BUQUES (ENCLAVAMIENTO CEREMONIAL)
+    // ==========================================
+    const audBuqueBabor = document.getElementById('audBuqueBabor');
+    const audBuqueEstribor = document.getElementById('audBuqueEstribor');
+    const audBuqueRetirada = document.getElementById('audBuqueRetirada');
+
+    let buqueHonorTocado = false; // true si se ha tocado BR o ER
+    let buqueSonidoEnCurso = false;
+
+    [audBuqueBabor, audBuqueEstribor, audBuqueRetirada].forEach(a => {
+      if (a) {
+        a.onended = () => { onBuqueAudioFin(); };
+        a.onerror = () => { onBuqueAudioFin(); };
+      }
+    });
+
+    function onBuqueAudioFin() {
+      const statusBox = document.getElementById('audioStatusBar');
+      if (statusBox) statusBox.style.display = 'none';
+      buqueSonidoEnCurso = false;
+      actualizarEstadoBuques();
+    }
+
+    function tocarHonoresBabor() {
+      if (buqueSonidoEnCurso || buqueHonorTocado) return;
+      buqueSonidoEnCurso = true;
+      buqueHonorTocado = true;
+      bloquearTodosBotonesBuques();
+      reproducirAudioBuque(audBuqueBabor, 'HONORES POR BABOR (Luz Roja)');
+    }
+
+    function tocarHonoresEstribor() {
+      if (buqueSonidoEnCurso || buqueHonorTocado) return;
+      buqueSonidoEnCurso = true;
+      buqueHonorTocado = true;
+      bloquearTodosBotonesBuques();
+      reproducirAudioBuque(audBuqueEstribor, 'HONORES POR ESTRIBOR (Luz Verde)');
+    }
+
+    function tocarHonoresRetirada() {
+      if (buqueSonidoEnCurso || !buqueHonorTocado) return;
+      buqueSonidoEnCurso = true;
+      bloquearTodosBotonesBuques();
+      reproducirAudioBuque(audBuqueRetirada, 'RETIRADA DE HONORES');
+      buqueHonorTocado = false; // Consumada la retirada, el ciclo se reinicia
+    }
+
+    function reproducirAudioBuque(audioEl, label) {
+      stopAllAudio();
+      const statusBox = document.getElementById('audioStatusBar');
+      const statusText = document.getElementById('audioStatusText');
+      if (statusBox) statusBox.style.display = 'flex';
+      if (statusText) statusText.textContent = `▶️ ${label}`;
+
+      if (audioEl) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(e => {
+          console.error('Error reproducirAudioBuque:', e);
+          onBuqueAudioFin();
+        });
+      }
+    }
+
+    function bloquearTodosBotonesBuques() {
+      const btnBR = document.getElementById('btnBuqueBabor');
+      const btnER = document.getElementById('btnBuqueEstribor');
+      const btnRet = document.getElementById('btnBuqueRetirada');
+      if (btnBR) { btnBR.classList.add('disabled'); btnBR.disabled = true; }
+      if (btnER) { btnER.classList.add('disabled'); btnER.disabled = true; }
+      if (btnRet) { btnRet.classList.add('disabled'); btnRet.disabled = true; }
+    }
+
+    function actualizarEstadoBuques() {
+      const btnBR = document.getElementById('btnBuqueBabor');
+      const btnER = document.getElementById('btnBuqueEstribor');
+      const btnRet = document.getElementById('btnBuqueRetirada');
+      const badge = document.getElementById('badgeBuqueRetirada');
+
+      if (buqueHonorTocado) {
+        // Se ha tocado Babor o Estribor: se desactivan los dos honores y se activa Retirada
+        if (btnBR) { btnBR.classList.add('disabled'); btnBR.disabled = true; }
+        if (btnER) { btnER.classList.add('disabled'); btnER.disabled = true; }
+        if (btnRet) { btnRet.classList.remove('disabled'); btnRet.disabled = false; }
+        if (badge) {
+          badge.style.background = '#0284c7';
+          badge.style.color = '#ffffff';
+          badge.textContent = 'Habilitado';
+        }
+      } else {
+        // Estado inicial o tras Retirada: activos Babor y Estribor, bloqueada Retirada
+        if (btnBR) { btnBR.classList.remove('disabled'); btnBR.disabled = false; }
+        if (btnER) { btnER.classList.remove('disabled'); btnER.disabled = false; }
+        if (btnRet) { btnRet.classList.add('disabled'); btnRet.disabled = true; }
+        if (badge) {
+          badge.style.background = '#334155';
+          badge.style.color = '#94a3b8';
+          badge.textContent = 'Bloqueado';
+        }
+      }
+    }
+
   </script>
 </body>
 </html>
