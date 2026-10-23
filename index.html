@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792794709';
+    const APP_VERSION = 'v1792794823';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -515,7 +515,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792794709</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792794823</div>
 </footer>
 
   <script>
@@ -1051,7 +1051,7 @@ function _legacy_execAuth() {
       // En Organismos Internacionales, limitar estrictamente a OTAN y UE
       let baseCatalog = ANTHEMS_CATALOG;
       if (selectedAuth && selectedAuth.isOrganismo) {
-        baseCatalog = ANTHEMS_CATALOG.filter(a => a.name === 'OTAN' || a.name === 'UE' || a.name === 'EU');
+        baseCatalog = ANTHEMS_CATALOG.filter(a => a.name === 'OTAN' || a.name === 'UE' || a.name === 'EU' || a.name === 'SOM Malta');
       }
 
       const filtered = baseCatalog.filter(a => a.name.toLowerCase().includes(q));
@@ -1064,7 +1064,7 @@ function _legacy_execAuth() {
           setChosenAnthem(item);
           renderAnthemResults(document.getElementById('txtAnthemSearch').value);
         };
-        btn.innerHTML = `<span>🎵 ${item.name}</span><span style="font-size:10px; color:#94a3b8;">tdolarea/anthems</span>`;
+        btn.innerHTML = `<span>🎵 ${item.name === 'SOM Malta' ? 'Soberana Orden de Malta' : item.name}</span><span style="font-size:10px; color:#94a3b8;">tdolarea/anthems</span>`;
         list.appendChild(btn);
       });
     }
