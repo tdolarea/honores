@@ -190,7 +190,7 @@
       <div class="card">
         <div class="card-title">Chifle en el Portalón (Ceremonial Naval)</div>
         <div class="btn-grid" style="grid-template-columns: 1fr;">
-          <button class="action-btn primary" style="padding:16px;" onclick="tocarChifleMando()">
+          <button class="action-btn primary" id="btnChifleMando" style="padding:16px;" onclick="tocarChifleMando()">
             <span style="font-size:14px;">🎺 CHIFLE Almirante o Comandante</span>
             <span>⚓</span>
           </button>
@@ -198,7 +198,7 @@
             <span style="font-size:14px;">🎺 CHIFLE Retirada Almte / Comte</span>
             <span id="badgeRetirada" style="font-size:10px; background:#334155; padding:2px 6px; border-radius:4px; color:#94a3b8;">Bloqueado</span>
           </button>
-          <button class="action-btn primary" style="padding:16px;" onclick="tocarChifleOficiales()">
+          <button class="action-btn primary" id="btnChifleOficiales" style="padding:16px;" onclick="tocarChifleOficiales()">
             <span style="font-size:14px;">🎺 CHIFLE Oficiales</span>
             <span>⚓</span>
           </button>
@@ -401,6 +401,7 @@
 
       currentAudio.onended = () => {
         statusBox.style.display = 'none';
+        desbloquearSegunCeremonial();
       };
     }
 
@@ -409,7 +410,9 @@
         currentAudio.pause();
         currentAudio.currentTime = 0;
         currentAudio = null;
-      }
+      
+      desbloquearSegunCeremonial();
+    }
       document.getElementById('audioStatusBar').style.display = 'none';
     }
 
@@ -488,233 +491,75 @@ function _legacy_execAuth() {
     }
   
     // ==========================================
-    // HONORES A AUTORIDADES (INTERRUPTORES ON/OFF)
-    // ==========================================
-    const AUTHORITIES = [
-      { id: 'REY', cat: 'corona', name: 'SM El Rey', salvas: 21, vivas: 7, himno: 'Himno_nacional_de_Espana.mp3', himnoLabel: 'Himno Nacional completo' },
-      { id: 'REINA', cat: 'corona', name: 'SM La Reina', salvas: 21, vivas: 7, himno: 'Himno_nacional_de_Espana.mp3', himnoLabel: 'Himno Nacional completo' },
-      { id: 'PRINCESA', cat: 'corona', name: 'SAR Princesa de Asturias', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (breve)' },
-      { id: 'INFANTA', cat: 'corona', name: 'SAR Infanta de España', salvas: 17, vivas: 4, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (breve)' },
-      { id: 'PRESIDENTE', cat: 'gobierno', name: 'Presidente del Gobierno', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (breve)' },
-      { id: 'MINISTRO', cat: 'gobierno', name: 'Ministra de Defensa', salvas: 19, vivas: 5, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (breve)' },
-      { id: 'EMBAJADOR', cat: 'gobierno', name: 'Embajador de España en el extranjero', salvas: 19, vivas: 0, himno: 'Espania_corto.mp3', himnoLabel: 'Marcha Real (breve)' },
-      { id: 'ALMIRANTE_GRAL', cat: 'mando', name: 'Almirante General (AJEMA / JEMAD)', salvas: 17, vivas: 4, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'ALMIRANTE', cat: 'mando', name: 'Almirante / Teniente General', salvas: 17, vivas: 3, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'VICEALM', cat: 'mando', name: 'Vicealmirante / General de División', salvas: 15, vivas: 2, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'CONTRAALM', cat: 'mando', name: 'Contraalmirante / General de Brigada', salvas: 13, vivas: 1, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'COMANDANTE', cat: 'mando', name: 'Comandante del Buque / Capitán de Navío', salvas: 0, vivas: 0, himno: 'MarchadeInfantes.mp3', himnoLabel: 'Marcha de Infantes' },
-      { id: 'JEFE_EXT', cat: 'extranjeras', name: 'Jefe de Estado Extranjero', salvas: 21, vivas: 0, himno: 'Himno_nacional_de_Espana.mp3', himnoLabel: 'Himno País Extranjero' },
-      { id: 'PM_EXT', cat: 'extranjeras', name: 'Primer Ministro Extranjero', salvas: 19, vivas: 0, himno: 'Himno_nacional_de_Espana.mp3', himnoLabel: 'Himno País Extranjero' }
-    ];
-
-    let currentAuthCat = 'todas';
-    let selectedAuth = null;
-    let authSequenceQueue = [];
-    let isExecutingSequence = false;
-
-    function renderAuthList() {
-      const container = document.getElementById('authListContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const filtered = AUTHORITIES.filter(a => currentAuthCat === 'todas' || a.cat === currentAuthCat);
-
-      filtered.forEach(auth => {
-        const item = document.createElement('div');
-        item.className = 'auth-btn-card' + (selectedAuth && selectedAuth.id === auth.id ? ' selected' : '');
-        item.onclick = () => selectAuthority(auth);
-
-        let badges = [];
-        if (auth.salvas > 0) badges.push(`💥 ${auth.salvas} salvas`);
-        if (auth.vivas > 0) badges.push(`🗣️ ${auth.vivas} vivas`);
-        if (auth.himnoLabel) badges.push(`🎺 ${auth.himnoLabel}`);
-
-        item.innerHTML = `
-          <div>
-            <div style="font-size:13.5px; font-weight:800; color:#f8fafc;">${auth.name}</div>
-            <div style="font-size:11px; color:#38bdf8; margin-top:3px;">${badges.join(' · ') || 'Toques de ordenanza'}</div>
-          </div>
-          <div style="font-size:16px; color:#94a3b8;">›</div>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function filterAuthCat(cat) {
-      currentAuthCat = cat;
-      document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
-      event.target.classList.add('active');
-      renderAuthList();
-    }
-
-    function selectAuthority(auth) {
-      selectedAuth = auth;
-      renderAuthList();
-
-      document.getElementById('authConfigPanel').style.display = 'block';
-      document.getElementById('authStepLabel').textContent = 'Honores para ' + auth.name;
-
-      document.getElementById('cfgAuthName').textContent = auth.name;
-      document.getElementById('cfgAuthSub').textContent = `Active o apague cada saludo según el caso:`;
-
-      // Salvas
-      const rowSalvas = document.getElementById('rowSalvas');
-      const chkSalvas = document.getElementById('chkSalvas');
-      if (auth.salvas > 0) {
-        rowSalvas.style.display = 'flex';
-        chkSalvas.checked = true;
-        document.getElementById('descSalvas').textContent = `${auth.salvas} cañonazos de salva de ordenanza`;
-      } else {
-        rowSalvas.style.display = 'none';
-        chkSalvas.checked = false;
-      }
-
-      // Vivas
-      const rowVivas = document.getElementById('rowVivas');
-      const chkVivas = document.getElementById('chkVivas');
-      if (auth.vivas > 0) {
-        rowVivas.style.display = 'flex';
-        chkVivas.checked = true;
-        document.getElementById('descVivas').textContent = `${auth.vivas} «¡Viva España!» de ordenanza`;
-      } else {
-        rowVivas.style.display = 'none';
-        chkVivas.checked = false;
-      }
-
-      // Música
-      const rowMusica = document.getElementById('rowMusica');
-      const chkMusica = document.getElementById('chkMusica');
-      if (auth.himno) {
-        rowMusica.style.display = 'flex';
-        chkMusica.checked = true;
-        document.getElementById('descMusica').textContent = auth.himnoLabel || 'Música reglamentaria';
-      } else {
-        rowMusica.style.display = 'none';
-        chkMusica.checked = false;
-      }
-
-      // Corneta
-      document.getElementById('chkCorneta').checked = true;
-
-      document.getElementById('authConfigPanel').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function resetAuthSelection() {
-      selectedAuth = null;
-      document.getElementById('authConfigPanel').style.display = 'none';
-      document.getElementById('authStepLabel').textContent = 'Seleccione Autoridad';
-      renderAuthList();
-    }
-
-    function executeConfiguredAuth() {
-      if (!selectedAuth) return;
-      stopAllAudio();
-
-      const useSalvas = document.getElementById('chkSalvas').checked && selectedAuth.salvas > 0;
-      const useVivas = document.getElementById('chkVivas').checked && selectedAuth.vivas > 0;
-      const useMusica = document.getElementById('chkMusica').checked && selectedAuth.himno;
-      const useCorneta = document.getElementById('chkCorneta').checked;
-
-      authSequenceQueue = [];
-
-      // 1. Corneta: Firmes y Presenten Armas
-      if (useCorneta) {
-        authSequenceQueue.push({ src: 'audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3', label: `1/4 Toque FIRMES (${selectedAuth.name})` });
-        authSequenceQueue.push({ src: 'audio/cornetapresentenarmas.wav', label: `2/4 Toque PRESENTEN ARMAS` });
-      }
-
-      // 2. Música / Himno
-      if (useMusica) {
-        authSequenceQueue.push({ src: `audio/${selectedAuth.himno}`, label: `MÚSICA: ${selectedAuth.himnoLabel}` });
-      }
-
-      // 3. Salvas de ordenanza
-      if (useSalvas) {
-        let salvaFile = `audio/salvasdeordenanza${selectedAuth.salvas}salvas(mp3cut.net).mp3`;
-        if (selectedAuth.salvas === 21) salvaFile = 'audio/salvasdeordenanza21salvas(mp3cut.net).mp3';
-        authSequenceQueue.push({ src: salvaFile, label: `SALVAS: ${selectedAuth.salvas} cañonazos de ordenanza` });
-      }
-
-      // 4. Vivas a España
-      if (useVivas) {
-        let vivaFile = `audio/vivaespana0${selectedAuth.vivas}.mp3`;
-        if (selectedAuth.vivas === 1) vivaFile = 'audio/vivaaespana01.mp3';
-        authSequenceQueue.push({ src: vivaFile, label: `VOCES: ${selectedAuth.vivas} Vivas a España` });
-      }
-
-      if (authSequenceQueue.length === 0) {
-        alert('Debe activar al menos un saludo o toque reglamentario.');
-        return;
-      }
-
-      playNextInAuthSequence();
-    }
-
-    function playNextInAuthSequence() {
-      if (authSequenceQueue.length === 0) {
-        document.getElementById('audioStatusBar').style.display = 'none';
-        isExecutingSequence = false;
-        return;
-      }
-
-      isExecutingSequence = true;
-      const nextItem = authSequenceQueue.shift();
-      const statusBox = document.getElementById('audioStatusBar');
-      const statusText = document.getElementById('audioStatusText');
-
-      currentAudio = new Audio(nextItem.src);
-      currentAudio.play().then(() => {
-        statusBox.style.display = 'flex';
-        statusText.textContent = `▶️ ${nextItem.label}`;
-      }).catch(err => {
-        console.error('Sequence play error:', err);
-        playNextInAuthSequence();
-      });
-
-      currentAudio.onended = () => {
-        setTimeout(playNextInAuthSequence, 1200);
-      };
-    }
-
-    // Inicializar lista de autoridades al arrancar
-    renderAuthList();
-
-  
-    // ==========================================
-    // LÓGICA CEREMONIAL DEL PORTALÓN
+    // LÓGICA CEREMONIAL DEL PORTALÓN (ENCLAVAMIENTO DE SEGURIDAD)
     // ==========================================
     let mandoChifleActivo = false;
+    let sonidoEnMarcha = false;
+    let ultimoToque = null; // 'mando', 'oficiales', 'retirada'
 
     function tocarChifleMando() {
+      if (sonidoEnMarcha) return;
+      ultimoToque = 'mando';
+      bloquearTodosBotonesPortalon();
       playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante');
-      mandoChifleActivo = true;
-      actualizarEstadoRetirada();
     }
 
     function tocarChifleOficiales() {
+      if (sonidoEnMarcha) return;
+      ultimoToque = 'oficiales';
+      bloquearTodosBotonesPortalon();
       playAudio('audio/oficiales.mp3', 'CHIFLE: Oficiales');
-      mandoChifleActivo = false;
-      actualizarEstadoRetirada();
     }
 
     function tocarChifleRetirada() {
-      if (!mandoChifleActivo) return;
+      if (sonidoEnMarcha || !mandoChifleActivo) return;
+      ultimoToque = 'retirada';
+      bloquearTodosBotonesPortalon();
       playAudio('audio/retiradaComteoAlmte.mp3', 'CHIFLE: Retirada Almte / Comte');
-      mandoChifleActivo = false; // Tras la retirada queda consumada la secuencia
-      actualizarEstadoRetirada();
     }
 
-    function actualizarEstadoRetirada() {
-      const btn = document.getElementById('btnChifleRetirada');
-      const badge = document.getElementById('badgeRetirada');
-      if (!btn || !badge) return;
+    function bloquearTodosBotonesPortalon() {
+      sonidoEnMarcha = true;
+      const btnMando = document.getElementById('btnChifleMando');
+      const btnOficiales = document.getElementById('btnChifleOficiales');
+      const btnRet = document.getElementById('btnChifleRetirada');
+      if (btnMando) btnMando.classList.add('disabled');
+      if (btnOficiales) btnOficiales.classList.add('disabled');
+      if (btnRet) btnRet.classList.add('disabled');
+    }
 
-      if (mandoChifleActivo) {
-        btn.classList.remove('disabled');
-        badge.style.background = '#0284c7';
-        badge.style.color = '#ffffff';
-        badge.textContent = 'Habilitado';
+    function desbloquearSegunCeremonial() {
+      sonidoEnMarcha = false;
+      const btnMando = document.getElementById('btnChifleMando');
+      const btnOficiales = document.getElementById('btnChifleOficiales');
+      const btnRet = document.getElementById('btnChifleRetirada');
+      const badge = document.getElementById('badgeRetirada');
+
+      // Los dos iniciales (Mando y Oficiales) siempre se activan al terminar
+      if (btnMando) btnMando.classList.remove('disabled');
+      if (btnOficiales) btnOficiales.classList.remove('disabled');
+
+      // Regla de Retirada:
+      // Si el que ha sonado es Almirante/Comandante -> se activan los TRES (Retirada habilitada)
+      // Si ha sonado Oficiales o Retirada (o parada de emergencia) -> se activan solo los dos iniciales
+      if (ultimoToque === 'mando') {
+        mandoChifleActivo = true;
+        if (btnRet) btnRet.classList.remove('disabled');
+        if (badge) {
+          badge.style.background = '#0284c7';
+          badge.style.color = '#ffffff';
+          badge.textContent = 'Habilitado';
+        }
       } else {
+        mandoChifleActivo = false;
+        if (btnRet) btnRet.classList.add('disabled');
+        if (badge) {
+          badge.style.background = '#334155';
+          badge.style.color = '#94a3b8';
+          badge.textContent = 'Bloqueado';
+        }
+      }
+    } else {
         btn.classList.add('disabled');
         badge.style.background = '#334155';
         badge.style.color = '#94a3b8';
