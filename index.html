@@ -902,6 +902,264 @@ function _legacy_execAuth() {
       }
     }
 
+    function renderAuthList() {
+      const container = document.getElementById('authListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const filtered = AUTHORITIES.filter(a => currentAuthCat === 'todas' || a.cat === currentAuthCat);
+
+      filtered.forEach(auth => {
+        const item = document.createElement('div');
+        item.className = 'auth-btn-card' + (selectedAuth && selectedAuth.id === auth.id ? ' selected' : '');
+        item.onclick = () => selectAuthority(auth);
+
+        // SOLO EL NOMBRE LIMPIO EN LA LISTA INICIAL
+        item.innerHTML = `
+          <div>
+            <div style="font-size:14px; font-weight:800; color:#f8fafc;">${auth.name}</div>
+          </div>
+          <div style="font-size:16px; color:#94a3b8;">›</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function filterAuthCat(cat) {
+      currentAuthCat = cat;
+      document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      renderAuthList();
+    }
+
+    function seleccionarPosicionArma(pos) {
+      posicionArmaSeleccionada = pos;
+      const btnP = document.getElementById('btnArmaPresenten');
+      const btnH = document.getElementById('btnArmaHombro');
+      const btnF = document.getElementById('btnArmaFirmes');
+      const lbl = document.getElementById('lblArmaActual');
+
+      [btnP, btnH, btnF].forEach(b => { if (b) b.classList.remove('primary'); });
+
+      if (pos === 'presenten') {
+        if (btnP) btnP.classList.add('primary');
+        if (lbl) lbl.textContent = 'Presenten Armas';
+      } else if (pos === 'hombro') {
+        if (btnH) btnH.classList.add('primary');
+        if (lbl) lbl.textContent = 'Sobre el Hombro';
+      } else {
+        if (btnF) btnF.classList.add('primary');
+        if (lbl) lbl.textContent = 'En Firmes (sin armas)';
+      }
+    }
+
+    function selectAuthority(auth) {
+      selectedAuth = auth;
+      renderAuthList();
+
+      document.getElementById('authConfigPanel').style.display = 'block';
+      document.getElementById('authStepLabel').textContent = '2. Configure y Ejecute';
+
+      document.getElementById('cfgAuthName').textContent = auth.name;
+      document.getElementById('cfgAuthSub').textContent = 'Ceremonial de Honores de Ordenanza';
+
+      // Posición del arma por defecto: Presenten
+      seleccionarPosicionArma(auth.armaDefecto || 'presenten');
+
+      // Gestión de Extranjero / Organismo e Himnos
+      const anthemBox = document.getElementById('anthemPickerBox');
+      const orderExp = document.getElementById('anthemOrderExplanation');
+      const anthemTitle = document.getElementById('lblAnthemPickerTitle');
+
+      if (auth.isExtranjero || auth.isOrganismo) {
+        anthemBox.style.display = 'block';
+        const versionH = (auth.himnoEspana === 'Espania_largo.mp3') ? 'versión completa' : 'versión breve';
+        if (auth.isExtranjero) {
+          anthemTitle.textContent = '🎵 Himno del País Extranjero:';
+          orderExp.innerHTML = '<strong>Regla protocolaria:</strong> 1º Himno Extranjero ➔ 2º Himno de España (' + versionH + ') con salvas simultáneas.';
+        } else {
+          anthemTitle.textContent = '🎵 Himno del Organismo Internacional:';
+          orderExp.innerHTML = '<strong>Regla protocolaria:</strong> 1º Himno de España (' + versionH + ') ➔ 2º Himno del Organismo con salvas simultáneas.';
+        }
+
+        let def = ANTHEMS_CATALOG.find(a => a.name.toLowerCase().includes((auth.defaultAnthem || '').toLowerCase()));
+        if (!def && ANTHEMS_CATALOG.length > 0) def = ANTHEMS_CATALOG[0];
+        setChosenAnthem(def);
+        renderAnthemResults('');
+      } else {
+        anthemBox.style.display = 'none';
+        selectedForeignAnthem = null;
+      }
+
+      // Salvas
+      const rowSalvas = document.getElementById('rowSalvas');
+      const chkSalvas = document.getElementById('chkSalvas');
+      if (auth.salvas > 0) {
+        rowSalvas.style.display = 'flex';
+        chkSalvas.checked = true;
+        document.getElementById('descSalvas').textContent = auth.salvas + ' Salvas de Ordenanza simultáneas con el himno';
+      } else {
+        rowSalvas.style.display = 'none';
+        chkSalvas.checked = false;
+      }
+
+      // Vivas
+      const rowVivas = document.getElementById('rowVivas');
+      const chkVivas = document.getElementById('chkVivas');
+      if (auth.vivas > 0) {
+        rowVivas.style.display = 'flex';
+        chkVivas.checked = true;
+        document.getElementById('descVivas').textContent = (auth.vivas === 1 ? '1 Voz de Viva España' : auth.vivas + ' Voces de Viva España');
+      } else {
+        rowVivas.style.display = 'none';
+        chkVivas.checked = false;
+      }
+
+      // Música
+      const rowMusica = document.getElementById('rowMusica');
+      const chkMusica = document.getElementById('chkMusica');
+      rowMusica.style.display = 'flex';
+      chkMusica.checked = true;
+
+      if (auth.isExtranjero) {
+        document.getElementById('descMusica').textContent = '1º Himno Extranjero ➔ 2º Himno de España';
+      } else if (auth.isOrganismo) {
+        document.getElementById('descMusica').textContent = '1º Himno de España ➔ 2º Himno del Organismo';
+      } else {
+        document.getElementById('descMusica').textContent = auth.himnoLabel || 'Música reglamentaria';
+      }
+
+      // Corneta
+      document.getElementById('chkCorneta').checked = true;
+
+      document.getElementById('authConfigPanel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function setChosenAnthem(anthem) {
+      selectedForeignAnthem = anthem;
+      const el = document.getElementById('selectedAnthemName');
+      if (el && anthem) {
+        el.textContent = anthem.name;
+      }
+    }
+
+    function onSearchAnthemInput(query) {
+      renderAnthemResults(query);
+    }
+
+    function renderAnthemResults(query) {
+      const list = document.getElementById('anthemResultsList');
+      if (!list) return;
+      list.innerHTML = '';
+
+      const q = (query || '').toLowerCase().trim();
+      const matches = ANTHEMS_CATALOG.filter(a => !q || a.name.toLowerCase().includes(q)).slice(0, 20);
+
+      matches.forEach(item => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.style.cssText = 'background:#0f2347; border:1px solid #1e3a8a; border-radius:5px; padding:6px 10px; color:#e2e8f0; font-size:11.5px; text-align:left; cursor:pointer; display:flex; justify-content:space-between; align-items:center;';
+        if (selectedForeignAnthem && selectedForeignAnthem.id === item.id) {
+          btn.style.borderColor = '#38bdf8';
+          btn.style.background = '#0284c7';
+        }
+        btn.onclick = () => {
+          setChosenAnthem(item);
+          renderAnthemResults(document.getElementById('txtAnthemSearch').value);
+        };
+        btn.innerHTML = `<span>🎵 ${item.name}</span><span style="font-size:10px; color:#94a3b8;">tdolarea/anthems</span>`;
+        list.appendChild(btn);
+      });
+    }
+
+    function resetAuthSelection() {
+      selectedAuth = null;
+      document.getElementById('authConfigPanel').style.display = 'none';
+      document.getElementById('authListContainer').style.display = 'block';
+      document.getElementById('authCatPills').style.display = 'flex';
+      document.getElementById('authStepLabel').textContent = '1. Seleccione Autoridad';
+      renderAuthList();
+    }
+
+    function filterAuthCat(cat) {
+      currentAuthCat = cat;
+      document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      renderAuthList();
+    }
+
+    function seleccionarPosicionArma(pos) {
+      posicionArmaSeleccionada = pos;
+      const btnP = document.getElementById('btnArmaPresenten');
+      const btnH = document.getElementById('btnArmaHombro');
+      const btnF = document.getElementById('btnArmaFirmes');
+      const lbl = document.getElementById('lblArmaActual');
+
+      [btnP, btnH, btnF].forEach(b => { if (b) b.classList.remove('primary'); });
+
+      if (pos === 'presenten') {
+        if (btnP) btnP.classList.add('primary');
+        if (lbl) lbl.textContent = 'Presenten Armas';
+      } else if (pos === 'hombro') {
+        if (btnH) btnH.classList.add('primary');
+        if (lbl) lbl.textContent = 'Sobre el Hombro';
+      } else {
+        if (btnF) btnF.classList.add('primary');
+        if (lbl) lbl.textContent = 'En Firmes (sin armas)';
+      }
+    }
+
+    function renderAuthList() {
+      const container = document.getElementById('authListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const filtered = AUTHORITIES.filter(a => currentAuthCat === 'todas' || a.cat === currentAuthCat);
+
+      filtered.forEach(auth => {
+        const item = document.createElement('div');
+        item.className = 'auth-btn-card' + (selectedAuth && selectedAuth.id === auth.id ? ' selected' : '');
+        item.onclick = () => selectAuthority(auth);
+
+        // SOLO EL NOMBRE LIMPIO EN LA LISTA INICIAL
+        item.innerHTML = `
+          <div>
+            <div style="font-size:14px; font-weight:800; color:#f8fafc;">${auth.name}</div>
+          </div>
+          <div style="font-size:16px; color:#94a3b8;">›</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function filterAuthCat(cat) {
+      currentAuthCat = cat;
+      document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      renderAuthList();
+    }
+
+    function seleccionarPosicionArma(pos) {
+      posicionArmaSeleccionada = pos;
+      const btnP = document.getElementById('btnArmaPresenten');
+      const btnH = document.getElementById('btnArmaHombro');
+      const btnF = document.getElementById('btnArmaFirmes');
+      const lbl = document.getElementById('lblArmaActual');
+
+      [btnP, btnH, btnF].forEach(b => { if (b) b.classList.remove('primary'); });
+
+      if (pos === 'presenten') {
+        if (btnP) btnP.classList.add('primary');
+        if (lbl) lbl.textContent = 'Presenten Armas';
+      } else if (pos === 'hombro') {
+        if (btnH) btnH.classList.add('primary');
+        if (lbl) lbl.textContent = 'Sobre el Hombro';
+      } else {
+        if (btnF) btnF.classList.add('primary');
+        if (lbl) lbl.textContent = 'En Firmes (sin armas)';
+      }
+    }
+
     function selectAuthority(auth) {
       selectedAuth = auth;
       renderAuthList();
@@ -1122,20 +1380,30 @@ function _legacy_execAuth() {
       // 7. Audio de Descanso
       const elDescanso = document.getElementById('audDescanso');
 
-      // DESBLOQUEO TÁCTIL TOTAL EN MÓVILES (SÍNCRONO CON EL CLIC DEL USUARIO)
-      const todosLosAudios = [elFirmes, elArma, elEjecutiva, elViva, elSalva, elEspana, elExt, elDescanso];
-      todosLosAudios.forEach(aud => {
+      // DESBLOQUEO TÁCTIL PARA MÓVILES (SÍNCRONO):
+      // A los audios futuros que sonarán en diferido les hacemos warm-up silencioso
+      const audiosFuturos = [elArma, elEjecutiva, elViva, elSalva, elEspana, elExt, elDescanso];
+      audiosFuturos.forEach(aud => {
         if (aud) {
-          aud.muted = true;
-          aud.play().then(() => {
-            aud.pause();
-            aud.currentTime = 0;
-            aud.muted = false;
-          }).catch(() => {
-            aud.muted = false;
-          });
+          try {
+            aud.muted = true;
+            let p = aud.play();
+            if (p !== undefined) {
+              p.then(() => {
+                aud.pause();
+                aud.currentTime = 0;
+                aud.muted = false;
+              }).catch(() => { aud.muted = false; });
+            }
+          } catch(e) { aud.muted = false; }
         }
       });
+
+      // Asegurar que el primer sonido (elFirmes) esté desmuteado y listo
+      if (elFirmes) {
+        elFirmes.muted = false;
+        elFirmes.currentTime = 0;
+      }
 
       // INICIAR SECUENCIA (PASO 1 DIRECTO)
       if (useCorneta && elFirmes) {
