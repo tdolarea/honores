@@ -1180,27 +1180,46 @@ function _legacy_execAuth() {
     function reproducirPaso5(elSalva, himnosQueue, elDescanso, useCorneta) {
       if (!secuenciaActiva) return;
 
-      // Disparar salvas en paralelo
+      // Si no hay salvas ni himnos, saltar directo al descanso
+      if (!elSalva && (!himnosQueue || himnosQueue.length === 0)) {
+        reproducirPaso6(elDescanso, useCorneta);
+        return;
+      }
+
+      // Arrancar Salvas (con pequeño retardo de seguridad para evitar colisión de decodificación en móvil)
       if (elSalva) {
         try {
           elSalva.currentTime = 0;
           elSalva.muted = false;
-          elSalva.play().catch(e => console.error('Salvas play error:', e));
-        } catch(e){}
+          let pSalva = elSalva.play();
+          if (pSalva !== undefined) {
+            pSalva.catch(err => console.warn('Salvas play error controlado:', err));
+          }
+        } catch(e) {
+          console.warn('Salvas exception:', e);
+        }
       }
 
-      // Disparar himnos
-      if (himnosQueue.length > 0) {
-        reproducirHimnosSecuencia(himnosQueue, elSalva, () => {
-          reproducirPaso6(elDescanso, useCorneta);
-        });
+      // Disparar secuencia de himnos
+      if (himnosQueue && himnosQueue.length > 0) {
+        // Retardo de 120ms para que el foco de audio en Android no colisione con las salvas
+        setTimeout(() => {
+          if (!secuenciaActiva) return;
+          reproducirHimnosSecuencia(himnosQueue, elSalva, () => {
+            reproducirPaso6(elDescanso, useCorneta);
+          });
+        }, 120);
       } else {
-        if (elSalva) {
-          elSalva.onended = () => { reproducirPaso6(elDescanso, useCorneta); };
-          let dur = (elSalva.duration && !isNaN(elSalva.duration)) ? (elSalva.duration * 1000 + 800) : 15000;
-          timerPasoSeguro = setTimeout(() => { reproducirPaso6(elDescanso, useCorneta); }, dur);
-        } else {
+        // Solo salvas sin himno
+        let durSalva = (elSalva && elSalva.duration && !isNaN(elSalva.duration)) ? (elSalva.duration * 1000 + 1000) : 15000;
+        timerPasoSeguro = setTimeout(() => {
           reproducirPaso6(elDescanso, useCorneta);
+        }, durSalva);
+        if (elSalva) {
+          elSalva.onended = () => {
+            if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
+            reproducirPaso6(elDescanso, useCorneta);
+          };
         }
       }
     }
@@ -1230,13 +1249,17 @@ function _legacy_execAuth() {
 
       item.el.onended = avanzar;
 
-      item.el.play().then(() => {
-        let durMs = (item.el.duration && !isNaN(item.el.duration)) ? (item.el.duration * 1000 + 1200) : 35000;
-        timerPasoSeguro = setTimeout(avanzar, durMs);
-      }).catch(err => {
-        console.error('Himno play error:', err);
-        avanzar();
-      });
+      let pHimno = item.el.play();
+      let durMs = (item.el.duration && !isNaN(item.el.duration)) ? (item.el.duration * 1000 + 1500) : 25000;
+      timerPasoSeguro = setTimeout(avanzar, durMs);
+
+      if (pHimno !== undefined) {
+        pHimno.catch(err => {
+          console.warn('Himno play error controlado:', err);
+          // Si el navegador bloqueó el audio secundario, no congelar la app: avanzar
+          avanzar();
+        });
+      }
     }
 
     function reproducirPaso6(elDescanso, useCorneta) {
