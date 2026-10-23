@@ -224,13 +224,7 @@
     </div>
 
     <!-- ESTADO DE AUDIO -->
-    <div class="status-bar" id="audioStatusBar" style="display:none;">
-      <span id="audioStatusText" style="display:flex; align-items:center; gap:8px;">
-        <span style="font-size:16px;">🔊</span>
-        <span>Reproduciendo toque...</span>
-      </span>
-      <button class="status-bar-stop-btn" onclick="stopAllAudio()">🛑 PARAR SONIDO</button>
-    </div>
+    
 
     <!-- VISTA 1: PORTALÓN -->
     <div class="view-section active" id="viewPortalon">
@@ -419,7 +413,7 @@
             </label>
           </div>
 
-          <!-- BOTONES DE ACCIÓN Y BARRA DE ESTADO INTEGRADA -->
+          <!-- BOTONES DE ACCIÓN Y BARRA ROJA INTEGRADA ABAJO (DISEÑO EXACTO SUPERIOR) -->
           <div style="margin-top:16px;">
             <!-- BOTÓN EJECUTIVA (VISIBLE EN REPOSO) -->
             <button id="btnEjecutivaPrincipal" class="action-btn primary" 
@@ -428,24 +422,16 @@
               <span>▶️ Ejecutiva</span>
             </button>
 
-            <!-- BARRA ROJA ACTIVA (SOLO VISIBLE MIENTRAS SUENA) -->
-            <div id="authActiveBar" 
-              style="display:none; background:linear-gradient(90deg, #991b1b, #dc2626); border:2px solid #ef4444; border-radius:8px; padding:12px 14px; align-items:center; justify-content:space-between; box-shadow:0 0 15px rgba(239,68,68,0.5);">
-              <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
-                <span style="font-size:18px; animation:pulse 1s infinite;">🔊</span>
-                <span id="authActiveText" style="font-size:13px; font-weight:800; color:#fff; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
-                  Reproduciendo...
-                </span>
-              </div>
-              <button type="button" class="action-btn danger" 
-                style="padding:6px 14px; font-size:12px; font-weight:900; background:#450a0a; border-color:#f87171; color:#fff; min-height:34px; margin-left:8px;" 
-                onclick="stopAllAudio()">
-                🛑 PARAR
-              </button>
+            <!-- BARRA ROJA ACTIVA ABAJO (CORTADA DE ARRIBA: .status-bar Y .status-bar-stop-btn) -->
+            <div id="audioStatusBar" class="status-bar" style="display:none; margin-bottom:0; justify-content:space-between; align-items:center;">
+              <span id="audioStatusText" style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                <span style="font-size:18px;">🔊</span>
+                <span id="audioStatusInnerTxt" style="white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Reproduciendo toque...</span>
+              </span>
+              <button type="button" class="status-bar-stop-btn" onclick="stopAllAudio()">🛑 PARAR SONIDO</button>
             </div>
-          </div></div>
+          </div>
         </div>
-
       </div>
     </div>
 
@@ -502,7 +488,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792780389</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792781036</div>
 </footer>
 
   <script>
@@ -2196,27 +2182,19 @@ function _legacy_execAuth() {
 
     function actualizarStatus(txt) {
       const statusBox = document.getElementById('audioStatusBar');
-      const statusText = document.getElementById('audioStatusText');
-      if (statusBox) statusBox.style.display = 'flex';
-      if (statusText) statusText.textContent = '▶️ ' + txt;
-
-      const authActiveBar = document.getElementById('authActiveBar');
-      const authActiveText = document.getElementById('authActiveText');
-      if (authActiveBar) authActiveBar.style.display = 'flex';
-      if (authActiveText) authActiveText.textContent = txt;
-
+      const innerText = document.getElementById('audioStatusInnerTxt');
       const btnEj = document.getElementById('btnEjecutivaPrincipal');
+
+      if (innerText) innerText.textContent = txt;
+      if (statusBox) statusBox.style.display = 'flex';
       if (btnEj) btnEj.style.display = 'none';
     }
 
     function cerrarStatus() {
       const statusBox = document.getElementById('audioStatusBar');
-      if (statusBox) statusBox.style.display = 'none';
-
-      const authActiveBar = document.getElementById('authActiveBar');
-      if (authActiveBar) authActiveBar.style.display = 'none';
-
       const btnEj = document.getElementById('btnEjecutivaPrincipal');
+
+      if (statusBox) statusBox.style.display = 'none';
       if (btnEj) btnEj.style.display = 'flex';
     }
 
