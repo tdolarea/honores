@@ -440,17 +440,24 @@
     }
 
     function stopAllAudio() {
-      [audMando, audOficiales, audRetirada, audGeneral, audBuqueBabor, audBuqueEstribor, audBuqueRetirada].forEach(a => {
+      const allAudios = [
+        document.getElementById('audMando'),
+        document.getElementById('audOficiales'),
+        document.getElementById('audRetirada'),
+        document.getElementById('audGeneral'),
+        document.getElementById('audBuqueBabor'),
+        document.getElementById('audBuqueEstribor'),
+        document.getElementById('audBuqueRetirada')
+      ];
+      allAudios.forEach(a => {
         if (a) {
           try { a.pause(); a.currentTime = 0; } catch(e){}
         }
       });
       onAudioTerminado();
-      onBuqueAudioFin();
-    } catch(e){}
-        }
-      });
-      onAudioTerminado();
+      if (typeof onBuqueAudioFin === 'function') {
+        onBuqueAudioFin();
+      }
     }
 
     function tocarChifleMando() {
