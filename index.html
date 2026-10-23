@@ -66,9 +66,25 @@
     }
 
     .status-bar {
-      background: #022c22; border: 1px solid #059669; border-radius: 6px; padding: 8px 12px;
-      color: #34d399; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; display: flex;
-      align-items: center; justify-content: space-between;
+      background: #7f1d1d; border: 2px solid #ef4444; border-radius: 8px; padding: 12px 16px;
+      color: #fef2f2; font-size: 13px; font-weight: 800; margin-bottom: 14px; display: flex;
+      align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(239,68,68,0.4);
+      animation: pulseAlert 2s infinite;
+    }
+    @keyframes pulseAlert {
+      0% { border-color: #ef4444; }
+      50% { border-color: #f87171; }
+      100% { border-color: #ef4444; }
+    }
+    .status-bar-stop-btn {
+      background: #dc2626; border: 1.5px solid #fecaca; color: white; padding: 8px 16px;
+      border-radius: 6px; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-bar-stop-btn:active { background: #991b1b; transform: scale(0.96); }
+
+    .action-btn.disabled {
+      opacity: 0.4; cursor: not-allowed; pointer-events: none; border-color: #334155; filter: grayscale(1);
     }
 
     .install-banner {
@@ -162,25 +178,27 @@
 
     <!-- ESTADO DE AUDIO -->
     <div class="status-bar" id="audioStatusBar" style="display:none;">
-      <span id="audioStatusText">Reproduciendo toque...</span>
-      <span style="cursor:pointer;" onclick="stopAllAudio()">✕ Detener</span>
+      <span id="audioStatusText" style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:16px;">🔊</span>
+        <span>Reproduciendo toque...</span>
+      </span>
+      <button class="status-bar-stop-btn" onclick="stopAllAudio()">🛑 PARAR SONIDO</button>
     </div>
 
     <!-- VISTA 1: PORTALÓN -->
-        <!-- VISTA 1: PORTALÓN -->
     <div class="view-section active" id="viewPortalon">
       <div class="card">
         <div class="card-title">Chifle en el Portalón (Ceremonial Naval)</div>
         <div class="btn-grid" style="grid-template-columns: 1fr;">
-          <button class="action-btn primary" style="padding:16px;" onclick="playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante')">
+          <button class="action-btn primary" style="padding:16px;" onclick="tocarChifleMando()">
             <span style="font-size:14px;">🎺 CHIFLE Almirante o Comandante</span>
             <span>⚓</span>
           </button>
-          <button class="action-btn primary" style="padding:16px;" onclick="playAudio('audio/retiradaComteoAlmte.mp3', 'CHIFLE: Retirada Almte / Comte')">
+          <button class="action-btn primary disabled" id="btnChifleRetirada" style="padding:16px;" onclick="tocarChifleRetirada()">
             <span style="font-size:14px;">🎺 CHIFLE Retirada Almte / Comte</span>
-            <span>⚓</span>
+            <span id="badgeRetirada" style="font-size:10px; background:#334155; padding:2px 6px; border-radius:4px; color:#94a3b8;">Bloqueado</span>
           </button>
-          <button class="action-btn" style="padding:16px;" onclick="playAudio('audio/oficiales.mp3', 'CHIFLE: Oficiales')">
+          <button class="action-btn" style="padding:16px;" onclick="tocarChifleOficiales()">
             <span style="font-size:14px;">🎺 CHIFLE Oficiales</span>
             <span>⚓</span>
           </button>
@@ -660,6 +678,49 @@ function _legacy_execAuth() {
 
     // Inicializar lista de autoridades al arrancar
     renderAuthList();
+
+  
+    // ==========================================
+    // LÓGICA CEREMONIAL DEL PORTALÓN
+    // ==========================================
+    let mandoChifleActivo = false;
+
+    function tocarChifleMando() {
+      playAudio('audio/ComteoAlmte.mp3', 'CHIFLE: Almirante o Comandante');
+      mandoChifleActivo = true;
+      actualizarEstadoRetirada();
+    }
+
+    function tocarChifleOficiales() {
+      playAudio('audio/oficiales.mp3', 'CHIFLE: Oficiales');
+      mandoChifleActivo = false;
+      actualizarEstadoRetirada();
+    }
+
+    function tocarChifleRetirada() {
+      if (!mandoChifleActivo) return;
+      playAudio('audio/retiradaComteoAlmte.mp3', 'CHIFLE: Retirada Almte / Comte');
+      mandoChifleActivo = false; // Tras la retirada queda consumada la secuencia
+      actualizarEstadoRetirada();
+    }
+
+    function actualizarEstadoRetirada() {
+      const btn = document.getElementById('btnChifleRetirada');
+      const badge = document.getElementById('badgeRetirada');
+      if (!btn || !badge) return;
+
+      if (mandoChifleActivo) {
+        btn.classList.remove('disabled');
+        badge.style.background = '#0284c7';
+        badge.style.color = '#ffffff';
+        badge.textContent = 'Habilitado';
+      } else {
+        btn.classList.add('disabled');
+        badge.style.background = '#334155';
+        badge.style.color = '#94a3b8';
+        badge.textContent = 'Bloqueado';
+      }
+    }
 
   </script>
 </body>
