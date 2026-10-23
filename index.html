@@ -1038,6 +1038,9 @@ function _legacy_execAuth() {
     let secuenciaPaso = 0;
     let secuenciaActiva = false;
 
+    
+    let timerPasoSeguro = null;
+
     function executeConfiguredAuth() {
       if (!selectedAuth) {
         alert('Por favor, seleccione primero una autoridad.');
@@ -1082,8 +1085,10 @@ function _legacy_execAuth() {
 
       // 6. Audio de Himnos
       let himnosQueue = [];
+      let elEspana = null;
+      let elExt = null;
       if (useMusica) {
-        let elEspana = (selectedAuth.himnoEspana === 'Espania_largo.mp3' || selectedAuth.himno === 'Espania_largo.mp3')
+        elEspana = (selectedAuth.himnoEspana === 'Espania_largo.mp3' || selectedAuth.himno === 'Espania_largo.mp3')
           ? document.getElementById('audHimnoLargo')
           : (selectedAuth.esMarchaInfantes ? document.getElementById('audHimnoMarcha') : document.getElementById('audHimnoCorto'));
 
@@ -1093,7 +1098,7 @@ function _legacy_execAuth() {
 
         if (selectedAuth.isExtranjero) {
           if (selectedForeignAnthem) {
-            let elExt = document.getElementById('audHimnoExtranjero');
+            elExt = document.getElementById('audHimnoExtranjero');
             if (elExt) {
               elExt.src = selectedForeignAnthem.url;
               himnosQueue.push({ el: elExt, label: '1º HIMNO EXTRANJERO: ' + selectedForeignAnthem.name });
@@ -1103,7 +1108,7 @@ function _legacy_execAuth() {
         } else if (selectedAuth.isOrganismo) {
           himnosQueue.push({ el: elEspana, label: '1º ' + labelEsp });
           if (selectedForeignAnthem) {
-            let elExt = document.getElementById('audHimnoExtranjero');
+            elExt = document.getElementById('audHimnoExtranjero');
             if (elExt) {
               elExt.src = selectedForeignAnthem.url;
               himnosQueue.push({ el: elExt, label: '2º HIMNO ORGANISMO: ' + selectedForeignAnthem.name });
@@ -1117,7 +1122,22 @@ function _legacy_execAuth() {
       // 7. Audio de Descanso
       const elDescanso = document.getElementById('audDescanso');
 
-      // PASO 1 DIRECTO (Síncrono con el toque táctil)
+      // DESBLOQUEO TÁCTIL TOTAL EN MÓVILES (SÍNCRONO CON EL CLIC DEL USUARIO)
+      const todosLosAudios = [elFirmes, elArma, elEjecutiva, elViva, elSalva, elEspana, elExt, elDescanso];
+      todosLosAudios.forEach(aud => {
+        if (aud) {
+          aud.muted = true;
+          aud.play().then(() => {
+            aud.pause();
+            aud.currentTime = 0;
+            aud.muted = false;
+          }).catch(() => {
+            aud.muted = false;
+          });
+        }
+      });
+
+      // INICIAR SECUENCIA (PASO 1 DIRECTO)
       if (useCorneta && elFirmes) {
         reproducirPasoDirecto(elFirmes, '1/6 CORNETA: Toque de FIRMES', () => {
           // PASO 2: Posición del arma
@@ -1164,7 +1184,8 @@ function _legacy_execAuth() {
       if (elSalva) {
         try {
           elSalva.currentTime = 0;
-          elSalva.play().catch(e => console.error('Salvas:', e));
+          elSalva.muted = false;
+          elSalva.play().catch(e => console.error('Salvas play error:', e));
         } catch(e){}
       }
 
@@ -1176,6 +1197,8 @@ function _legacy_execAuth() {
       } else {
         if (elSalva) {
           elSalva.onended = () => { reproducirPaso6(elDescanso, useCorneta); };
+          let dur = (elSalva.duration && !isNaN(elSalva.duration)) ? (elSalva.duration * 1000 + 800) : 15000;
+          timerPasoSeguro = setTimeout(() => { reproducirPaso6(elDescanso, useCorneta); }, dur);
         } else {
           reproducirPaso6(elDescanso, useCorneta);
         }
@@ -1193,15 +1216,26 @@ function _legacy_execAuth() {
       actualizarStatus('5/6 MÚSICA: ' + item.label + tagSalva);
 
       item.el.currentTime = 0;
+      item.el.muted = false;
+      let finalizado = false;
+
+      function avanzar() {
+        if (finalizado) return;
+        finalizado = true;
+        if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
+        setTimeout(() => {
+          reproducirHimnosSecuencia(queue, elSalva, onFinished);
+        }, 1200);
+      }
+
+      item.el.onended = avanzar;
+
       item.el.play().then(() => {
-        item.el.onended = () => {
-          setTimeout(() => {
-            reproducirHimnosSecuencia(queue, elSalva, onFinished);
-          }, 1200);
-        };
+        let durMs = (item.el.duration && !isNaN(item.el.duration)) ? (item.el.duration * 1000 + 1200) : 35000;
+        timerPasoSeguro = setTimeout(avanzar, durMs);
       }).catch(err => {
-        console.error('Himno error:', err);
-        setTimeout(() => { reproducirHimnosSecuencia(queue, elSalva, onFinished); }, 800);
+        console.error('Himno play error:', err);
+        avanzar();
       });
     }
 
@@ -1226,22 +1260,37 @@ function _legacy_execAuth() {
 
       actualizarStatus(label);
       elAudio.currentTime = 0;
+      elAudio.muted = false;
+      let terminado = false;
+
+      function darPaso() {
+        if (terminado) return;
+        terminado = true;
+        if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
+        setTimeout(callback, 1000);
+      }
+
+      elAudio.onended = darPaso;
+
       elAudio.play().then(() => {
-        elAudio.onended = () => {
-          setTimeout(callback, 1000);
-        };
+        let maxMs = (elAudio.duration && !isNaN(elAudio.duration)) ? (elAudio.duration * 1000 + 1200) : 7000;
+        timerPasoSeguro = setTimeout(darPaso, maxMs);
       }).catch(e => {
         console.error('Play error direct:', label, e);
-        setTimeout(callback, 800);
+        darPaso();
       });
     }
 
     function stopAllAudio() {
       secuenciaActiva = false;
+      if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
       const allAudios = document.querySelectorAll('audio');
       allAudios.forEach(a => {
         if (a) {
-          try { a.pause(); a.currentTime = 0; } catch(e){}
+          try {
+            a.pause();
+            a.currentTime = 0;
+          } catch(e){}
         }
       });
       cerrarStatus();
