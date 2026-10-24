@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792858781';
+    const APP_VERSION = 'v1792858865';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -835,7 +835,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792858781</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792858865</div>
 </footer>
 
   <script>
@@ -2056,6 +2056,21 @@ function _legacy_execAuth() {
       }, { timeout: 10000, enableHighAccuracy: true });
     }
 
+    function obtenerLetraHuso(valHuso) {
+      let offset = 0;
+      if (valHuso === 'auto') {
+        offset = -new Date().getTimezoneOffset() / 60.0;
+      } else {
+        offset = parseFloat(valHuso);
+      }
+      const mapping = {
+        0: 'Z',
+        1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E', 6: 'F', 7: 'G', 8: 'H', 9: 'I', 10: 'K', 11: 'L', 12: 'M',
+        '-1': 'N', '-2': 'O', '-3': 'P', '-4': 'Q', '-5': 'R', '-6': 'S', '-7': 'T', '-8': 'U', '-9': 'V', '-10': 'W', '-11': 'X', '-12': 'Y'
+      };
+      return mapping[offset] || (offset >= 0 ? `+${offset}` : `${offset}`);
+    }
+
     function refrescarPosicionYHoraEnPantalla() {
       const lblPos = document.getElementById('lblPosicionDisplay');
       const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
@@ -2065,23 +2080,24 @@ function _legacy_execAuth() {
         if (rowPos) rowPos.style.display = 'flex';
         if (lblPos) {
           if (cerFuenteOcaso === 'manual') {
-            lblPos.textContent = 'Hora Manual';
+            lblPos.textContent = 'Hora fijada manualmente';
           } else {
             const coordFmt = formatearCoordNaval(cerPosicionLat, cerPosicionLon);
             lblPos.textContent = `${coordFmt} · ${cerPosicionNombre}`;
           }
         }
         if (lblDisp) {
-          const husoTxt = (cerHusoHorario === 'auto') ? 'Auto' : (cerHusoHorario >= 0 ? `UTC+${cerHusoHorario}` : `UTC${cerHusoHorario}`);
-          const sufijo = (cerFuenteOcaso === 'manual') ? ' (Manual)' : ` (${cerPosicionNombre} · ${husoTxt})`;
-          lblDisp.textContent = `${cerHoraObjetivo}h${sufijo}`;
+          const letraHuso = obtenerLetraHuso(cerHusoHorario);
+          // Formato naval estricto ordenado por el Comandante: p.e. "20:32 C"
+          lblDisp.textContent = `${cerHoraObjetivo} ${letraHuso}`;
           lblDisp.style.color = '#fbbf24';
         }
       } else {
         // En modo Izado
         if (rowPos) rowPos.style.display = 'none';
         if (lblDisp) {
-          lblDisp.textContent = `${cerHoraObjetivo}h`;
+          const letraHuso = obtenerLetraHuso(cerHusoHorario);
+          lblDisp.textContent = `${cerHoraObjetivo} ${letraHuso}`;
           lblDisp.style.color = '#38bdf8';
         }
       }
