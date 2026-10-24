@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792869301';
+    const APP_VERSION = 'v1792871272';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -677,10 +677,10 @@
 
         <!-- MODO DE EJECUCIÓN: AUTOMÁTICO VS MANUAL -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:14px;">
-          <button type="button" class="action-btn primary" id="btnDisparoAuto" onclick="setModoDisparo('auto')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+          <button type="button" class="action-btn primary" id="btnDisparoAuto" class="action-btn" onclick="setModoDisparo('auto')" style="font-size:11px; padding:8px 4px; justify-content:center;">
             ⏱️ Ejecución Automática
           </button>
-          <button type="button" class="action-btn" id="btnDisparoManual" onclick="setModoDisparo('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+          <button type="button" class="action-btn" id="btnDisparoManual" class="action-btn primary" onclick="setModoDisparo('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
             👆 Ejecución Manual
           </button>
         </div>
@@ -693,10 +693,10 @@
           <div id="boxOpcionesAudioBandera">
             <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">Audio:</div>
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
-              <button type="button" class="action-btn primary" id="btnAcompHimno" onclick="setAcompBandera('himno')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+              <button type="button" class="action-btn primary" id="btnAcompHimno" class="action-btn" onclick="setAcompBandera('himno')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
                 🎺 Himno Nacional
               </button>
-              <button type="button" class="action-btn" id="btnAcompChifle" onclick="setAcompBandera('chifle')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+              <button type="button" class="action-btn" id="btnAcompChifle" class="action-btn primary" onclick="setAcompBandera('chifle')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
                 📢 Solo Chifle
               </button>
               <button type="button" class="action-btn" id="btnAcompAmbos" onclick="setAcompBandera('ambos')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
@@ -836,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792869301</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792871272</div>
 </footer>
 
   <script>
@@ -2355,7 +2355,7 @@ function _legacy_execAuth() {
     }
 
         function restablecerConfiguracionPorDefecto() {
-      // 1. Desarmar automático
+      // 1. Desarmar automático si estaba armado
       cerArmado = false;
       cerDisparoSenalesHecho = false;
       cerDisparoEjecutivaHecho = false;
@@ -2367,18 +2367,29 @@ function _legacy_execAuth() {
       }
       if (btnDetener) btnDetener.style.display = 'block';
 
-      // 2. Situación del buque: Buque en Puerto (por defecto)
+      // 2. Buque en puerto
       setSituacionBuque('puerto');
 
-      // 3. Modo de hora: Hora Manual (por defecto)
+      // 3. Modo hora manual
       setFuenteOcaso('manual');
 
-      // 4. Opciones ceremoniales por defecto
-      setAcompBandera('himno');
-      setModalidadOracion('leida');
+      // 4. Activación manual
+      setModoDisparo('manual');
+
+      // 5. Sonido sólo chifle
+      setAcompBandera('chifle');
+
+      // 6. Sin países extranjeros
       limpiarPaisesCortesia();
 
-      // 5. Refrescar display y reloj
+      // 7. Oración por voz leída
+      setModalidadOracion('leida');
+
+      // 8. Buenas noches marcadas
+      const chkBN = document.getElementById('chkBuenasNoches');
+      if (chkBN) chkBN.checked = true;
+
+      // 9. Refrescar display y reloj
       actualizarHoraObjetivo();
       refrescarPosicionYHoraEnPantalla();
       actualizarTickReloj();
@@ -2628,6 +2639,7 @@ function _legacy_execAuth() {
 
     window.addEventListener('DOMContentLoaded', () => {
       try { renderAuthList(); } catch(e){}
+      try { restablecerConfiguracionPorDefecto(); } catch(e){}
       try {
         actualizarHoraObjetivo();
         refrescarPosicionYHoraEnPantalla();
