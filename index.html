@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792829129';
+    const APP_VERSION = 'v1792829724';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -727,7 +727,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792829129</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792829724</div>
 </footer>
 
   <script>
@@ -884,6 +884,12 @@
       const targetBtn = document.getElementById(`nav${viewId.charAt(0).toUpperCase() + viewId.slice(1)}`);
       if (targetView) targetView.classList.add('active');
       if (targetBtn) targetBtn.classList.add('active');
+
+      if (viewId === 'izado') {
+        actualizarHoraObjetivo();
+        actualizarTickReloj();
+        iniciarRelojCeremonial();
+      }
     }
 
     // Legacy
@@ -1901,27 +1907,34 @@ function _legacy_execAuth() {
 
     // RELOJ CONTINUO Y EVALUACIÓN DE DISPARO
     function actualizarTickReloj() {
-      // Leer la hora objetivo directamente del input correspondiente en tiempo real
+      // 1. Obtener la hora objetivo del input activo
+      let horaStr = '';
       if (cerModo === 'izado') {
         const inp = document.getElementById('inputHoraIzado');
-        if (inp && inp.value) cerHoraObjetivo = inp.value;
+        if (inp && inp.value) horaStr = inp.value;
       } else {
         if (cerFuenteOcaso === 'manual') {
           const inp = document.getElementById('inputHoraArriadoManual');
-          if (inp && inp.value) cerHoraObjetivo = inp.value;
+          if (inp && inp.value) horaStr = inp.value;
+        } else {
+          horaStr = cerHoraObjetivo;
         }
       }
 
-      if (!cerHoraObjetivo || !cerHoraObjetivo.includes(':')) return;
+      if (!horaStr || !horaStr.includes(':')) {
+        horaStr = (cerModo === 'izado' ? '08:00' : '19:30');
+      }
+      cerHoraObjetivo = horaStr;
 
+      // 2. Calcular diferencia en segundos
       const now = new Date();
-      const parts = cerHoraObjetivo.split(':').map(Number);
+      const parts = horaStr.split(':').map(Number);
       const objH = parts[0];
       const objM = parts[1];
       const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), objH, objM, 0, 0);
 
       let diffMs = target.getTime() - now.getTime();
-      // Si la hora ya pasó hace más de 30 segundos, calcular cuenta atrás para mañana
+      // Si la hora ya pasó hace más de 30 segundos, calcular para el día siguiente
       if (diffMs < -30000) {
         target.setDate(target.getDate() + 1);
         diffMs = target.getTime() - now.getTime();
@@ -1932,20 +1945,21 @@ function _legacy_execAuth() {
       const mm = Math.floor((totalSec % 3600) / 60);
       const ss = totalSec % 60;
 
+      const fmt = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
       const lblCd = document.getElementById('lblCuentaAtras');
       if (lblCd) {
-        lblCd.textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+        lblCd.textContent = fmt;
       }
 
-      // EVALUACIÓN DE DISPARO AUTOMÁTICO (SI ESTÁ ARMADO)
+      // 3. Disparo de eventos en modo automático
       if (cerArmado && cerModoDisparo === 'auto') {
-        // A T-5 min exactos (entre 290s y 300s)
+        // A T-5 min (300 segundos, margen 295-300)
         if (totalSec <= 300 && totalSec > 290 && !cerDisparoSenalesHecho) {
           cerDisparoSenalesHecho = true;
-          ejecutarPasoManual(1); // Voz Señales a la bandera
+          ejecutarPasoManual(1);
         }
 
-        // A T-0 exactos (entre 0s y 3s)
+        // A T-0 exactos
         if (totalSec <= 0 && !cerDisparoEjecutivaHecho) {
           cerDisparoEjecutivaHecho = true;
           iniciarSecuenciaCompletaAuto();
@@ -1955,24 +1969,28 @@ function _legacy_execAuth() {
 
     function iniciarRelojCeremonial() {
       actualizarTickReloj();
-      setInterval(actualizarTickReloj, 1000);
+      if (!window.__relojInterval) {
+        window.__relojInterval = setInterval(actualizarTickReloj, 1000);
+      }
     }
 
     function toggleArmadoCeremonial() {
       cerArmado = !cerArmado;
       const btn = document.getElementById('btnArmarCeremonial');
+      const btnDetener = document.getElementById('btnDetenerSecuenciaGeneral');
+
       if (btn) {
         if (cerArmado) {
           cerDisparoSenalesHecho = false;
           cerDisparoEjecutivaHecho = false;
           btn.className = 'action-btn danger';
           btn.innerHTML = '<span>🛡️ SECUENCIA AUTOMÁTICA ACTIVA — TOCAR PARA DESACTIVAR</span>';
+          if (btnDetener) btnDetener.style.display = 'none'; // OCULTAR SEGUNDO BOTÓN ROJO
           actualizarStatus(`🛡️ Ceremonial ${cerModo.toUpperCase()} armado para las ${cerHoraObjetivo}h`);
         } else {
           btn.className = 'action-btn primary';
           btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
-      const btnDetener = document.getElementById('btnDetenerSecuenciaGeneral');
-      if (btnDetener) btnDetener.style.display = 'block';
+          if (btnDetener) btnDetener.style.display = 'block'; // RESTAURAR BOTÓN
           cerrarStatus();
         }
       }
@@ -1983,16 +2001,15 @@ function _legacy_execAuth() {
       cerDisparoSenalesHecho = false;
       cerDisparoEjecutivaHecho = false;
       const btn = document.getElementById('btnArmarCeremonial');
+      const btnDetener = document.getElementById('btnDetenerSecuenciaGeneral');
       if (btn) {
         btn.className = 'action-btn primary';
         btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
-      const btnDetener = document.getElementById('btnDetenerSecuenciaGeneral');
-      if (btnDetener) btnDetener.style.display = 'block';
       }
+      if (btnDetener) btnDetener.style.display = 'block';
       stopAllAudio();
     }
 
-    // SECUENCIA AUTOMÁTICA COMPLETA AL LLEGAR A T-0
     function iniciarSecuenciaCompletaAuto() {
       // 1. Voz "A la bandera frente a popa, presenten"
       reproducirAudioCeremonialPaso(document.getElementById('audAlabandera'), '2. 🗣️ A la bandera frente a popa, presenten', () => {
@@ -2153,12 +2170,16 @@ function _legacy_execAuth() {
     }
 
     // Inicializar lista al arrancar
-    // Inicializar aplicaciones y reloj ceremonial al arrancar
+    // Inicializar aplicaciones y reloj ceremonial al arrancar (v1792829724)
     renderAuthList();
     actualizarHoraObjetivo();
     iniciarRelojCeremonial();
-    // Ejecutar un primer ciclo de reloj inmediatamente sin esperar 1 segundo
     actualizarTickReloj();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      actualizarHoraObjetivo();
+      iniciarRelojCeremonial();
+    });
 
   </script>
 </body>
