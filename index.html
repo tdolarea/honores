@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792836604';
+    const APP_VERSION = 'v1792837310';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -727,7 +727,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792836604</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792837310</div>
 </footer>
 
   <script>
@@ -2063,17 +2063,22 @@ function _legacy_execAuth() {
       }
     }
 
-    function reproducirAudioCeremonialPaso(elAudio, etiqueta, onFin) {
+    function reproducirAudioCeremonialPaso(elAudio, etiqueta, onFin, maxDuracionSec) {
       if (!elAudio) {
         if (onFin) onFin();
         return;
       }
       actualizarStatus(etiqueta);
       let cerrado = false;
+      let timerCorte = null;
 
       function avanzar() {
         if (cerrado) return;
         cerrado = true;
+        if (timerCorte) clearTimeout(timerCorte);
+        try { elAudio.pause(); } catch(e) {}
+        elAudio.onended = null;
+        elAudio.ontimeupdate = null;
         if (onFin) {
           setTimeout(onFin, 1000); // Pausa solemne de 1 segundo entre pasos
         }
@@ -2086,16 +2091,32 @@ function _legacy_execAuth() {
 
       elAudio.onended = avanzar;
 
+      // Si se define un corte máximo (para eliminar el remanente de chifle al final de la pista)
+      if (maxDuracionSec && maxDuracionSec > 0) {
+        elAudio.ontimeupdate = () => {
+          if (elAudio.currentTime >= maxDuracionSec) {
+            avanzar();
+          }
+        };
+        timerCorte = setTimeout(() => {
+          avanzar();
+        }, (maxDuracionSec + 0.3) * 1000);
+      }
+
       let p = elAudio.play();
       if (p !== undefined) {
         p.catch(e => {
           console.warn('Audio play err:', etiqueta, e);
-          // Si falló el play directo por política de navegador o carga, intentar con audGeneral
           try {
             audGeneral.src = elAudio.src || elAudio.currentSrc;
             audGeneral.currentTime = 0;
             audGeneral.muted = false;
             audGeneral.onended = avanzar;
+            if (maxDuracionSec && maxDuracionSec > 0) {
+              audGeneral.ontimeupdate = () => {
+                if (audGeneral.currentTime >= maxDuracionSec) avanzar();
+              };
+            }
             audGeneral.play().catch(err2 => {
               console.warn('Fallback audGeneral err:', err2);
               avanzar();
@@ -2111,9 +2132,10 @@ function _legacy_execAuth() {
       stopAllAudio();
 
       // 1. Si es SOLO CHIFLE:
+      // chiflecompletobanderalargo dura 49.5s; los últimos 8s son la retirada añadida. Cortamos a los 41.5s:
       if (cerAcompBandera === 'chifle') {
         const chifle = document.getElementById('audChifleLargo');
-        reproducirAudioCeremonialPaso(chifle, '3. 📢 Pitada de Chifle', callbackFin);
+        reproducirAudioCeremonialPaso(chifle, '3. 📢 Pitada de Chifle', callbackFin, 41.5);
         return;
       }
 
@@ -2134,20 +2156,42 @@ function _legacy_execAuth() {
       cerPaisesCortesia.forEach(pNombre => {
         const item = ANTHEMS_CATALOG.find(a => a.name.toLowerCase() === pNombre.toLowerCase());
         if (item) {
-          cola.push({ url: item.url, label: 'CORTESÍA: ' + item.name });
+          cola.push({ url: item.url, label: 'CORTESÍA: ' + item.name, maxSec: 0 });
         }
       });
 
       // Himno Nacional de España (breve)
+      // Espania_corto.mp3 dura 35.1s; la música termina en 27.2s y luego tiene el chifle añadido. Cortamos a los 27.2s exactos:
       let elEsp = document.getElementById('audHimnoCorto');
-      if (!elEsp) {
-        elEsp = new Audio('audio/Espania_corto.mp3');
-      } else {
-        elEsp.src = 'audio/Espania_corto.mp3';
-      }
-      cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA (breve)' });
+      if (!elEsp) elEsp = new Audio('audio/Espania_corto.mp3');
+      else elEsp.src = 'audio/Espania_corto.mp3';
+
+      cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA (breve)', maxSec: 27.2 });
 
       reproducirColaBanderaSecuencial(cola, callbackFin);
+    }
+
+    function reproducirColaBanderaSecuencial(cola, onFin) {
+      if (!cola || cola.length === 0) {
+        if (onFin) onFin();
+        return;
+      }
+      const item = cola.shift();
+      actualizarStatus('3. 🇪🇸 ' + item.label);
+
+      let audioEl = item.el;
+      if (!audioEl && item.url) {
+        audioEl = document.getElementById('audHimnoExtranjero');
+        if (audioEl) audioEl.src = item.url;
+      }
+
+      reproducirAudioCeremonialPaso(audioEl, '3. 🇪🇸 ' + item.label, () => {
+        if (cola.length > 0) {
+          setTimeout(() => reproducirColaBanderaSecuencial(cola, onFin), 1200);
+        } else {
+          if (onFin) onFin();
+        }
+      }, item.maxSec || 0);
     }
 
     function reproducirColaBanderaSecuencial(cola, onFin) {
