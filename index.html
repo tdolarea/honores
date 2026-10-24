@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792858939';
+    const APP_VERSION = 'v1792859716';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -835,7 +835,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792858939</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792859716</div>
 </footer>
 
   <script>
@@ -2241,7 +2241,7 @@ function _legacy_execAuth() {
 
     // RELOJ CONTINUO Y EVALUACIÓN DE DISPARO
     function actualizarTickReloj() {
-      // 1. Obtener la hora objetivo del input activo
+      // 1. Obtener la hora objetivo limpia
       let horaStr = '';
       if (cerModo === 'izado') {
         const inp = document.getElementById('inputHoraIzado');
@@ -2258,13 +2258,18 @@ function _legacy_execAuth() {
       if (!horaStr || !horaStr.includes(':')) {
         horaStr = (cerModo === 'izado' ? '08:00' : '19:30');
       }
-      cerHoraObjetivo = horaStr;
+
+      // Extraer estrictamente solo los dígitos de HH y MM para evitar colisiones con letras de huso
+      const match = horaStr.match(/(\d{1,2}):(\d{2})/);
+      if (!match) {
+        return;
+      }
+      const objH = parseInt(match[1], 10);
+      const objM = parseInt(match[2], 10);
+      cerHoraObjetivo = `${String(objH).padStart(2,'0')}:${String(objM).padStart(2,'0')}`;
 
       // 2. Calcular diferencia en segundos
       const now = new Date();
-      const parts = horaStr.split(':').map(Number);
-      const objH = parts[0];
-      const objM = parts[1];
       const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), objH, objM, 0, 0);
 
       let diffMs = target.getTime() - now.getTime();
@@ -2394,6 +2399,199 @@ function _legacy_execAuth() {
       });
     }
 
-    </script>
+    
+
+    // ==========================================
+    // REPRODUCTOR Y CONTROL DE AUDIO CEREMONIAL ESTÁTICO (DOM PRECARGADO)
+    // ==========================================
+    function pararAudioCeremonial(elExcluido) {
+      const ids = [
+        'audIzado1','audIzado2','audIzado3Himno','audIzado3Chifle','audIzado4','audIzado5',
+        'audArriado1','audArriado2','audArriado3Himno','audArriado3Chifle','audArriado4','audArriado5',
+        'audArriado6Leida','audArriado6Cantada','audArriado6Corneta','audArriado7'
+      ];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el !== elExcluido) {
+          try {
+            el.pause();
+            el.currentTime = 0;
+            el.onended = null;
+          } catch(e) {}
+        }
+      });
+    }
+
+    function reproducirElementoCeremonial(elAudio, etiqueta, onFin, elExcluido) {
+      if (!elAudio) {
+        if (onFin) onFin();
+        return;
+      }
+      pararAudioCeremonial(elExcluido);
+      actualizarStatus(etiqueta);
+
+      let finalizado = false;
+      function avanzar() {
+        if (finalizado) return;
+        finalizado = true;
+        elAudio.onended = null;
+        if (onFin) {
+          setTimeout(onFin, 1000); // 1 segundo de pausa solemne entre fases
+        }
+      }
+
+      try {
+        elAudio.currentTime = 0;
+        elAudio.muted = false;
+      } catch(e) {}
+
+      elAudio.onended = avanzar;
+
+      let p = elAudio.play();
+      if (p !== undefined) {
+        p.catch(err => {
+          console.warn('Ceremonial play err:', etiqueta, err);
+          avanzar();
+        });
+      }
+    }
+
+    // BOTONES DE MANDO MANUAL PASO A PASO
+    function ejecutarPasoManual(paso) {
+      if (paso === 1) {
+        const el = (cerModo === 'izado') ? document.getElementById('audIzado1') : document.getElementById('audArriado1');
+        reproducirElementoCeremonial(el, '1. 🗣️ Voz: "Señales a la bandera" (T-5 min)');
+      } else if (paso === 2) {
+        const el = (cerModo === 'izado') ? document.getElementById('audIzado2') : document.getElementById('audArriado2');
+        reproducirElementoCeremonial(el, '2. 🗣️ Voz: "A la bandera frente a popa, presenten"');
+      } else if (paso === 3) {
+        ejecutarMovimientoBanderaCompleto();
+      } else if (paso === 4) {
+        const el = (cerModo === 'izado') ? document.getElementById('audIzado4') : document.getElementById('audArriado4');
+        reproducirElementoCeremonial(el, '4. 🗣️ Voz: "Retirada de honores"');
+      } else if (paso === 5) {
+        const el = (cerModo === 'izado') ? document.getElementById('audIzado5') : document.getElementById('audArriado5');
+        reproducirElementoCeremonial(el, '5. 📢 Chifle: Retirada de honores');
+      } else if (paso === 6) {
+        ejecutarOracion();
+      } else if (paso === 7) {
+        reproducirElementoCeremonial(document.getElementById('audArriado7'), '7. 🌙 "Dotación, buenas noches"');
+      }
+    }
+
+    // PASO 3: MOVIMIENTO DE BANDERA (HIMNO / CHIFLE / AMBOS)
+    function ejecutarMovimientoBanderaCompleto(callbackFin) {
+      pararAudioCeremonial();
+
+      const elHimno = (cerModo === 'izado') ? document.getElementById('audIzado3Himno') : document.getElementById('audArriado3Himno');
+      const elChifle = (cerModo === 'izado') ? document.getElementById('audIzado3Chifle') : document.getElementById('audArriado3Chifle');
+
+      // Caso 1: Solo chifle
+      if (cerAcompBandera === 'chifle') {
+        reproducirElementoCeremonial(elChifle, '3. 📢 Pitada de Chifle', callbackFin);
+        return;
+      }
+
+      // Caso 2: Chifle + Himno simultáneos
+      if (cerAcompBandera === 'ambos') {
+        if (elChifle) {
+          try {
+            elChifle.currentTime = 0;
+            elChifle.muted = false;
+            let pChifle = elChifle.play();
+            if (pChifle !== undefined) {
+              pChifle.catch(e => console.warn('Chifle simultáneo warning:', e));
+            }
+          } catch(e) {}
+        }
+      }
+
+      // Caso 3: Cola de himnos (países de cortesía si los hay + Himno Nacional de España de último)
+      let cola = [];
+      cerPaisesCortesia.forEach(pNombre => {
+        const item = ANTHEMS_CATALOG.find(a => a.name.toLowerCase() === pNombre.toLowerCase());
+        if (item) {
+          cola.push({ url: item.url, label: 'CORTESÍA: ' + item.name });
+        }
+      });
+
+      // Himno Nacional de España breve oficial (elHimno del DOM)
+      cola.push({ el: elHimno, label: 'HIMNO NACIONAL DE ESPAÑA' });
+
+      function procesarCola() {
+        if (cola.length === 0) {
+          if (callbackFin) callbackFin();
+          return;
+        }
+        const item = cola.shift();
+        if (item.el) {
+          // Si estamos en modo ambos, no matar al chifle al lanzar el himno:
+          reproducirElementoCeremonial(item.el, '3. 🇪🇸 ' + item.label, () => {
+            if (cola.length > 0) setTimeout(procesarCola, 1200);
+            else if (callbackFin) callbackFin();
+          }, (cerAcompBandera === 'ambos') ? elChifle : null);
+        } else if (item.url) {
+          const ext = document.getElementById('audHimnoExtranjero');
+          if (ext) {
+            ext.src = item.url;
+            reproducirElementoCeremonial(ext, '3. 🇪🇸 ' + item.label, () => {
+              if (cola.length > 0) setTimeout(procesarCola, 1200);
+              else if (callbackFin) callbackFin();
+            }, (cerAcompBandera === 'ambos') ? elChifle : null);
+          } else {
+            procesarCola();
+          }
+        }
+      }
+
+      procesarCola();
+    }
+
+    // PASO 6: ORACIÓN DE LA NOCHE (ARRIADO)
+    function ejecutarOracion(callbackFin) {
+      let elOra = null;
+      let lbl = 'Oración de la Noche';
+      if (cerModalidadOracion === 'leida') {
+        elOra = document.getElementById('audArriado6Leida');
+        lbl = '6. 📖 Oración de la Noche (Leída)';
+      } else if (cerModalidadOracion === 'cantada') {
+        elOra = document.getElementById('audArriado6Cantada');
+        lbl = '6. 🎶 Oración Marinera (Cantada)';
+      } else if (cerModalidadOracion === 'corneta') {
+        elOra = document.getElementById('audArriado6Corneta');
+        lbl = '6. 🎺 Toque de Oración a Corneta';
+      }
+
+      if (elOra) {
+        reproducirElementoCeremonial(elOra, lbl, callbackFin);
+      } else {
+        if (callbackFin) callbackFin();
+      }
+    }
+
+    // ==========================================
+    // INICIALIZACIÓN GENERAL DE LA APLICACIÓN AL ARRANCAR (SIN DEPENDER DE EVENTOS EXTERNOS)
+    // ==========================================
+    try {
+      renderAuthList();
+    } catch(e) { console.error('Error renderAuthList init:', e); }
+
+    try {
+      actualizarHoraObjetivo();
+      refrescarPosicionYHoraEnPantalla();
+      iniciarRelojCeremonial();
+      actualizarTickReloj();
+    } catch(e) { console.error('Error reloj init:', e); }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      try { renderAuthList(); } catch(e){}
+      try {
+        actualizarHoraObjetivo();
+        refrescarPosicionYHoraEnPantalla();
+        iniciarRelojCeremonial();
+      } catch(e){}
+    });
+
+  </script>
 </body>
 </html>
