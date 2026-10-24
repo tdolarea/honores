@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792857635';
+    const APP_VERSION = 'v1792857886';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -520,34 +520,55 @@
 
           <!-- MODO ARRIADO: MANUAL / LOCALIDAD / GPS -->
           <div id="boxHoraArriado" style="display:none; flex-direction:column; gap:10px;">
-            <!-- SELECTOR DE FUENTE DE HORA DEL OCASO -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
-              <button type="button" class="action-btn primary" id="btnFuenteManual" onclick="setFuenteOcaso('manual')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
-                📝 Orden Diaria
-              </button>
-              <button type="button" class="action-btn" id="btnFuenteBase" onclick="setFuenteOcaso('base')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
-                ⚓ Por Base
-              </button>
-              <button type="button" class="action-btn" id="btnFuenteGps" onclick="setFuenteOcaso('gps')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
-                📡 Por GPS
-              </button>
-            </div>
-
-            <!-- ENTRADA MANUAL / ORDEN DIARIA -->
-            <div id="subBoxManual" style="display:flex; align-items:center; justify-content:space-between;">
-              <span style="font-size:12px; color:#cbd5e1;">Hora fijada por Orden Diaria:</span>
-              <input type="time" id="inputHoraArriadoManual" value="19:30" 
-                style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:15px; font-weight:800; padding:5px 8px; text-align:center;"
-                oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
-            </div>
-
-            <!-- POR BASE NAVAL -->
-            <div id="subBoxBase" style="display:none; flex-direction:column; gap:6px;">
+            
+            <!-- VENTANA / CAJA DEDICADA DE HUSO HORARIO (SOLICITUD EXPLÍCITA) -->
+            <div style="background:#070d1e; border:1.5px solid #38bdf8; border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:12px; color:#cbd5e1;">Seleccionar Base Naval:</span>
-                <span style="font-size:13px; font-weight:900; color:#38bdf8;" id="lblOcasoCalculadoBase">--:--</span>
+                <span style="font-size:11.5px; font-weight:800; color:#38bdf8; display:flex; align-items:center; gap:5px;">
+                  🌐 HUSO HORARIO DE A BORDO (ZONA MILITAR)
+                </span>
+                <span style="font-size:11px; font-weight:800; color:#fbbf24;" id="lblHusoActivoBadge">UTC+2 (Bravo · B)</span>
               </div>
-              <select id="selBaseNaval" style="width:100%; background:#0b152d; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; padding:6px 8px;" onchange="calcularOcasoBase()">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                <span style="font-size:11px; color:#cbd5e1;">Seleccione huso horario del reloj del buque:</span>
+                <select id="selHusoHorario" style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12.5px; font-weight:800; padding:6px 8px;" onchange="cambiarHusoHorario(this.value)">
+                  <option value="auto">📱 Hora del Dispositivo (Auto)</option>
+                  <option value="0">UTC +0 (Zulu · Z · GMT)</option>
+                  <option value="1">UTC +1 (Alfa · A · Invierno Península)</option>
+                  <option value="2" selected>UTC +2 (Bravo · B · Verano Península)</option>
+                  <option value="3">UTC +3 (Charlie · C · Mediterráneo Oriental)</option>
+                  <option value="4">UTC +4 (Delta · D · Golfo Pérsico)</option>
+                  <option value="-1">UTC -1 (November · N · Invierno Canarias)</option>
+                  <option value="-2">UTC -2 (Oscar · O)</option>
+                  <option value="-3">UTC -3 (Papa · P)</option>
+                  <option value="-4">UTC -4 (Quebec · Q · Atlántico Occidental)</option>
+                  <option value="-5">UTC -5 (Romeo · R · Caribe / Colombia)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="font-size:11.5px; font-weight:800; color:#cbd5e1; margin-top:2px;">POSICIÓN PARA EL CÁLCULO DEL OCASO:</div>
+            
+            <!-- SELECTOR DE FUENTE DE POSICIÓN: 4 BOTONES -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+              <button type="button" class="action-btn primary" id="btnFuenteBase" onclick="setFuenteOcaso('base')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                ⚓ Localidad / Base
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteGps" onclick="setFuenteOcaso('gps')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                📡 Posición GPS
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteCoordManual" onclick="setFuenteOcaso('coord')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                ✏️ Coord. Manuales
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteManual" onclick="setFuenteOcaso('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                📝 Hora Orden Diaria
+              </button>
+            </div>
+
+            <!-- OP 1: POR BASE NAVAL / LOCALIDAD -->
+            <div id="subBoxBase" style="display:flex; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Seleccionar Base Naval / Localidad:</div>
+              <select id="selBaseNaval" style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12.5px; font-weight:700; padding:8px;" onchange="calcularOcasoBase()">
                 <option value="Rota">Base Naval de Rota (Cádiz)</option>
                 <option value="Ferrol">Arsenal Militar de Ferrol (A Coruña)</option>
                 <option value="Cartagena">Arsenal Militar de Cartagena (Murcia)</option>
@@ -555,31 +576,81 @@
                 <option value="Las Palmas">Arsenal Militar de Las Palmas (Canarias)</option>
                 <option value="Marin">Escuela Naval Militar de Marín (Pontevedra)</option>
                 <option value="Mahon">Estación Naval de Mahón (Baleares)</option>
+                <option value="Ceuta">Comandancia Naval de Ceuta</option>
+                <option value="Melilla">Comandancia Naval de Melilla</option>
+                <option value="Malaga">Puerto de Málaga</option>
+                <option value="Alicante">Puerto de Alicante</option>
+                <option value="Valencia">Comandancia Naval de Valencia</option>
+                <option value="Barcelona">Comandancia Naval de Barcelona</option>
+                <option value="Palma">Comandancia Naval de Palma de Mallorca</option>
               </select>
             </div>
 
-            <!-- POR GPS EN LA MAR -->
-            <div id="subBoxGps" style="display:none; flex-direction:column; gap:6px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:12px; color:#cbd5e1;">Posición real del buque:</span>
-                <span style="font-size:13px; font-weight:900; color:#38bdf8;" id="lblOcasoCalculadoGps">--:--</span>
-              </div>
-              <button type="button" class="action-btn" onclick="obtenerGpsYCalcularOcaso()" style="justify-content:center; font-size:11.5px; padding:6px;">
+            <!-- OP 2: POR GPS EN LA MAR -->
+            <div id="subBoxGps" style="display:none; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Lectura GPS Satelital del Buque:</div>
+              <button type="button" class="action-btn primary" onclick="obtenerGpsYCalcularOcaso()" style="justify-content:center; font-size:12px; padding:10px; font-weight:800;">
                 <span>📡 Leer Coordenadas GPS y Calcular Ocaso</span>
               </button>
-              <div style="font-size:10px; color:#94a3b8;" id="lblCoordenadasGps">Coordenadas no leídas</div>
+              <div style="font-size:11px; color:#94a3b8; text-align:center;" id="lblCoordenadasGps">Coordenadas no leídas aún</div>
+            </div>
+
+            <!-- OP 3: COORDENADAS MANUALES (LATITUD Y LONGITUD) -->
+            <div id="subBoxCoord" style="display:none; flex-direction:column; gap:8px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Introducir Coordenadas Manuales:</div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div>
+                  <div style="font-size:10.5px; color:#94a3b8; margin-bottom:2px;">Latitud (° N / -S):</div>
+                  <input type="number" step="0.0001" id="inputCoordLat" value="36.6200" placeholder="Ej: 36.6200"
+                    style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:14px; font-weight:800; padding:6px 8px; text-align:center;"
+                    oninput="calcularOcasoCoordManual()">
+                </div>
+                <div>
+                  <div style="font-size:10.5px; color:#94a3b8; margin-bottom:2px;">Longitud (° E / -W):</div>
+                  <input type="number" step="0.0001" id="inputCoordLon" value="-6.3500" placeholder="Ej: -6.3500"
+                    style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:14px; font-weight:800; padding:6px 8px; text-align:center;"
+                    oninput="calcularOcasoCoordManual()">
+                </div>
+              </div>
+              <div style="font-size:10px; color:#64748b; font-style:italic;">Formato decimal (ej. Rota: Lat 36.6200, Lon -6.3500).</div>
+            </div>
+
+            <!-- OP 4: ENTRADA DIRECTA POR ORDEN DIARIA -->
+            <div id="subBoxManual" style="display:none; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                  <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Hora fijada por Orden Diaria:</div>
+                  <div style="font-size:10px; color:#94a3b8;">Entrada horaria fija sin cálculo solar</div>
+                </div>
+                <input type="time" id="inputHoraArriadoManual" value="19:30" 
+                  style="background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:900; padding:6px 10px; text-align:center;"
+                  oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
+              </div>
             </div>
           </div>
 
-          <!-- LÍNEA DESTACADA: HORA EFECTIVA Y CUENTA ATRÁS -->
-          <div style="margin-top:12px; padding:10px; background:#0b152d; border:1px solid #1e3a8a; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;" id="lblTituloHoraEfectiva">🎯 HORA DEL ARRIADO:</div>
-              <div style="font-size:18px; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums;" id="lblHoraCeremonialDisplay">19:30h</div>
+          <!-- TARJETA DESTACADA EN PANTALLA: POSICIÓN Y HORA DEL ARRIADO -->
+          <div style="margin-top:12px; background:#0b152d; border:1.5px solid #1e3a8a; border-radius:8px; padding:12px;">
+            <!-- LÍNEA 1: POSICIÓN EN PANTALLA (SOLICITUD EXPLÍCITA) -->
+            <div id="rowPosicionPantalla" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid #1e293b; flex-wrap:wrap; gap:4px;">
+              <span style="font-size:11px; font-weight:800; color:#94a3b8; display:flex; align-items:center; gap:4px;">
+                📍 POSICIÓN EN PANTALLA:
+              </span>
+              <span style="font-size:12px; font-weight:900; color:#38bdf8; text-align:right;" id="lblPosicionDisplay">
+                36°37.2'N, 006°21.0'W · Base Naval de Rota
+              </span>
             </div>
-            <div style="text-align:right;">
-              <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">⏱️ TIEMPO RESTANTE:</div>
-              <div style="font-size:20px; font-weight:900; color:#38bdf8; font-variant-numeric:tabular-nums;" id="lblCuentaAtras">--:--:--</div>
+
+            <!-- LÍNEA 2: HORA DEL ARRIADO / OCASO Y CUENTA ATRÁS -->
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;" id="lblTituloHoraEfectiva">🎯 HORA DEL ARRIADO (OCASO):</div>
+                <div style="font-size:22px; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums;" id="lblHoraCeremonialDisplay">19:30h</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">⏱️ TIEMPO RESTANTE:</div>
+                <div style="font-size:22px; font-weight:900; color:#38bdf8; font-variant-numeric:tabular-nums;" id="lblCuentaAtras">--:--:--</div>
+              </div>
             </div>
           </div>
         </div>
@@ -743,7 +814,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792857635</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792857886</div>
 </footer>
 
   <script>
@@ -1664,14 +1735,63 @@ function _legacy_execAuth() {
     let cerDisparoEjecutivaHecho = false;
 
     const BASES_NAVALES = {
-      'Rota': { lat: 36.62, lon: -6.35, nombre: 'Base Naval de Rota (Cádiz)' },
-      'Ferrol': { lat: 43.48, lon: -8.23, nombre: 'Arsenal Militar de Ferrol (A Coruña)' },
-      'Cartagena': { lat: 37.60, lon: -0.98, nombre: 'Arsenal Militar de Cartagena (Murcia)' },
-      'San Fernando': { lat: 36.46, lon: -6.20, nombre: 'La Carraca / San Fernando (Cádiz)' },
-      'Las Palmas': { lat: 28.13, lon: -15.43, nombre: 'Arsenal Militar de Las Palmas' },
-      'Marin': { lat: 42.40, lon: -8.70, nombre: 'Escuela Naval Militar de Marín' },
-      'Mahon': { lat: 39.89, lon: 4.26, nombre: 'Estación Naval de Mahón' }
+      'Rota': { lat: 36.6200, lon: -6.3500, nombre: 'Base Naval de Rota (Cádiz)' },
+      'Ferrol': { lat: 43.4800, lon: -8.2300, nombre: 'Arsenal Militar de Ferrol (A Coruña)' },
+      'Cartagena': { lat: 37.6000, lon: -0.9800, nombre: 'Arsenal Militar de Cartagena (Murcia)' },
+      'San Fernando': { lat: 36.4600, lon: -6.2000, nombre: 'La Carraca / San Fernando (Cádiz)' },
+      'Las Palmas': { lat: 28.1300, lon: -15.4300, nombre: 'Arsenal Militar de Las Palmas' },
+      'Marin': { lat: 42.4000, lon: -8.7000, nombre: 'Escuela Naval Militar de Marín' },
+      'Mahon': { lat: 39.8900, lon: 4.2600, nombre: 'Estación Naval de Mahón (Baleares)' },
+      'Ceuta': { lat: 35.8894, lon: -5.3213, nombre: 'Comandancia Naval de Ceuta' },
+      'Melilla': { lat: 35.2923, lon: -2.9381, nombre: 'Comandancia Naval de Melilla' },
+      'Malaga': { lat: 36.7213, lon: -4.4214, nombre: 'Puerto de Málaga' },
+      'Alicante': { lat: 38.3452, lon: -0.4810, nombre: 'Puerto de Alicante' },
+      'Valencia': { lat: 39.4699, lon: -0.3763, nombre: 'Comandancia Naval de Valencia' },
+      'Barcelona': { lat: 41.3851, lon: 2.1734, nombre: 'Comandancia Naval de Barcelona' },
+      'Palma': { lat: 39.5696, lon: 2.6502, nombre: 'Comandancia Naval de Palma de Mallorca' }
     };
+
+    let cerPosicionLat = 36.6200;
+    let cerPosicionLon = -6.3500;
+    let cerPosicionNombre = 'Base Naval de Rota';
+    let cerHusoHorario = '2'; // Por defecto UTC+2 (Bravo) o el que el usuario elija
+
+    function formatearCoordNaval(lat, lon) {
+      const latHem = lat >= 0 ? 'N' : 'S';
+      const lonHem = lon >= 0 ? 'E' : 'W';
+      const latAbs = Math.abs(lat);
+      const lonAbs = Math.abs(lon);
+
+      const latGrad = Math.floor(latAbs);
+      const latMin = ((latAbs - latGrad) * 60).toFixed(1);
+
+      const lonGrad = Math.floor(lonAbs);
+      const lonMin = ((lonAbs - lonGrad) * 60).toFixed(1);
+
+      return `${String(latGrad).padStart(2, '0')}°${String(latMin).padStart(4, '0')}'${latHem}, ${String(lonGrad).padStart(3, '0')}°${String(lonMin).padStart(4, '0')}'${lonHem}`;
+    }
+
+    function cambiarHusoHorario(val) {
+      cerHusoHorario = val;
+      const bBadge = document.getElementById('lblHusoActivoBadge');
+      if (bBadge) {
+        if (val === 'auto') bBadge.textContent = 'Dispositivo (Auto)';
+        else if (val === '0') bBadge.textContent = 'UTC+0 (Zulu · Z)';
+        else if (val === '1') bBadge.textContent = 'UTC+1 (Alfa · A)';
+        else if (val === '2') bBadge.textContent = 'UTC+2 (Bravo · B)';
+        else if (val === '3') bBadge.textContent = 'UTC+3 (Charlie · C)';
+        else if (val === '4') bBadge.textContent = 'UTC+4 (Delta · D)';
+        else if (val === '-1') bBadge.textContent = 'UTC-1 (November · N)';
+        else bBadge.textContent = (val >= 0 ? `UTC+${val}` : `UTC${val}`);
+      }
+
+      if (cerFuenteOcaso === 'base') calcularOcasoBase();
+      else if (cerFuenteOcaso === 'coord') calcularOcasoCoordManual();
+      else if (cerFuenteOcaso === 'gps') {
+        const ocaso = calcularHoraOcaso(cerPosicionLat, cerPosicionLon);
+        if (ocaso) { cerHoraObjetivo = ocaso; refrescarPosicionYHoraEnPantalla(); actualizarTickReloj(); }
+      }
+    }
 
     function setCeremonialModo(modo) {
       cerModo = modo;
@@ -1712,25 +1832,36 @@ function _legacy_execAuth() {
 
     function setFuenteOcaso(fuente) {
       cerFuenteOcaso = fuente;
-      const btnM = document.getElementById('btnFuenteManual');
       const btnB = document.getElementById('btnFuenteBase');
       const btnG = document.getElementById('btnFuenteGps');
-      const boxM = document.getElementById('subBoxManual');
+      const btnC = document.getElementById('btnFuenteCoordManual');
+      const btnM = document.getElementById('btnFuenteManual');
+
       const boxB = document.getElementById('subBoxBase');
       const boxG = document.getElementById('subBoxGps');
+      const boxC = document.getElementById('subBoxCoord');
+      const boxM = document.getElementById('subBoxManual');
 
-      if (btnM) btnM.className = 'action-btn' + (fuente === 'manual' ? ' primary' : '');
       if (btnB) btnB.className = 'action-btn' + (fuente === 'base' ? ' primary' : '');
       if (btnG) btnG.className = 'action-btn' + (fuente === 'gps' ? ' primary' : '');
+      if (btnC) btnC.className = 'action-btn' + (fuente === 'coord' ? ' primary' : '');
+      if (btnM) btnM.className = 'action-btn' + (fuente === 'manual' ? ' primary' : '');
 
-      if (boxM) boxM.style.display = (fuente === 'manual' ? 'flex' : 'none');
       if (boxB) boxB.style.display = (fuente === 'base' ? 'flex' : 'none');
       if (boxG) boxG.style.display = (fuente === 'gps' ? 'flex' : 'none');
+      if (boxC) boxC.style.display = (fuente === 'coord' ? 'flex' : 'none');
+      if (boxM) boxM.style.display = (fuente === 'manual' ? 'flex' : 'none');
 
-      if (fuente === 'base') calcularOcasoBase();
-      else if (fuente === 'manual') actualizarHoraObjetivo();
+      if (fuente === 'base') {
+        calcularOcasoBase();
+      } else if (fuente === 'coord') {
+        calcularOcasoCoordManual();
+      } else if (fuente === 'manual') {
+        actualizarHoraObjetivo();
+      }
     }
 
+    // ALGORITMO ASTRONÓMICO OFICIAL NOAA / JEAN MEEUS (100% OFFLINE EN LOCAL)
     function calcularHoraOcaso(lat, lon, dateObj) {
       const d = dateObj || new Date();
       const start = new Date(d.getFullYear(), 0, 0);
@@ -1755,7 +1886,7 @@ function _legacy_execAuth() {
 
       const sinDec = 0.39782 * Math.sin(L * toRad);
       const cosDec = Math.cos(Math.asin(sinDec));
-      const zenith = 90.8333; // Ocaso oficial
+      const zenith = 90.8333; // Cenit oficial del ocaso solar (90°50')
       const cosH = (Math.cos(zenith * toRad) - (sinDec * Math.sin(lat * toRad))) / (cosDec * Math.cos(lat * toRad));
 
       if (cosH > 1 || cosH < -1) return null; // Noche polar o sol de medianoche
@@ -1765,9 +1896,15 @@ function _legacy_execAuth() {
       let UT = (T - lngHour) % 24;
       if (UT < 0) UT += 24;
 
-      // Convertir UT a hora local del navegador
-      const tzOffset = -d.getTimezoneOffset() / 60.0;
-      let localHours = (UT + tzOffset) % 24;
+      // Aplicar el huso horario elegido por el buque/usuario
+      let offsetHoras = 0;
+      if (cerHusoHorario === 'auto') {
+        offsetHoras = -d.getTimezoneOffset() / 60.0;
+      } else {
+        offsetHoras = parseFloat(cerHusoHorario);
+      }
+
+      let localHours = (UT + offsetHoras) % 24;
       if (localHours < 0) localHours += 24;
 
       const hh = Math.floor(localHours);
@@ -1778,24 +1915,43 @@ function _legacy_execAuth() {
     function calcularOcasoBase() {
       const sel = document.getElementById('selBaseNaval');
       const baseKey = sel ? sel.value : 'Rota';
-      const coords = BASES_NAVALES[baseKey] || BASES_NAVALES['Rota'];
-      const ocasoStr = calcularHoraOcaso(coords.lat, coords.lon);
-      const lbl = document.getElementById('lblOcasoCalculadoBase');
-      if (lbl && ocasoStr) lbl.textContent = ocasoStr + 'h';
+      const bObj = BASES_NAVALES[baseKey] || BASES_NAVALES['Rota'];
+      
+      cerPosicionLat = bObj.lat;
+      cerPosicionLon = bObj.lon;
+      cerPosicionNombre = bObj.nombre;
+
+      const ocasoStr = calcularHoraOcaso(cerPosicionLat, cerPosicionLon);
       if (ocasoStr) {
         cerHoraObjetivo = ocasoStr;
-        const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
-        if (lblDisp && cerModo === 'arriado') {
-          lblDisp.textContent = `${ocasoStr}h (${baseKey})`;
-          lblDisp.style.color = '#fbbf24';
+      }
+      refrescarPosicionYHoraEnPantalla();
+      actualizarTickReloj();
+    }
+
+    function calcularOcasoCoordManual() {
+      const inLat = document.getElementById('inputCoordLat');
+      const inLon = document.getElementById('inputCoordLon');
+      const latVal = inLat ? parseFloat(inLat.value) : 36.62;
+      const lonVal = inLon ? parseFloat(inLon.value) : -6.35;
+
+      if (!isNaN(latVal) && !isNaN(lonVal)) {
+        cerPosicionLat = latVal;
+        cerPosicionLon = lonVal;
+        cerPosicionNombre = 'Posición Manual';
+
+        const ocasoStr = calcularHoraOcaso(cerPosicionLat, cerPosicionLon);
+        if (ocasoStr) {
+          cerHoraObjetivo = ocasoStr;
         }
+        refrescarPosicionYHoraEnPantalla();
+        actualizarTickReloj();
       }
     }
 
     function obtenerGpsYCalcularOcaso() {
       const lblCoord = document.getElementById('lblCoordenadasGps');
-      const lblRes = document.getElementById('lblOcasoCalculadoGps');
-      if (lblCoord) lblCoord.textContent = 'Obteniendo posición GPS del buque...';
+      if (lblCoord) lblCoord.textContent = 'Obteniendo señal GPS del buque...';
 
       if (!('geolocation' in navigator)) {
         if (lblCoord) lblCoord.textContent = 'Geolocalización no soportada en este navegador.';
@@ -1805,54 +1961,81 @@ function _legacy_execAuth() {
       navigator.geolocation.getCurrentPosition(pos => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
-        if (lblCoord) lblCoord.textContent = `Lat: ${lat.toFixed(4)}°, Lon: ${lon.toFixed(4)}°`;
+        cerPosicionLat = lat;
+        cerPosicionLon = lon;
+        cerPosicionNombre = 'GPS Buque';
+
+        const navalFmt = formatearCoordNaval(lat, lon);
+        if (lblCoord) lblCoord.textContent = `Señal OK: ${navalFmt} (Lat ${lat.toFixed(4)}°, Lon ${lon.toFixed(4)}°)`;
+
         const ocaso = calcularHoraOcaso(lat, lon);
         if (ocaso) {
-          if (lblRes) lblRes.textContent = ocaso + 'h';
           cerHoraObjetivo = ocaso;
-          const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
-          if (lblDisp && cerModo === 'arriado') {
-            lblDisp.textContent = `${ocaso}h (GPS Buque)`;
-            lblDisp.style.color = '#fbbf24';
-          }
+          refrescarPosicionYHoraEnPantalla();
           actualizarTickReloj();
         }
       }, err => {
-        if (lblCoord) lblCoord.textContent = 'Error GPS: ' + err.message + '. Usando posición Rota por defecto.';
+        if (lblCoord) lblCoord.textContent = 'Error GPS: ' + err.message + '. Activando Base Rota por defecto.';
         calcularOcasoBase();
       }, { timeout: 10000, enableHighAccuracy: true });
     }
 
+    function refrescarPosicionYHoraEnPantalla() {
+      const lblPos = document.getElementById('lblPosicionDisplay');
+      const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
+      const rowPos = document.getElementById('rowPosicionPantalla');
+
+      if (cerModo === 'arriado') {
+        if (rowPos) rowPos.style.display = 'flex';
+        if (lblPos) {
+          if (cerFuenteOcaso === 'manual') {
+            lblPos.textContent = 'Hora manual por Orden Diaria';
+          } else {
+            const coordFmt = formatearCoordNaval(cerPosicionLat, cerPosicionLon);
+            lblPos.textContent = `${coordFmt} · ${cerPosicionNombre}`;
+          }
+        }
+        if (lblDisp) {
+          const husoTxt = (cerHusoHorario === 'auto') ? 'Auto' : (cerHusoHorario >= 0 ? `UTC+${cerHusoHorario}` : `UTC${cerHusoHorario}`);
+          const sufijo = (cerFuenteOcaso === 'manual') ? ' (Orden Diaria)' : ` (${cerPosicionNombre} · ${husoTxt})`;
+          lblDisp.textContent = `${cerHoraObjetivo}h${sufijo}`;
+          lblDisp.style.color = '#fbbf24';
+        }
+      } else {
+        // En modo Izado
+        if (rowPos) rowPos.style.display = 'none';
+        if (lblDisp) {
+          lblDisp.textContent = `${cerHoraObjetivo}h`;
+          lblDisp.style.color = '#38bdf8';
+        }
+      }
+    }
+
     function actualizarHoraObjetivo() {
-      let sufijoFuente = '';
       if (cerModo === 'izado') {
         const inp = document.getElementById('inputHoraIzado');
         cerHoraObjetivo = inp ? inp.value : '08:00';
-        sufijoFuente = '';
       } else {
         if (cerFuenteOcaso === 'manual') {
           const inp = document.getElementById('inputHoraArriadoManual');
           cerHoraObjetivo = inp ? inp.value : '19:30';
-          sufijoFuente = ' (Orden Diaria)';
         } else if (cerFuenteOcaso === 'base') {
           calcularOcasoBase();
-          const sel = document.getElementById('selBaseNaval');
-          sufijoFuente = sel ? ` (${sel.value})` : ' (Base)';
+          return;
+        } else if (cerFuenteOcaso === 'coord') {
+          calcularOcasoCoordManual();
+          return;
         } else if (cerFuenteOcaso === 'gps') {
-          sufijoFuente = ' (GPS)';
+          const ocaso = calcularHoraOcaso(cerPosicionLat, cerPosicionLon);
+          if (ocaso) cerHoraObjetivo = ocaso;
         }
       }
 
       const lblTit = document.getElementById('lblTituloHoraEfectiva');
-      const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
-
       if (lblTit) {
-        lblTit.textContent = (cerModo === 'izado') ? '🎯 HORA DEL IZADO:' : '🎯 HORA DEL ARRIADO:';
+        lblTit.textContent = (cerModo === 'izado') ? '🎯 HORA DEL IZADO:' : '🎯 HORA DEL ARRIADO (OCASO):';
       }
-      if (lblDisp) {
-        lblDisp.textContent = `${cerHoraObjetivo}h${sufijoFuente}`;
-        lblDisp.style.color = (cerModo === 'izado') ? '#38bdf8' : '#fbbf24';
-      }
+      refrescarPosicionYHoraEnPantalla();
     }
 
     function setModoDisparo(modo) {
