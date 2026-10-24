@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792858865';
+    const APP_VERSION = 'v1792858939';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -689,7 +689,7 @@
           <div style="font-size:12px; font-weight:800; color:#38bdf8;">⚙️ Opciones:</div>
 
           <!-- ACOMPAÑAMIENTO AL MOVER LA BANDERA -->
-          <div>
+          <div id="boxOpcionesAudioBandera">
             <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">Audio:</div>
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
               <button type="button" class="action-btn primary" id="btnAcompHimno" onclick="setAcompBandera('himno')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
@@ -705,7 +705,7 @@
           </div>
 
           <!-- BUQUES EXTRANJEROS EN PUERTO (CORTESÍA) -->
-          <div>
+          <div id="boxOpcionesBuquesCortesia">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Buques Extranjeros en Puerto:</div>
               <span style="font-size:10.5px; color:#38bdf8; cursor:pointer;" onclick="toggleSelectorCortesia()">[+ Añadir País]</span>
@@ -835,7 +835,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792858865</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792858939</div>
 </footer>
 
   <script>
@@ -1781,32 +1781,52 @@ function _legacy_execAuth() {
       const panelBandera = document.getElementById('panelPasosBandera');
       const btnIz = document.getElementById('btnModoIzado');
       const btnArr = document.getElementById('btnModoArriado');
-      const boxIz = document.getElementById('boxHoraIzado');
-      const boxArr = document.getElementById('boxHoraArriado');
+      
+      const boxAudio = document.getElementById('boxOpcionesAudioBandera');
+      const boxCortesia = document.getElementById('boxOpcionesBuquesCortesia');
+      const rowOra = document.getElementById('rowOpcionOracion');
+      const rowBN = document.getElementById('rowOpcionBuenasNoches');
 
       if (btnP) btnP.className = 'action-btn' + (sit === 'puerto' ? ' primary' : '');
       if (btnM) btnM.className = 'action-btn' + (sit === 'mar' ? ' primary' : '');
 
       if (sit === 'mar') {
+        // En la mar: la bandera permanece izada, no hay honores de izado/arriado
         if (panelBandera) panelBandera.style.display = 'none';
-        // En navegación el ceremonial aplicable al ocaso es la oración
+        if (boxAudio) boxAudio.style.display = 'none';
+        if (boxCortesia) boxCortesia.style.display = 'none';
+
+        // Ocultar pestaña de Izado y fijar Arriado/Ocaso
         setCeremonialModo('arriado');
         if (btnIz) btnIz.style.display = 'none';
         if (btnArr) btnArr.style.gridColumn = '1 / -1';
-        // En la mar, por defecto es posición GPS
+        
+        // En navegación se reza la oración y aviso dotación al ocaso
+        if (rowOra) rowOra.style.display = 'flex';
+        if (rowBN) rowBN.style.display = 'flex';
+
+        // En la mar, por defecto capturar GPS
         setFuenteOcaso('gps');
       } else {
+        // En puerto / fondeo: ceremonial de bandera activo
         if (panelBandera) panelBandera.style.display = 'flex';
+        if (boxAudio) boxAudio.style.display = 'block';
+        if (boxCortesia) boxCortesia.style.display = 'block';
+
         if (btnIz) btnIz.style.display = 'flex';
         if (btnArr) btnArr.style.gridColumn = 'auto';
+
+        // Restaurar visibilidad según el modo activo (izado vs arriado)
+        if (cerModo === 'izado') {
+          if (rowOra) rowOra.style.display = 'none';
+          if (rowBN) rowBN.style.display = 'none';
+        } else {
+          if (rowOra) rowOra.style.display = 'flex';
+          if (rowBN) rowBN.style.display = 'flex';
+        }
       }
       refrescarPosicionYHoraEnPantalla();
     }
-
-    let cerPosicionLat = 36.6200;
-    let cerPosicionLon = -6.3500;
-    let cerPosicionNombre = 'Base Naval de Rota';
-    let cerHusoHorario = '2'; // Por defecto UTC+2 (Bravo) o el que el usuario elija
 
     function formatearCoordNaval(lat, lon) {
       const latHem = lat >= 0 ? 'N' : 'S';
