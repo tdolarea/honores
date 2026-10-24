@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792825101';
+    const APP_VERSION = 'v1792825187';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -654,7 +654,7 @@
         <!-- PANEL DE EJECUCIÓN (AUTOMÁTICA O MANUAL) -->
         <div id="panelEjecucionAuto" style="margin-bottom:10px;">
           <button type="button" class="action-btn primary" id="btnArmarCeremonial" onclick="toggleArmadoCeremonial()" style="width:100%; justify-content:center; padding:12px; font-size:13px; font-weight:900;">
-            <span>🛡️ ARMAR Y ESPERAR HORA CEREMONIAL</span>
+            <span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>
           </button>
         </div>
 
@@ -727,7 +727,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792825101</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792825187</div>
 </footer>
 
   <script>
@@ -1948,11 +1948,11 @@ function _legacy_execAuth() {
           cerDisparoSenalesHecho = false;
           cerDisparoEjecutivaHecho = false;
           btn.className = 'action-btn danger';
-          btn.innerHTML = '<span>🛡️ CEREMONIAL ARMADO (ESPERANDO HORA) — TOCAR PARA DESARMAR</span>';
+          btn.innerHTML = '<span>🛡️ SECUENCIA AUTOMÁTICA ACTIVA — TOCAR PARA DESACTIVAR</span>';
           actualizarStatus(`🛡️ Ceremonial ${cerModo.toUpperCase()} armado para las ${cerHoraObjetivo}h`);
         } else {
           btn.className = 'action-btn primary';
-          btn.innerHTML = '<span>🛡️ ARMAR Y ESPERAR HORA CEREMONIAL</span>';
+          btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
           cerrarStatus();
         }
       }
@@ -1965,7 +1965,7 @@ function _legacy_execAuth() {
       const btn = document.getElementById('btnArmarCeremonial');
       if (btn) {
         btn.className = 'action-btn primary';
-        btn.innerHTML = '<span>🛡️ ARMAR Y ESPERAR HORA CEREMONIAL</span>';
+        btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
       }
       stopAllAudio();
     }
