@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792828581';
+    const APP_VERSION = 'v1792829129';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -503,7 +503,7 @@
             </div>
             <input type="time" id="inputHoraIzado" value="08:00" 
               style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:800; padding:6px 10px; text-align:center;"
-              onchange="actualizarHoraObjetivo()">
+              oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
           </div>
 
           <!-- MODO ARRIADO: MANUAL / LOCALIDAD / GPS -->
@@ -526,7 +526,7 @@
               <span style="font-size:12px; color:#cbd5e1;">Hora fijada por Orden Diaria:</span>
               <input type="time" id="inputHoraArriadoManual" value="19:30" 
                 style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:15px; font-weight:800; padding:5px 8px; text-align:center;"
-                onchange="actualizarHoraObjetivo()">
+                oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
             </div>
 
             <!-- POR BASE NAVAL -->
@@ -692,7 +692,7 @@
         </div>
 
         <!-- BOTÓN DE PARADA GENERAL -->
-        <button type="button" class="action-btn danger" onclick="cancelarCeremonialIzado()" style="width:100%; justify-content:center; padding:8px; font-size:11px; margin-top:4px;">
+        <button type="button" class="action-btn danger" id="btnDetenerSecuenciaGeneral" onclick="cancelarCeremonialIzado()" style="width:100%; justify-content:center; padding:8px; font-size:11px; margin-top:4px;">
           <span>⏹️ DETENER SECUENCIA</span>
         </button>
       </div>
@@ -727,7 +727,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792828581</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792829129</div>
 </footer>
 
   <script>
@@ -1128,8 +1128,6 @@ function _legacy_execAuth() {
       document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
       if (event && event.target) event.target.classList.add('active');
       renderAuthList();
-    actualizarHoraObjetivo();
-    iniciarRelojCeremonial();
     }
 
     function seleccionarPosicionArma(pos) {
@@ -1902,44 +1900,62 @@ function _legacy_execAuth() {
     }
 
     // RELOJ CONTINUO Y EVALUACIÓN DE DISPARO
+    function actualizarTickReloj() {
+      // Leer la hora objetivo directamente del input correspondiente en tiempo real
+      if (cerModo === 'izado') {
+        const inp = document.getElementById('inputHoraIzado');
+        if (inp && inp.value) cerHoraObjetivo = inp.value;
+      } else {
+        if (cerFuenteOcaso === 'manual') {
+          const inp = document.getElementById('inputHoraArriadoManual');
+          if (inp && inp.value) cerHoraObjetivo = inp.value;
+        }
+      }
+
+      if (!cerHoraObjetivo || !cerHoraObjetivo.includes(':')) return;
+
+      const now = new Date();
+      const parts = cerHoraObjetivo.split(':').map(Number);
+      const objH = parts[0];
+      const objM = parts[1];
+      const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), objH, objM, 0, 0);
+
+      let diffMs = target.getTime() - now.getTime();
+      // Si la hora ya pasó hace más de 30 segundos, calcular cuenta atrás para mañana
+      if (diffMs < -30000) {
+        target.setDate(target.getDate() + 1);
+        diffMs = target.getTime() - now.getTime();
+      }
+
+      const totalSec = Math.max(0, Math.floor(diffMs / 1000));
+      const hh = Math.floor(totalSec / 3600);
+      const mm = Math.floor((totalSec % 3600) / 60);
+      const ss = totalSec % 60;
+
+      const lblCd = document.getElementById('lblCuentaAtras');
+      if (lblCd) {
+        lblCd.textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+      }
+
+      // EVALUACIÓN DE DISPARO AUTOMÁTICO (SI ESTÁ ARMADO)
+      if (cerArmado && cerModoDisparo === 'auto') {
+        // A T-5 min exactos (entre 290s y 300s)
+        if (totalSec <= 300 && totalSec > 290 && !cerDisparoSenalesHecho) {
+          cerDisparoSenalesHecho = true;
+          ejecutarPasoManual(1); // Voz Señales a la bandera
+        }
+
+        // A T-0 exactos (entre 0s y 3s)
+        if (totalSec <= 0 && !cerDisparoEjecutivaHecho) {
+          cerDisparoEjecutivaHecho = true;
+          iniciarSecuenciaCompletaAuto();
+        }
+      }
+    }
+
     function iniciarRelojCeremonial() {
-      setInterval(() => {
-        const now = new Date();
-        const [objH, objM] = cerHoraObjetivo.split(':').map(Number);
-        const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), objH, objM, 0, 0);
-
-        let diffMs = target - now;
-        if (diffMs < -30000) {
-          // Si ya pasó la hora de hoy, apunta al día siguiente
-          target.setDate(target.getDate() + 1);
-          diffMs = target - now;
-        }
-
-        const diffSec = Math.floor(diffMs / 1000);
-        const hh = Math.floor(diffSec / 3600);
-        const mm = Math.floor((diffSec % 3600) / 60);
-        const ss = diffSec % 60;
-
-        const lblCd = document.getElementById('lblCuentaAtras');
-        if (lblCd) {
-          lblCd.textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
-        }
-
-        // EVALUACIÓN DE DISPARO AUTOMÁTICO (SI ESTÁ ARMADO)
-        if (cerArmado && cerModoDisparo === 'auto') {
-          // A T-5 min exactos (300 segundos, tolerancia +/- 1s)
-          if (diffSec <= 300 && diffSec > 290 && !cerDisparoSenalesHecho) {
-            cerDisparoSenalesHecho = true;
-            ejecutarPasoManual(1); // Voz Señales a la bandera
-          }
-
-          // A T-0 exactos (0 segundos)
-          if (diffSec <= 0 && diffSec > -5 && !cerDisparoEjecutivaHecho) {
-            cerDisparoEjecutivaHecho = true;
-            iniciarSecuenciaCompletaAuto();
-          }
-        }
-      }, 1000);
+      actualizarTickReloj();
+      setInterval(actualizarTickReloj, 1000);
     }
 
     function toggleArmadoCeremonial() {
@@ -1955,6 +1971,8 @@ function _legacy_execAuth() {
         } else {
           btn.className = 'action-btn primary';
           btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
+      const btnDetener = document.getElementById('btnDetenerSecuenciaGeneral');
+      if (btnDetener) btnDetener.style.display = 'block';
           cerrarStatus();
         }
       }
@@ -1968,6 +1986,8 @@ function _legacy_execAuth() {
       if (btn) {
         btn.className = 'action-btn primary';
         btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
+      const btnDetener = document.getElementById('btnDetenerSecuenciaGeneral');
+      if (btnDetener) btnDetener.style.display = 'block';
       }
       stopAllAudio();
     }
@@ -2133,7 +2153,12 @@ function _legacy_execAuth() {
     }
 
     // Inicializar lista al arrancar
+    // Inicializar aplicaciones y reloj ceremonial al arrancar
     renderAuthList();
+    actualizarHoraObjetivo();
+    iniciarRelojCeremonial();
+    // Ejecutar un primer ciclo de reloj inmediatamente sin esperar 1 segundo
+    actualizarTickReloj();
 
   </script>
 </body>
