@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792863160';
+    const APP_VERSION = 'v1792867634';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -668,7 +668,7 @@
                 <div style="font-size:22px; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums;" id="lblHoraCeremonialDisplay">19:30h</div>
               </div>
               <div style="text-align:right;">
-                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">⏱️ TIEMPO RESTANTE:</div>
+                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">⏱️ HORA LOCAL SISTEMA:</div>
                 <div style="font-size:22px; font-weight:900; color:#38bdf8; font-variant-numeric:tabular-nums;" id="lblCuentaAtras">--:--:--</div>
               </div>
             </div>
@@ -836,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792863160</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792867634</div>
 </footer>
 
   <script>
@@ -2243,7 +2243,24 @@ function _legacy_execAuth() {
 
     // RELOJ CONTINUO Y EVALUACIÓN DE DISPARO
     function actualizarTickReloj() {
-      // 1. Obtener la hora objetivo limpia
+      // 1. Obtener la hora del sistema del dispositivo con segundos
+      const now = new Date();
+      const sH = String(now.getHours()).padStart(2, '0');
+      const sM = String(now.getMinutes()).padStart(2, '0');
+      const sS = String(now.getSeconds()).padStart(2, '0');
+
+      // Calcular la letra de huso horario militar del propio dispositivo
+      const offsetDisp = -now.getTimezoneOffset() / 60.0;
+      const letraHusoDisp = obtenerLetraHuso(offsetDisp);
+
+      // Formato solicitado por el Comandante: HH:mm:ss H
+      const horaSistemaFmt = `${sH}:${sM}:${sS} ${letraHusoDisp}`;
+      const lblReloj = document.getElementById('lblCuentaAtras');
+      if (lblReloj) {
+        lblReloj.textContent = horaSistemaFmt;
+      }
+
+      // 2. Extraer horas y minutos del ceremonial activo para la evaluación de disparo
       let horaStr = '';
       if (cerModo === 'izado') {
         const inp = document.getElementById('inputHoraIzado');
@@ -2261,38 +2278,23 @@ function _legacy_execAuth() {
         horaStr = (cerModo === 'izado' ? '08:00' : '19:30');
       }
 
-      // Extraer estrictamente solo los dígitos de HH y MM para evitar colisiones con letras de huso
       const match = horaStr.match(/(\d{1,2}):(\d{2})/);
-      if (!match) {
-        return;
-      }
+      if (!match) return;
       const objH = parseInt(match[1], 10);
       const objM = parseInt(match[2], 10);
       cerHoraObjetivo = `${String(objH).padStart(2,'0')}:${String(objM).padStart(2,'0')}`;
 
-      // 2. Calcular diferencia en segundos
-      const now = new Date();
+      // 3. Evaluar cuenta atrás interna para la secuencia automática
       const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), objH, objM, 0, 0);
-
       let diffMs = target.getTime() - now.getTime();
-      // Si la hora ya pasó hace más de 30 segundos, calcular para el día siguiente
       if (diffMs < -30000) {
         target.setDate(target.getDate() + 1);
         diffMs = target.getTime() - now.getTime();
       }
 
       const totalSec = Math.max(0, Math.floor(diffMs / 1000));
-      const hh = Math.floor(totalSec / 3600);
-      const mm = Math.floor((totalSec % 3600) / 60);
-      const ss = totalSec % 60;
 
-      const fmt = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
-      const lblCd = document.getElementById('lblCuentaAtras');
-      if (lblCd) {
-        lblCd.textContent = fmt;
-      }
-
-      // 3. Disparo de eventos en modo automático
+      // 4. Disparo de eventos en modo automático
       if (cerArmado && cerModoDisparo === 'auto') {
         // A T-5 min (300 segundos, margen 295-300)
         if (totalSec <= 300 && totalSec > 290 && !cerDisparoSenalesHecho) {
