@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792867634';
+    const APP_VERSION = 'v1792868345';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -537,10 +537,10 @@
               <!-- DESPLEGABLE OCULTO (SOLO SI SE OPRIME CAMBIAR) -->
               <div id="boxDesplegableHuso" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #1e3a8a;">
                 <select id="selHusoHorario" style="width:100%; background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:800; padding:6px 8px;" onchange="onSeleccionarHuso(this.value)">
-                  <option value="auto">📱 Hora del Dispositivo (Auto)</option>
+                  <option value="auto" selected>📱 Hora del Dispositivo (Auto)</option>
                   <option value="0">UTC +0 (Zulu · Z · GMT)</option>
                   <option value="1">UTC +1 (Alfa · A · Invierno Península)</option>
-                  <option value="2" selected>UTC +2 (Bravo · B · Verano Península)</option>
+                  <option value="2">UTC +2 (Bravo · B · Verano Península)</option>
                   <option value="3">UTC +3 (Charlie · C · Mediterráneo Oriental)</option>
                   <option value="4">UTC +4 (Delta · D · Golfo Pérsico)</option>
                   <option value="-1">UTC -1 (November · N · Invierno Canarias)</option>
@@ -836,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792867634</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792868345</div>
 </footer>
 
   <script>
@@ -1242,6 +1242,7 @@ function _legacy_execAuth() {
       currentAuthCat = cat;
       document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
       if (event && event.target) event.target.classList.add('active');
+      cambiarHusoHorario('auto');
       renderAuthList();
     }
 
@@ -1750,7 +1751,7 @@ function _legacy_execAuth() {
     let cerAcompBandera = 'himno'; // 'himno' | 'chifle' | 'ambos'
     let cerModalidadOracion = 'leida'; // 'leida' | 'cantada' | 'corneta' | 'ninguna'
     let cerPaisesCortesia = []; // Lista de países extranjeros presentes
-    let cerHusoHorario = '2'; // Por defecto UTC+2 (Bravo · Verano) o el seleccionado
+    let cerHusoHorario = 'auto'; // Por defecto toma el huso del dispositivo // Por defecto UTC+2 (Bravo · Verano) o el seleccionado
     let cerHoraObjetivo = '08:00';
     let cerArmado = false;
     let cerTimerCuentaAtras = null;
@@ -1869,19 +1870,35 @@ function _legacy_execAuth() {
       if (btn) btn.textContent = '⚙️ Cambiar';
     }
 
+        function obtenerTextoHuso(valHuso) {
+      if (valHuso === 'auto') {
+        const offset = -new Date().getTimezoneOffset() / 60.0;
+        const letra = obtenerLetraHuso(offset);
+        const signo = offset >= 0 ? '+' : '';
+        return `Dispositivo (UTC${signo}${offset} ${letra})`;
+      }
+      const mapNombres = {
+        '0': 'UTC+0 (Zulu · Z)',
+        '1': 'UTC+1 (Alfa · A)',
+        '2': 'UTC+2 (Bravo · B)',
+        '3': 'UTC+3 (Charlie · C)',
+        '4': 'UTC+4 (Delta · D)',
+        '-1': 'UTC-1 (November · N)',
+        '-2': 'UTC-2 (Oscar · O)',
+        '-3': 'UTC-3 (Papa · P)',
+        '-4': 'UTC-4 (Quebec · Q)',
+        '-5': 'UTC-5 (Romeo · R)'
+      };
+      return mapNombres[valHuso] || (valHuso >= 0 ? `UTC+${valHuso}` : `UTC${valHuso}`);
+    }
+
     function cambiarHusoHorario(val) {
       cerHusoHorario = val;
       const bBadge = document.getElementById('lblHusoActivoBadge');
-      if (bBadge) {
-        if (val === 'auto') bBadge.textContent = 'Dispositivo (Auto)';
-        else if (val === '0') bBadge.textContent = 'UTC+0 (Zulu · Z)';
-        else if (val === '1') bBadge.textContent = 'UTC+1 (Alfa · A)';
-        else if (val === '2') bBadge.textContent = 'UTC+2 (Bravo · B)';
-        else if (val === '3') bBadge.textContent = 'UTC+3 (Charlie · C)';
-        else if (val === '4') bBadge.textContent = 'UTC+4 (Delta · D)';
-        else if (val === '-1') bBadge.textContent = 'UTC-1 (November · N)';
-        else bBadge.textContent = (val >= 0 ? `UTC+${val}` : `UTC${val}`);
-      }
+      const lblTexto = document.getElementById('lblHusoTextoVisible');
+      const textoCompleto = obtenerTextoHuso(val);
+      if (bBadge) bBadge.textContent = textoCompleto;
+      if (lblTexto) lblTexto.textContent = textoCompleto;
 
       if (cerFuenteOcaso === 'base') calcularOcasoBase();
       else if (cerFuenteOcaso === 'coord') calcularOcasoCoordManual();
