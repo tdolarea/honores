@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792860352';
+    const APP_VERSION = 'v1792863160';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -589,20 +589,20 @@
             <div id="subBoxBase" style="display:flex; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
               <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Seleccionar Base Naval / Localidad:</div>
               <select id="selBaseNaval" style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12.5px; font-weight:700; padding:8px;" onchange="calcularOcasoBase()">
-                <option value="Rota">Base Naval de Rota (Cádiz)</option>
-                <option value="Ferrol">Arsenal Militar de Ferrol (A Coruña)</option>
-                <option value="Cartagena">Arsenal Militar de Cartagena (Murcia)</option>
+                <option value="Rota">Base Naval de Rota</option>
+                <option value="Ferrol">Arsenal de Ferrol</option>
+                <option value="Cartagena">Arsenal de Cartagena</option>
                 <option value="San Fernando">Base Naval de La Carraca / San Fernando</option>
-                <option value="Las Palmas">Arsenal Militar de Las Palmas (Canarias)</option>
-                <option value="Marin">Escuela Naval Militar de Marín (Pontevedra)</option>
-                <option value="Mahon">Estación Naval de Mahón (Baleares)</option>
-                <option value="Ceuta">Comandancia Naval de Ceuta</option>
-                <option value="Melilla">Comandancia Naval de Melilla</option>
+                <option value="Las Palmas">Arsenal de Las Palmas</option>
+                <option value="Marin">ENM de Marín</option>
+                <option value="Mahon">Estación Naval de Mahón</option>
+                <option value="Ceuta">CN de Ceuta</option>
+                <option value="Melilla">CN de Melilla</option>
                 <option value="Malaga">Puerto de Málaga</option>
                 <option value="Alicante">Puerto de Alicante</option>
-                <option value="Valencia">Comandancia Naval de Valencia</option>
-                <option value="Barcelona">Comandancia Naval de Barcelona</option>
-                <option value="Palma">Comandancia Naval de Palma de Mallorca</option>
+                <option value="Valencia">CN de Valencia</option>
+                <option value="Barcelona">CN de Barcelona</option>
+                <option value="Palma">CN de Palma de Mallorca</option>
               </select>
             </div>
 
@@ -836,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792860352</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792863160</div>
 </footer>
 
   <script>
@@ -1758,20 +1758,20 @@ function _legacy_execAuth() {
     let cerDisparoEjecutivaHecho = false;
 
     const BASES_NAVALES = {
-      'Rota': { lat: 36.6200, lon: -6.3500, nombre: 'Base Naval de Rota (Cádiz)' },
-      'Ferrol': { lat: 43.4800, lon: -8.2300, nombre: 'Arsenal Militar de Ferrol (A Coruña)' },
-      'Cartagena': { lat: 37.6000, lon: -0.9800, nombre: 'Arsenal Militar de Cartagena (Murcia)' },
-      'San Fernando': { lat: 36.4600, lon: -6.2000, nombre: 'La Carraca / San Fernando (Cádiz)' },
-      'Las Palmas': { lat: 28.1300, lon: -15.4300, nombre: 'Arsenal Militar de Las Palmas' },
-      'Marin': { lat: 42.4000, lon: -8.7000, nombre: 'Escuela Naval Militar de Marín' },
-      'Mahon': { lat: 39.8900, lon: 4.2600, nombre: 'Estación Naval de Mahón (Baleares)' },
-      'Ceuta': { lat: 35.8894, lon: -5.3213, nombre: 'Comandancia Naval de Ceuta' },
-      'Melilla': { lat: 35.2923, lon: -2.9381, nombre: 'Comandancia Naval de Melilla' },
+      'Rota': { lat: 36.6200, lon: -6.3500, nombre: 'Base Naval de Rota' },
+      'Ferrol': { lat: 43.4800, lon: -8.2300, nombre: 'Arsenal de Ferrol' },
+      'Cartagena': { lat: 37.6000, lon: -0.9800, nombre: 'Arsenal de Cartagena' },
+      'San Fernando': { lat: 36.4600, lon: -6.2000, nombre: 'La Carraca / San Fernando' },
+      'Las Palmas': { lat: 28.1300, lon: -15.4300, nombre: 'Arsenal de Las Palmas' },
+      'Marin': { lat: 42.4000, lon: -8.7000, nombre: 'ENM de Marín' },
+      'Mahon': { lat: 39.8900, lon: 4.2600, nombre: 'Estación Naval de Mahón' },
+      'Ceuta': { lat: 35.8894, lon: -5.3213, nombre: 'CN de Ceuta' },
+      'Melilla': { lat: 35.2923, lon: -2.9381, nombre: 'CN de Melilla' },
       'Malaga': { lat: 36.7213, lon: -4.4214, nombre: 'Puerto de Málaga' },
       'Alicante': { lat: 38.3452, lon: -0.4810, nombre: 'Puerto de Alicante' },
-      'Valencia': { lat: 39.4699, lon: -0.3763, nombre: 'Comandancia Naval de Valencia' },
-      'Barcelona': { lat: 41.3851, lon: 2.1734, nombre: 'Comandancia Naval de Barcelona' },
-      'Palma': { lat: 39.5696, lon: 2.6502, nombre: 'Comandancia Naval de Palma de Mallorca' }
+      'Valencia': { lat: 39.4699, lon: -0.3763, nombre: 'CN de Valencia' },
+      'Barcelona': { lat: 41.3851, lon: 2.1734, nombre: 'CN de Barcelona' },
+      'Palma': { lat: 39.5696, lon: 2.6502, nombre: 'CN de Palma de Mallorca' }
     };
 
     let cerSituacionBuque = 'puerto'; // 'puerto' | 'mar'
