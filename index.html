@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792837310';
+    const APP_VERSION = 'v1792847086';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -174,10 +174,10 @@
 
   
   <!-- Reproductores estáticos para Ceremonial de Izado y Arriado -->
-  <audio id="audSenales" src="audio/senalesalabandera.mp3" preload="auto" playsinline></audio>
-  <audio id="audAlabandera" src="audio/alabanderafrenteapopapresenten.mp3" preload="auto" playsinline></audio>
-  <audio id="audChifleLargo" src="audio/chiflecompletobanderalargo.mp3" preload="auto" playsinline></audio>
-  <audio id="audRetiradaHonoresVoz" src="audio/VOZretiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audSenales" src="audio/VOZELENASENALES.mp3" preload="auto" playsinline></audio>
+  <audio id="audAlabandera" src="audio/VOZELENALABANDERAFRENTEAPOPA.mp3" preload="auto" playsinline></audio>
+  <audio id="audChifleLargo" src="audio/chifleiniciohimno.mp3" preload="auto" playsinline></audio>
+  <audio id="audRetiradaHonoresVoz" src="audio/VOZELENARETIRADADEHONORES.mp3" preload="auto" playsinline></audio>
   <audio id="audRetiradaChifle" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
   <audio id="audOracionLeida" src="audio/VOZORACION.mp3" preload="auto" playsinline></audio>
   <audio id="audOracionCantada" src="audio/OraciondelaNoche.mp3" preload="auto" playsinline></audio>
@@ -727,7 +727,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792837310</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792847086</div>
 </footer>
 
   <script>
@@ -2131,11 +2131,10 @@ function _legacy_execAuth() {
     function ejecutarMovimientoBanderaCompleto(callbackFin) {
       stopAllAudio();
 
-      // 1. Si es SOLO CHIFLE:
-      // chiflecompletobanderalargo dura 49.5s; los últimos 8s son la retirada añadida. Cortamos a los 41.5s:
+      // 1. Si es SOLO CHIFLE (chifleiniciohimno.mp3):
       if (cerAcompBandera === 'chifle') {
         const chifle = document.getElementById('audChifleLargo');
-        reproducirAudioCeremonialPaso(chifle, '3. 📢 Pitada de Chifle', callbackFin, 41.5);
+        reproducirAudioCeremonialPaso(chifle, '3. 📢 Pitada de Chifle', callbackFin);
         return;
       }
 
@@ -2156,17 +2155,13 @@ function _legacy_execAuth() {
       cerPaisesCortesia.forEach(pNombre => {
         const item = ANTHEMS_CATALOG.find(a => a.name.toLowerCase() === pNombre.toLowerCase());
         if (item) {
-          cola.push({ url: item.url, label: 'CORTESÍA: ' + item.name, maxSec: 0 });
+          cola.push({ url: item.url, label: 'CORTESÍA: ' + item.name });
         }
       });
 
-      // Himno Nacional de España (breve)
-      // Espania_corto.mp3 dura 35.1s; la música termina en 27.2s y luego tiene el chifle añadido. Cortamos a los 27.2s exactos:
-      let elEsp = document.getElementById('audHimnoCorto');
-      if (!elEsp) elEsp = new Audio('audio/Espania_corto.mp3');
-      else elEsp.src = 'audio/Espania_corto.mp3';
-
-      cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA (breve)', maxSec: 27.2 });
+      // Himno Nacional de España (breve, oficial limpio)
+      const elEsp = document.getElementById('audHimnoCorto');
+      cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA (breve)' });
 
       reproducirColaBanderaSecuencial(cola, callbackFin);
     }
