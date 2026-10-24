@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792868345';
+    const APP_VERSION = 'v1792869301';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -836,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792868345</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792869301</div>
 </footer>
 
   <script>
@@ -2348,26 +2348,48 @@ function _legacy_execAuth() {
           if (btnDetener) btnDetener.style.display = 'none'; // OCULTAR SEGUNDO BOTÓN ROJO
           actualizarStatus(`🛡️ Ceremonial ${cerModo.toUpperCase()} armado para las ${cerHoraObjetivo}h`);
         } else {
-          btn.className = 'action-btn primary';
-          btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
-          if (btnDetener) btnDetener.style.display = 'block'; // RESTAURAR BOTÓN
+          restablecerConfiguracionPorDefecto();
           cerrarStatus();
         }
       }
     }
 
-    function cancelarCeremonialIzado() {
+        function restablecerConfiguracionPorDefecto() {
+      // 1. Desarmar automático
       cerArmado = false;
       cerDisparoSenalesHecho = false;
       cerDisparoEjecutivaHecho = false;
-      const btn = document.getElementById('btnArmarCeremonial');
+      const btnArmar = document.getElementById('btnArmarCeremonial');
       const btnDetener = document.getElementById('btnDetenerSecuenciaGeneral');
-      if (btn) {
-        btn.className = 'action-btn primary';
-        btn.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
+      if (btnArmar) {
+        btnArmar.className = 'action-btn primary';
+        btnArmar.innerHTML = '<span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>';
       }
       if (btnDetener) btnDetener.style.display = 'block';
+
+      // 2. Situación del buque: Buque en Puerto (por defecto)
+      setSituacionBuque('puerto');
+
+      // 3. Modo de hora: Hora Manual (por defecto)
+      setFuenteOcaso('manual');
+
+      // 4. Opciones ceremoniales por defecto
+      setAcompBandera('himno');
+      setModalidadOracion('leida');
+      limpiarPaisesCortesia();
+
+      // 5. Refrescar display y reloj
+      actualizarHoraObjetivo();
+      refrescarPosicionYHoraEnPantalla();
+      actualizarTickReloj();
+    }
+
+    function cancelarCeremonialIzado() {
       stopAllAudio();
+      pararAudioCeremonial();
+      restablecerConfiguracionPorDefecto();
+      actualizarStatus('⏹️ Secuencia automática detenida. Sistema en configuración por defecto.');
+      setTimeout(cerrarStatus, 3000);
     }
 
     function iniciarSecuenciaCompletaAuto() {
@@ -2379,7 +2401,7 @@ function _legacy_execAuth() {
           if (chkBN && chkBN.checked) {
             reproducirElementoCeremonial(document.getElementById('audArriado7'), '🌙 Dotación, buenas noches', () => {
               actualizarStatus('✅ Ceremonial al Ocaso en la mar completado.');
-              setTimeout(cerrarStatus, 4000);
+              setTimeout(() => { cerrarStatus(); restablecerConfiguracionPorDefecto(); }, 3500);
             });
           } else {
             actualizarStatus('✅ Ceremonial al Ocaso en la mar completado.');
@@ -2407,12 +2429,12 @@ function _legacy_execAuth() {
                     });
                   } else {
                     actualizarStatus('✅ Ceremonial de Arriado completado.');
-                    setTimeout(cerrarStatus, 4000);
+                    setTimeout(() => { cerrarStatus(); restablecerConfiguracionPorDefecto(); }, 3500);
                   }
                 });
               } else {
                 actualizarStatus('✅ Ceremonial de Izado completado.');
-                setTimeout(cerrarStatus, 4000);
+                setTimeout(() => { cerrarStatus(); restablecerConfiguracionPorDefecto(); }, 3500);
               }
             });
           });
