@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792854921';
+    const APP_VERSION = 'v1792855415';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -739,7 +739,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792854921</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792855415</div>
 </footer>
 
   <script>
@@ -2056,7 +2056,7 @@ function _legacy_execAuth() {
       });
     }
 
-    function pararAudioCeremonial() {
+    function pararAudioCeremonial(elExcluido) {
       const ids = [
         'audIzado1','audIzado2','audIzado3Himno','audIzado3Chifle','audIzado4','audIzado5',
         'audArriado1','audArriado2','audArriado3Himno','audArriado3Chifle','audArriado4','audArriado5',
@@ -2064,18 +2064,18 @@ function _legacy_execAuth() {
       ];
       ids.forEach(id => {
         const el = document.getElementById(id);
-        if (el) {
+        if (el && el !== elExcluido) {
           try { el.pause(); el.currentTime = 0; el.onended = null; } catch(e){}
         }
       });
     }
 
-    function reproducirElementoCeremonial(elAudio, etiqueta, onFin) {
+    function reproducirElementoCeremonial(elAudio, etiqueta, onFin, elExcluido) {
       if (!elAudio) {
         if (onFin) onFin();
         return;
       }
-      pararAudioCeremonial();
+      pararAudioCeremonial(elExcluido);
       actualizarStatus(etiqueta);
 
       let finalizado = false;
@@ -2104,7 +2104,6 @@ function _legacy_execAuth() {
       }
     }
 
-    // BOTONES DE MANDO MANUAL
     function ejecutarPasoManual(paso) {
       if (paso === 1) {
         const el = (cerModo === 'izado') ? document.getElementById('audIzado1') : document.getElementById('audArriado1');
@@ -2146,7 +2145,10 @@ function _legacy_execAuth() {
           try {
             elChifle.currentTime = 0;
             elChifle.muted = false;
-            elChifle.play().catch(e => console.warn('Chifle secundario err:', e));
+            let pChifle = elChifle.play();
+            if (pChifle !== undefined) {
+              pChifle.catch(e => console.warn('Chifle simultáneo warning:', e));
+            }
           } catch(e) {}
         }
       }
@@ -2170,19 +2172,19 @@ function _legacy_execAuth() {
         }
         const item = cola.shift();
         if (item.el) {
+          // Si estamos en modo ambos, no matar al chifle al lanzar el himno:
           reproducirElementoCeremonial(item.el, '3. 🇪🇸 ' + item.label, () => {
             if (cola.length > 0) setTimeout(procesarCola, 1200);
             else if (callbackFin) callbackFin();
-          });
+          }, (cerAcompBandera === 'ambos') ? elChifle : null);
         } else if (item.url) {
-          // Himno extranjero en streaming
           const ext = document.getElementById('audHimnoExtranjero');
           if (ext) {
             ext.src = item.url;
             reproducirElementoCeremonial(ext, '3. 🇪🇸 ' + item.label, () => {
               if (cola.length > 0) setTimeout(procesarCola, 1200);
               else if (callbackFin) callbackFin();
-            });
+            }, (cerAcompBandera === 'ambos') ? elChifle : null);
           } else {
             procesarCola();
           }
@@ -2192,7 +2194,6 @@ function _legacy_execAuth() {
       procesarCola();
     }
 
-    // PASO 6: ORACIÓN DE LA NOCHE (ARRIADO)
     function ejecutarOracion(callbackFin) {
       let elOra = null;
       let lbl = 'Oración de la Noche';
