@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792857920';
+    const APP_VERSION = 'v1792858702';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -505,16 +505,6 @@
           </div>
         </div>
 
-        <!-- AVISO REGLAMENTARIO SI NAVEGA -->
-        <div id="bannerBuqueNavegando" style="display:none; background:#0c4a6e; border:1.5px solid #38bdf8; border-radius:8px; padding:10px; margin-bottom:12px;">
-          <div style="font-size:12px; font-weight:900; color:#38bdf8; margin-bottom:3px;">
-            🌊 BUQUE NAVEGANDO (EN LA MAR)
-          </div>
-          <div style="font-size:11px; color:#e0f2fe; line-height:1.4;">
-            Según las Reales Ordenanzas, <strong>la Bandera permanece izada</strong> permanentemente en navegación. No hay honores de arriado ni izado; al ocaso se reza la <strong>Oración de la Noche</strong> y se da el toque de <strong>Dotación, buenas noches</strong>.
-          </div>
-        </div>
-
         <!-- SELECTOR DE CEREMONIAL: IZADO VS ARRIADO -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
           <button type="button" class="action-btn primary" id="btnModoIzado" onclick="setCeremonialModo('izado')" style="justify-content:center; text-align:center; padding:10px;">
@@ -841,7 +831,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792857920</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792858702</div>
 </footer>
 
   <script>
@@ -1784,7 +1774,6 @@ function _legacy_execAuth() {
       cerSituacionBuque = sit;
       const btnP = document.getElementById('btnSitPuerto');
       const btnM = document.getElementById('btnSitMar');
-      const banner = document.getElementById('bannerBuqueNavegando');
       const panelBandera = document.getElementById('panelPasosBandera');
       const btnIz = document.getElementById('btnModoIzado');
       const btnArr = document.getElementById('btnModoArriado');
@@ -1795,7 +1784,6 @@ function _legacy_execAuth() {
       if (btnM) btnM.className = 'action-btn' + (sit === 'mar' ? ' primary' : '');
 
       if (sit === 'mar') {
-        if (banner) banner.style.display = 'block';
         if (panelBandera) panelBandera.style.display = 'none';
         // En navegación el ceremonial aplicable al ocaso es la oración
         setCeremonialModo('arriado');
@@ -1804,7 +1792,6 @@ function _legacy_execAuth() {
         // En la mar, por defecto es posición GPS
         setFuenteOcaso('gps');
       } else {
-        if (banner) banner.style.display = 'none';
         if (panelBandera) panelBandera.style.display = 'flex';
         if (btnIz) btnIz.style.display = 'flex';
         if (btnArr) btnArr.style.gridColumn = 'auto';
