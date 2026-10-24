@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792857886';
+    const APP_VERSION = 'v1792857920';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -490,6 +490,31 @@
       <div class="card">
         
 
+        <!-- SELECTOR DE SITUACIÓN OPERATIVA DEL BUQUE -->
+        <div style="background:#070d1e; border:1px solid #334155; border-radius:8px; padding:6px 10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11.5px; font-weight:800; color:#94a3b8; display:flex; align-items:center; gap:6px;">
+            <span>🚢 SITUACIÓN DEL BUQUE:</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="action-btn primary" id="btnSitPuerto" onclick="setSituacionBuque('puerto')" style="font-size:11px; padding:5px 10px; min-height:28px;">
+              ⚓ En Puerto / Fondeo
+            </button>
+            <button type="button" class="action-btn" id="btnSitMar" onclick="setSituacionBuque('mar')" style="font-size:11px; padding:5px 10px; min-height:28px;">
+              🌊 Navegando (En la Mar)
+            </button>
+          </div>
+        </div>
+
+        <!-- AVISO REGLAMENTARIO SI NAVEGA -->
+        <div id="bannerBuqueNavegando" style="display:none; background:#0c4a6e; border:1.5px solid #38bdf8; border-radius:8px; padding:10px; margin-bottom:12px;">
+          <div style="font-size:12px; font-weight:900; color:#38bdf8; margin-bottom:3px;">
+            🌊 BUQUE NAVEGANDO (EN LA MAR)
+          </div>
+          <div style="font-size:11px; color:#e0f2fe; line-height:1.4;">
+            Según las Reales Ordenanzas, <strong>la Bandera permanece izada</strong> permanentemente en navegación. No hay honores de arriado ni izado; al ocaso se reza la <strong>Oración de la Noche</strong> y se da el toque de <strong>Dotación, buenas noches</strong>.
+          </div>
+        </div>
+
         <!-- SELECTOR DE CEREMONIAL: IZADO VS ARRIADO -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
           <button type="button" class="action-btn primary" id="btnModoIzado" onclick="setCeremonialModo('izado')" style="justify-content:center; text-align:center; padding:10px;">
@@ -748,6 +773,7 @@
         <!-- BOTONES DE CONTROL MANUAL (A LA ORDEN DEL OFICIAL DE GUARDIA) -->
         <div id="panelEjecucionManual" style="display:none; flex-direction:column; gap:6px; margin-bottom:10px;">
           <div style="font-size:11.5px; font-weight:800; color:#38bdf8; margin-bottom:2px;">BOTONES DE MANDO MANUAL:</div>
+          <div id="panelPasosBandera" style="display:flex; flex-direction:column; gap:6px;">
           <button type="button" class="action-btn" onclick="ejecutarPasoManual(1)" style="justify-content:space-between;">
             <span>1. 🗣️ Voz: "Señales a la bandera" (T-5 min)</span>
             <span>📢</span>
@@ -768,6 +794,7 @@
             <span>5. 📢 Chifle: Pitada de Retirada de Honores</span>
             <span>⚓</span>
           </button>
+          </div>
           <button type="button" class="action-btn" id="btnManualPasoOracion" onclick="ejecutarPasoManual(6)" style="display:none; justify-content:space-between;">
             <span>6. ⚓ Oración de la Noche</span>
             <span>🌙</span>
@@ -814,7 +841,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792857886</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792857920</div>
 </footer>
 
   <script>
@@ -1751,6 +1778,40 @@ function _legacy_execAuth() {
       'Palma': { lat: 39.5696, lon: 2.6502, nombre: 'Comandancia Naval de Palma de Mallorca' }
     };
 
+    let cerSituacionBuque = 'puerto'; // 'puerto' | 'mar'
+
+    function setSituacionBuque(sit) {
+      cerSituacionBuque = sit;
+      const btnP = document.getElementById('btnSitPuerto');
+      const btnM = document.getElementById('btnSitMar');
+      const banner = document.getElementById('bannerBuqueNavegando');
+      const panelBandera = document.getElementById('panelPasosBandera');
+      const btnIz = document.getElementById('btnModoIzado');
+      const btnArr = document.getElementById('btnModoArriado');
+      const boxIz = document.getElementById('boxHoraIzado');
+      const boxArr = document.getElementById('boxHoraArriado');
+
+      if (btnP) btnP.className = 'action-btn' + (sit === 'puerto' ? ' primary' : '');
+      if (btnM) btnM.className = 'action-btn' + (sit === 'mar' ? ' primary' : '');
+
+      if (sit === 'mar') {
+        if (banner) banner.style.display = 'block';
+        if (panelBandera) panelBandera.style.display = 'none';
+        // En navegación el ceremonial aplicable al ocaso es la oración
+        setCeremonialModo('arriado');
+        if (btnIz) btnIz.style.display = 'none';
+        if (btnArr) btnArr.style.gridColumn = '1 / -1';
+        // En la mar, por defecto es posición GPS
+        setFuenteOcaso('gps');
+      } else {
+        if (banner) banner.style.display = 'none';
+        if (panelBandera) panelBandera.style.display = 'flex';
+        if (btnIz) btnIz.style.display = 'flex';
+        if (btnArr) btnArr.style.gridColumn = 'auto';
+      }
+      refrescarPosicionYHoraEnPantalla();
+    }
+
     let cerPosicionLat = 36.6200;
     let cerPosicionLon = -6.3500;
     let cerPosicionNombre = 'Base Naval de Rota';
@@ -2233,215 +2294,34 @@ function _legacy_execAuth() {
     }
 
     function iniciarSecuenciaCompletaAuto() {
-      // 1. Voz: "A la bandera frente a popa, presenten"
-      reproducirAudioCeremonialPaso(obtenerAudioCeremonialPaso(2), '2. 🗣️ A la bandera frente a popa, presenten', () => {
-        // 2. Movimiento de Bandera (Himno Nacional breve y/o chifle)
-        ejecutarMovimientoBanderaCompleto(() => {
-          // 3. Voz: "Retirada de honores"
-          reproducirAudioCeremonialPaso(obtenerAudioCeremonialPaso(4), '4. 🗣️ Voz: Retirada de honores', () => {
-            // 4. Chifle: Pitada de Retirada de honores
-            reproducirAudioCeremonialPaso(obtenerAudioCeremonialPaso(5), '5. 📢 Chifle: Retirada de honores', () => {
-              // 5. Si es arriado: Oración de la Noche
-              if (cerModo === 'arriado' && cerModalidadOracion !== 'ninguna') {
-                ejecutarOracion(() => {
-                  // 6. Dotación, buenas noches
-                  const chkBN = document.getElementById('chkBuenasNoches');
-                  if (chkBN && chkBN.checked) {
-                    reproducirAudioCeremonialPaso('audio/dotacionbuenasnoches.mp3', '7. 🌙 Dotación, buenas noches', () => {
-                      actualizarStatus('✅ Ceremonial de Arriado completado.');
-                      setTimeout(cerrarStatus, 4000);
-                    });
-                  } else {
-                    actualizarStatus('✅ Ceremonial de Arriado completado.');
-                    setTimeout(cerrarStatus, 4000);
-                  }
-                });
-              } else {
-                actualizarStatus('✅ Ceremonial de Izado completado.');
-                setTimeout(cerrarStatus, 4000);
-              }
+      // Si el buque está NAVEGANDO: La bandera permanece izada, NO se arria ni se toca himno/chifle
+      if (cerSituacionBuque === 'mar') {
+        actualizarStatus('🌊 Buque navegando: Bandera permanece izada. Iniciando Oración de la Noche al Ocaso...');
+        ejecutarOracion(() => {
+          const chkBN = document.getElementById('chkBuenasNoches');
+          if (chkBN && chkBN.checked) {
+            reproducirElementoCeremonial(document.getElementById('audArriado7'), '🌙 Dotación, buenas noches', () => {
+              actualizarStatus('✅ Ceremonial al Ocaso en la mar completado.');
+              setTimeout(cerrarStatus, 4000);
             });
-          });
-        });
-      });
-    }
-
-    function pararAudioCeremonial(elExcluido) {
-      const ids = [
-        'audIzado1','audIzado2','audIzado3Himno','audIzado3Chifle','audIzado4','audIzado5',
-        'audArriado1','audArriado2','audArriado3Himno','audArriado3Chifle','audArriado4','audArriado5',
-        'audArriado6Leida','audArriado6Cantada','audArriado6Corneta','audArriado7'
-      ];
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el && el !== elExcluido) {
-          try { el.pause(); el.currentTime = 0; el.onended = null; } catch(e){}
-        }
-      });
-    }
-
-    function reproducirElementoCeremonial(elAudio, etiqueta, onFin, elExcluido) {
-      if (!elAudio) {
-        if (onFin) onFin();
-        return;
-      }
-      pararAudioCeremonial(elExcluido);
-      actualizarStatus(etiqueta);
-
-      let finalizado = false;
-      function avanzar() {
-        if (finalizado) return;
-        finalizado = true;
-        elAudio.onended = null;
-        if (onFin) {
-          setTimeout(onFin, 1000); // 1 segundo solemne entre fases
-        }
-      }
-
-      try {
-        elAudio.currentTime = 0;
-        elAudio.muted = false;
-      } catch(e) {}
-
-      elAudio.onended = avanzar;
-
-      let p = elAudio.play();
-      if (p !== undefined) {
-        p.catch(err => {
-          console.warn('Ceremonial play err:', etiqueta, err);
-          avanzar();
-        });
-      }
-    }
-
-    function ejecutarPasoManual(paso) {
-      if (paso === 1) {
-        const el = (cerModo === 'izado') ? document.getElementById('audIzado1') : document.getElementById('audArriado1');
-        reproducirElementoCeremonial(el, '1. 🗣️ Voz: "Señales a la bandera" (T-5 min)');
-      } else if (paso === 2) {
-        const el = (cerModo === 'izado') ? document.getElementById('audIzado2') : document.getElementById('audArriado2');
-        reproducirElementoCeremonial(el, '2. 🗣️ Voz: "A la bandera frente a popa, presenten"');
-      } else if (paso === 3) {
-        ejecutarMovimientoBanderaCompleto();
-      } else if (paso === 4) {
-        const el = (cerModo === 'izado') ? document.getElementById('audIzado4') : document.getElementById('audArriado4');
-        reproducirElementoCeremonial(el, '4. 🗣️ Voz: "Retirada de honores"');
-      } else if (paso === 5) {
-        const el = (cerModo === 'izado') ? document.getElementById('audIzado5') : document.getElementById('audArriado5');
-        reproducirElementoCeremonial(el, '5. 📢 Chifle: Retirada de honores');
-      } else if (paso === 6) {
-        ejecutarOracion();
-      } else if (paso === 7) {
-        reproducirElementoCeremonial(document.getElementById('audArriado7'), '7. 🌙 "Dotación, buenas noches"');
-      }
-    }
-
-    // PASO 3: MOVIMIENTO DE BANDERA
-    function ejecutarMovimientoBanderaCompleto(callbackFin) {
-      pararAudioCeremonial();
-
-      const elHimno = (cerModo === 'izado') ? document.getElementById('audIzado3Himno') : document.getElementById('audArriado3Himno');
-      const elChifle = (cerModo === 'izado') ? document.getElementById('audIzado3Chifle') : document.getElementById('audArriado3Chifle');
-
-      // Caso 1: Solo chifle
-      if (cerAcompBandera === 'chifle') {
-        reproducirElementoCeremonial(elChifle, '3. 📢 Pitada de Chifle', callbackFin);
-        return;
-      }
-
-      // Caso 2: Chifle + Himno simultáneos
-      if (cerAcompBandera === 'ambos') {
-        if (elChifle) {
-          try {
-            elChifle.currentTime = 0;
-            elChifle.muted = false;
-            let pChifle = elChifle.play();
-            if (pChifle !== undefined) {
-              pChifle.catch(e => console.warn('Chifle simultáneo warning:', e));
-            }
-          } catch(e) {}
-        }
-      }
-
-      // Caso 3: Cola de himnos (países de cortesía si los hay + Himno Nacional de España de último)
-      let cola = [];
-      cerPaisesCortesia.forEach(pNombre => {
-        const item = ANTHEMS_CATALOG.find(a => a.name.toLowerCase() === pNombre.toLowerCase());
-        if (item) {
-          cola.push({ url: item.url, label: 'CORTESÍA: ' + item.name });
-        }
-      });
-
-      // Himno Nacional de España breve oficial (elHimno del DOM)
-      cola.push({ el: elHimno, label: 'HIMNO NACIONAL DE ESPAÑA' });
-
-      function procesarCola() {
-        if (cola.length === 0) {
-          if (callbackFin) callbackFin();
-          return;
-        }
-        const item = cola.shift();
-        if (item.el) {
-          // Si estamos en modo ambos, no matar al chifle al lanzar el himno:
-          reproducirElementoCeremonial(item.el, '3. 🇪🇸 ' + item.label, () => {
-            if (cola.length > 0) setTimeout(procesarCola, 1200);
-            else if (callbackFin) callbackFin();
-          }, (cerAcompBandera === 'ambos') ? elChifle : null);
-        } else if (item.url) {
-          const ext = document.getElementById('audHimnoExtranjero');
-          if (ext) {
-            ext.src = item.url;
-            reproducirElementoCeremonial(ext, '3. 🇪🇸 ' + item.label, () => {
-              if (cola.length > 0) setTimeout(procesarCola, 1200);
-              else if (callbackFin) callbackFin();
-            }, (cerAcompBandera === 'ambos') ? elChifle : null);
           } else {
-            procesarCola();
+            actualizarStatus('✅ Ceremonial al Ocaso en la mar completado.');
+            setTimeout(cerrarStatus, 4000);
           }
-        }
+        });
+        return;
       }
 
-      procesarCola();
-    }
-
-    function ejecutarOracion(callbackFin) {
-      let elOra = null;
-      let lbl = 'Oración de la Noche';
-      if (cerModalidadOracion === 'leida') {
-        elOra = document.getElementById('audArriado6Leida');
-        lbl = '6. 📖 Oración de la Noche (Leída)';
-      } else if (cerModalidadOracion === 'cantada') {
-        elOra = document.getElementById('audArriado6Cantada');
-        lbl = '6. 🎶 Oración Marinera (Cantada)';
-      } else if (cerModalidadOracion === 'corneta') {
-        elOra = document.getElementById('audArriado6Corneta');
-        lbl = '6. 🎺 Toque de Oración a Corneta';
-      }
-
-      if (elOra) {
-        reproducirElementoCeremonial(elOra, lbl, callbackFin);
-      } else {
-        if (callbackFin) callbackFin();
-      }
-    }
-
-    // SECUENCIA COMPLETA AUTOMÁTICA
-    function iniciarSecuenciaCompletaAuto() {
-      // 1. Voz "A la bandera frente a popa" (paso 2)
+      // Si está EN PUERTO / FONDEADO: Ceremonial completo de bandera
       const el2 = (cerModo === 'izado') ? document.getElementById('audIzado2') : document.getElementById('audArriado2');
       reproducirElementoCeremonial(el2, '2. 🗣️ A la bandera frente a popa, presenten', () => {
-        // 2. Movimiento de Bandera (Himno / Chifle)
         ejecutarMovimientoBanderaCompleto(() => {
-          // 3. Voz "Retirada de honores" (paso 4)
           const el4 = (cerModo === 'izado') ? document.getElementById('audIzado4') : document.getElementById('audArriado4');
           reproducirElementoCeremonial(el4, '4. 🗣️ Voz: Retirada de honores', () => {
-            // 4. Chifle de retirada (paso 5)
             const el5 = (cerModo === 'izado') ? document.getElementById('audIzado5') : document.getElementById('audArriado5');
             reproducirElementoCeremonial(el5, '5. 📢 Chifle: Retirada de honores', () => {
-              // 5. Si es arriado, Oración
               if (cerModo === 'arriado' && cerModalidadOracion !== 'ninguna') {
                 ejecutarOracion(() => {
-                  // 6. Dotación, buenas noches
                   const chkBN = document.getElementById('chkBuenasNoches');
                   if (chkBN && chkBN.checked) {
                     reproducirElementoCeremonial(document.getElementById('audArriado7'), '7. 🌙 Dotación, buenas noches', () => {
@@ -2463,20 +2343,6 @@ function _legacy_execAuth() {
       });
     }
 
-    // ==========================================
-    // INICIALIZACIÓN GENERAL DE LA APLICACIÓN
-    // ==========================================
-    renderAuthList();
-    actualizarHoraObjetivo();
-    iniciarRelojCeremonial();
-    actualizarTickReloj();
-
-    window.addEventListener('DOMContentLoaded', () => {
-      renderAuthList();
-      actualizarHoraObjetivo();
-      iniciarRelojCeremonial();
-    });
-
-  </script>
+    </script>
 </body>
 </html>
