@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792859843';
+    const APP_VERSION = 'v1792860352';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -522,21 +522,7 @@
             <span style="font-size:11px; color:#94a3b8;" id="lblInfoOcaso"></span>
           </div>
 
-          <!-- MODO IZADO: HORA FIJA (08:00 POR DEFECTO O MANUAL) -->
-          <div id="boxHoraIzado" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-            <div>
-              <div style="font-size:13px; font-weight:700; color:#f8fafc;">Hora de Izado:</div>
-              <div style="font-size:11px; color:#94a3b8;">Por defecto a las 08:00h (ajustable)</div>
-            </div>
-            <input type="time" id="inputHoraIzado" value="08:00" 
-              style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:800; padding:6px 10px; text-align:center;"
-              oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
-          </div>
-
-          <!-- MODO ARRIADO: MANUAL / LOCALIDAD / GPS -->
-          <div id="boxHoraArriado" style="display:none; flex-direction:column; gap:10px;">
-            
-            <!-- VENTANA SIMPLIFICADA DE HUSO HORARIO -->
+          <!-- VENTANA SIMPLIFICADA DE HUSO HORARIO -->
             <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:6px; padding:8px 10px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -566,6 +552,21 @@
               </div>
             </div>
 
+
+          <!-- MODO IZADO: HORA FIJA (08:00 POR DEFECTO O MANUAL) -->
+          <div id="boxHoraIzado" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#f8fafc;">Hora de Izado:</div>
+              <div style="font-size:11px; color:#94a3b8;">Por defecto a las 08:00h (ajustable)</div>
+            </div>
+            <input type="time" id="inputHoraIzado" value="08:00" 
+              style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:800; padding:6px 10px; text-align:center;"
+              oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
+          </div>
+
+          <!-- MODO ARRIADO: MANUAL / LOCALIDAD / GPS -->
+          <div id="boxHoraArriado" style="display:none; flex-direction:column; gap:10px;">
+            
             <div style="font-size:11.5px; font-weight:800; color:#cbd5e1; margin-top:2px;">POSICIÓN PARA EL CÁLCULO DEL OCASO:</div>
             
             <!-- SELECTOR DE FUENTE DE POSICIÓN: 4 BOTONES -->
@@ -835,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792859843</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792860352</div>
 </footer>
 
   <script>
