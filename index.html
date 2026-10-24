@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792855415';
+    const APP_VERSION = 'v1792857635';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -545,7 +545,7 @@
             <div id="subBoxBase" style="display:none; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:12px; color:#cbd5e1;">Seleccionar Base Naval:</span>
-                <span style="font-size:12px; font-weight:800; color:#38bdf8;" id="lblOcasoCalculadoBase">--:--</span>
+                <span style="font-size:13px; font-weight:900; color:#38bdf8;" id="lblOcasoCalculadoBase">--:--</span>
               </div>
               <select id="selBaseNaval" style="width:100%; background:#0b152d; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; padding:6px 8px;" onchange="calcularOcasoBase()">
                 <option value="Rota">Base Naval de Rota (Cádiz)</option>
@@ -562,7 +562,7 @@
             <div id="subBoxGps" style="display:none; flex-direction:column; gap:6px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:12px; color:#cbd5e1;">Posición real del buque:</span>
-                <span style="font-size:12px; font-weight:800; color:#38bdf8;" id="lblOcasoCalculadoGps">--:--</span>
+                <span style="font-size:13px; font-weight:900; color:#38bdf8;" id="lblOcasoCalculadoGps">--:--</span>
               </div>
               <button type="button" class="action-btn" onclick="obtenerGpsYCalcularOcaso()" style="justify-content:center; font-size:11.5px; padding:6px;">
                 <span>📡 Leer Coordenadas GPS y Calcular Ocaso</span>
@@ -571,12 +571,16 @@
             </div>
           </div>
 
-          <!-- CUENTA ATRÁS -->
-          <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #1e3a8a; display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-size:11px; font-weight:700; color:#94a3b8; text-transform:uppercase;">
-              ⏱️ Tiempo para el Ceremonial:
+          <!-- LÍNEA DESTACADA: HORA EFECTIVA Y CUENTA ATRÁS -->
+          <div style="margin-top:12px; padding:10px; background:#0b152d; border:1px solid #1e3a8a; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;" id="lblTituloHoraEfectiva">🎯 HORA DEL ARRIADO:</div>
+              <div style="font-size:18px; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums;" id="lblHoraCeremonialDisplay">19:30h</div>
             </div>
-            <div style="font-size:20px; font-weight:900; color:#38bdf8; font-variant-numeric:tabular-nums;" id="lblCuentaAtras">--:--:--</div>
+            <div style="text-align:right;">
+              <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">⏱️ TIEMPO RESTANTE:</div>
+              <div style="font-size:20px; font-weight:900; color:#38bdf8; font-variant-numeric:tabular-nums;" id="lblCuentaAtras">--:--:--</div>
+            </div>
           </div>
         </div>
 
@@ -739,7 +743,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792855415</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792857635</div>
 </footer>
 
   <script>
@@ -1780,8 +1784,11 @@ function _legacy_execAuth() {
       if (lbl && ocasoStr) lbl.textContent = ocasoStr + 'h';
       if (ocasoStr) {
         cerHoraObjetivo = ocasoStr;
-        const lblObj = document.getElementById('lblHoraObjetivo');
-        // if (lblObj) lblObj.textContent = ocasoStr;
+        const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
+        if (lblDisp && cerModo === 'arriado') {
+          lblDisp.textContent = `${ocasoStr}h (${baseKey})`;
+          lblDisp.style.color = '#fbbf24';
+        }
       }
     }
 
@@ -1803,8 +1810,12 @@ function _legacy_execAuth() {
         if (ocaso) {
           if (lblRes) lblRes.textContent = ocaso + 'h';
           cerHoraObjetivo = ocaso;
-          const lblObj = document.getElementById('lblHoraObjetivo');
-          // if (lblObj) lblObj.textContent = ocaso;
+          const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
+          if (lblDisp && cerModo === 'arriado') {
+            lblDisp.textContent = `${ocaso}h (GPS Buque)`;
+            lblDisp.style.color = '#fbbf24';
+          }
+          actualizarTickReloj();
         }
       }, err => {
         if (lblCoord) lblCoord.textContent = 'Error GPS: ' + err.message + '. Usando posición Rota por defecto.';
@@ -1813,19 +1824,35 @@ function _legacy_execAuth() {
     }
 
     function actualizarHoraObjetivo() {
+      let sufijoFuente = '';
       if (cerModo === 'izado') {
         const inp = document.getElementById('inputHoraIzado');
         cerHoraObjetivo = inp ? inp.value : '08:00';
+        sufijoFuente = '';
       } else {
         if (cerFuenteOcaso === 'manual') {
           const inp = document.getElementById('inputHoraArriadoManual');
           cerHoraObjetivo = inp ? inp.value : '19:30';
+          sufijoFuente = ' (Orden Diaria)';
         } else if (cerFuenteOcaso === 'base') {
           calcularOcasoBase();
+          const sel = document.getElementById('selBaseNaval');
+          sufijoFuente = sel ? ` (${sel.value})` : ' (Base)';
+        } else if (cerFuenteOcaso === 'gps') {
+          sufijoFuente = ' (GPS)';
         }
       }
-      const lblObj = document.getElementById('lblHoraObjetivo');
-      // if (lblObj) lblObj.textContent = cerHoraObjetivo;
+
+      const lblTit = document.getElementById('lblTituloHoraEfectiva');
+      const lblDisp = document.getElementById('lblHoraCeremonialDisplay');
+
+      if (lblTit) {
+        lblTit.textContent = (cerModo === 'izado') ? '🎯 HORA DEL IZADO:' : '🎯 HORA DEL ARRIADO:';
+      }
+      if (lblDisp) {
+        lblDisp.textContent = `${cerHoraObjetivo}h${sufijoFuente}`;
+        lblDisp.style.color = (cerModo === 'izado') ? '#38bdf8' : '#fbbf24';
+      }
     }
 
     function setModoDisparo(modo) {
