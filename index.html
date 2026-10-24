@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792794823';
+    const APP_VERSION = 'v1792823701';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -171,6 +171,18 @@
     }
   </script>
 
+
+  
+  <!-- Reproductores estáticos para Ceremonial de Izado y Arriado -->
+  <audio id="audSenales" src="audio/senalesalabandera.mp3" preload="auto" playsinline></audio>
+  <audio id="audAlabandera" src="audio/alabanderafrenteapopapresenten.mp3" preload="auto" playsinline></audio>
+  <audio id="audChifleLargo" src="audio/chiflecompletobanderalargo.mp3" preload="auto" playsinline></audio>
+  <audio id="audRetiradaHonoresVoz" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audRetiradaChifle" src="audio/retiradaComteoAlmte.mp3" preload="auto" playsinline></audio>
+  <audio id="audOracionLeida" src="audio/VOZORACION.mp3" preload="auto" playsinline></audio>
+  <audio id="audOracionCantada" src="audio/OraciondelaNoche.mp3" preload="auto" playsinline></audio>
+  <audio id="audOracionCorneta" src="audio/CornetaToquedeOracion.wav" preload="auto" playsinline></audio>
+  <audio id="audDotacionBuenasNoches" src="audio/dotacionbuenasnoches.mp3" preload="auto" playsinline></audio>
 
   <!-- Reproductores estáticos precargados para Ceremonial de Autoridades -->
   <audio id="audFirmes" src="audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3" preload="auto" playsinline></audio>
@@ -464,29 +476,236 @@
 
     <div class="view-section" id="viewIzado">
       <div class="card">
-        <div class="card-title">Izado y Arriado de la Bandera</div>
-        <div class="btn-grid">
-          <button class="action-btn primary" onclick="playAudio('audio/CornetaHimnonacionalacorneta-reducido.wav', 'IZADO: Himno Nacional a Corneta')">
-            <span>🌅 IZADO DE BANDERA (08:00h)</span>
-            <span>🇪🇸</span>
+        <div class="card-title">
+          <span>🌅 Izado y Arriado de la Bandera</span>
+          <span style="font-size:11px; color:#38bdf8; font-weight:700;" id="badgeCeremonialActivo">🌅 IZADO</span>
+        </div>
+
+        <!-- SELECTOR DE CEREMONIAL: IZADO VS ARRIADO -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
+          <button type="button" class="action-btn primary" id="btnModoIzado" onclick="setCeremonialModo('izado')" style="justify-content:center; text-align:center; padding:10px;">
+            <span>🌅 IZADO DE BANDERA</span>
           </button>
-          <button class="action-btn primary" onclick="playAudio('audio/CornetaToquedeOracion.wav', 'ARRIADO: Toque de Oración (Ocaso)')">
-            <span>🌇 ARRIADO AL OCASO (Oración)</span>
-            <span>🇪🇸</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/08Oraciondelanoche.mp3', 'Oración de la Noche')">
-            <span>Oración de la Noche</span>
-            <span>⚓</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
-            <span>Salve Marinera</span>
-            <span>🌊</span>
+          <button type="button" class="action-btn" id="btnModoArriado" onclick="setCeremonialModo('arriado')" style="justify-content:center; text-align:center; padding:10px;">
+            <span>🌇 ARRIADO AL OCASO</span>
           </button>
         </div>
+
+        <!-- PANEL DE PROGRAMACIÓN HORARIA -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:12px; font-weight:800; color:#38bdf8; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+            <span>⏰ PROGRAMACIÓN HORARIA</span>
+            <span style="font-size:11px; color:#94a3b8;" id="lblInfoOcaso"></span>
+          </div>
+
+          <!-- MODO IZADO: HORA FIJA (08:00 POR DEFECTO O MANUAL) -->
+          <div id="boxHoraIzado" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#f8fafc;">Hora de Izado:</div>
+              <div style="font-size:11px; color:#94a3b8;">Por defecto a las 08:00h (ajustable)</div>
+            </div>
+            <input type="time" id="inputHoraIzado" value="08:00" 
+              style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:800; padding:6px 10px; text-align:center;"
+              onchange="actualizarHoraObjetivo()">
+          </div>
+
+          <!-- MODO ARRIADO: MANUAL / LOCALIDAD / GPS -->
+          <div id="boxHoraArriado" style="display:none; flex-direction:column; gap:10px;">
+            <!-- SELECTOR DE FUENTE DE HORA DEL OCASO -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
+              <button type="button" class="action-btn primary" id="btnFuenteManual" onclick="setFuenteOcaso('manual')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                📝 Orden Diaria
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteBase" onclick="setFuenteOcaso('base')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                ⚓ Por Base
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteGps" onclick="setFuenteOcaso('gps')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                📡 Por GPS
+              </button>
+            </div>
+
+            <!-- ENTRADA MANUAL / ORDEN DIARIA -->
+            <div id="subBoxManual" style="display:flex; align-items:center; justify-content:space-between;">
+              <span style="font-size:12px; color:#cbd5e1;">Hora fijada por Orden Diaria:</span>
+              <input type="time" id="inputHoraArriadoManual" value="19:30" 
+                style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:15px; font-weight:800; padding:5px 8px; text-align:center;"
+                onchange="actualizarHoraObjetivo()">
+            </div>
+
+            <!-- POR BASE NAVAL -->
+            <div id="subBoxBase" style="display:none; flex-direction:column; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; color:#cbd5e1;">Seleccionar Base Naval:</span>
+                <span style="font-size:12px; font-weight:800; color:#38bdf8;" id="lblOcasoCalculadoBase">--:--</span>
+              </div>
+              <select id="selBaseNaval" style="width:100%; background:#0b152d; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; padding:6px 8px;" onchange="calcularOcasoBase()">
+                <option value="Rota">Base Naval de Rota (Cádiz)</option>
+                <option value="Ferrol">Arsenal Militar de Ferrol (A Coruña)</option>
+                <option value="Cartagena">Arsenal Militar de Cartagena (Murcia)</option>
+                <option value="San Fernando">Base Naval de La Carraca / San Fernando</option>
+                <option value="Las Palmas">Arsenal Militar de Las Palmas (Canarias)</option>
+                <option value="Marin">Escuela Naval Militar de Marín (Pontevedra)</option>
+                <option value="Mahon">Estación Naval de Mahón (Baleares)</option>
+              </select>
+            </div>
+
+            <!-- POR GPS EN LA MAR -->
+            <div id="subBoxGps" style="display:none; flex-direction:column; gap:6px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; color:#cbd5e1;">Posición real del buque:</span>
+                <span style="font-size:12px; font-weight:800; color:#38bdf8;" id="lblOcasoCalculadoGps">--:--</span>
+              </div>
+              <button type="button" class="action-btn" onclick="obtenerGpsYCalcularOcaso()" style="justify-content:center; font-size:11.5px; padding:6px;">
+                <span>📡 Leer Coordenadas GPS y Calcular Ocaso</span>
+              </button>
+              <div style="font-size:10px; color:#94a3b8;" id="lblCoordenadasGps">Coordenadas no leídas</div>
+            </div>
+          </div>
+
+          <!-- CUENTA ATRÁS Y HORA OBJETIVO -->
+          <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #1e3a8a; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:11px; color:#94a3b8; text-transform:uppercase;">Hora Ceremonial:</div>
+              <div style="font-size:18px; font-weight:900; color:#f8fafc;" id="lblHoraObjetivo">08:00</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:10px; color:#94a3b8; text-transform:uppercase;">Cuenta atrás:</div>
+              <div style="font-size:18px; font-weight:900; color:#38bdf8;" id="lblCuentaAtras">--:--:--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODO DE DISPARO: AUTOMÁTICO VS MANUAL -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:14px;">
+          <button type="button" class="action-btn primary" id="btnDisparoAuto" onclick="setModoDisparo('auto')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+            ⏱️ Disparo Automático
+          </button>
+          <button type="button" class="action-btn" id="btnDisparoManual" onclick="setModoDisparo('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+            👆 Control Manual (A la orden)
+          </button>
+        </div>
+
+        <!-- CONFIGURACIÓN CEREMONIAL Y CORTESÍA -->
+        <div style="background:#0f172a; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px;">
+          <div style="font-size:12px; font-weight:800; color:#38bdf8;">⚙️ OPCIONES CEREMONIALES</div>
+
+          <!-- ACOMPAÑAMIENTO AL MOVER LA BANDERA -->
+          <div>
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">Acompañamiento a la Bandera:</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
+              <button type="button" class="action-btn primary" id="btnAcompHimno" onclick="setAcompBandera('himno')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                🎺 Himno Nacional
+              </button>
+              <button type="button" class="action-btn" id="btnAcompChifle" onclick="setAcompBandera('chifle')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                📢 Solo Chifle
+              </button>
+              <button type="button" class="action-btn" id="btnAcompAmbos" onclick="setAcompBandera('ambos')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                🎺+📢 Ambos
+              </button>
+            </div>
+          </div>
+
+          <!-- BUQUES EXTRANJEROS EN PUERTO (CORTESÍA) -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Buques Extranjeros en Puerto:</div>
+              <span style="font-size:10.5px; color:#38bdf8; cursor:pointer;" onclick="toggleSelectorCortesia()">[+ Añadir País]</span>
+            </div>
+            <div style="font-size:10.5px; color:#94a3b8; margin-bottom:4px;">
+              Regla naval: suenan primero los himnos extranjeros y el <strong>Himno de España siempre de último</strong>.
+            </div>
+            <div id="listaCortesiaPaises" style="display:flex; flex-wrap:wrap; gap:4px; min-height:24px;">
+              <span style="font-size:11px; color:#64748b; font-style:italic;" id="lblSinCortesia">Ningún buque extranjero añadido</span>
+            </div>
+            <!-- DESPLEGABLE RÁPIDO PARA AÑADIR CORTESÍA -->
+            <div id="boxSelectorCortesia" style="display:none; margin-top:6px; background:#070d1e; padding:6px; border-radius:6px; border:1px solid #334155;">
+              <select id="selPaisCortesia" style="width:75%; background:#0b152d; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; padding:4px;" onchange="agregarPaisCortesia(this.value)">
+                <option value="">Seleccione país presente...</option>
+              </select>
+              <button type="button" class="action-btn" onclick="limpiarPaisesCortesia()" style="font-size:10px; padding:4px 6px;">Borrar</button>
+            </div>
+          </div>
+
+          <!-- OPCIÓN EXCLUSIVA DEL ARRIADO: ORACIÓN -->
+          <div id="rowOpcionOracion" style="display:none; flex-direction:column; gap:6px;">
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Modalidad de la Oración:</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:4px;">
+              <button type="button" class="action-btn primary" id="btnOracionVoz" onclick="setModalidadOracion('leida')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                📖 Leída
+              </button>
+              <button type="button" class="action-btn" id="btnOracionCantada" onclick="setModalidadOracion('cantada')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                🎶 Cantada
+              </button>
+              <button type="button" class="action-btn" id="btnOracionCorneta" onclick="setModalidadOracion('corneta')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                🎺 Corneta
+              </button>
+              <button type="button" class="action-btn" id="btnOracionNinguna" onclick="setModalidadOracion('ninguna')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                ✕ Ninguna
+              </button>
+            </div>
+          </div>
+
+          <!-- OPCIÓN EXCLUSIVA DEL ARRIADO: A LA BATERÍA (DOTACIÓN BUENAS NOCHES) -->
+          <div class="toggle-row" id="rowOpcionBuenasNoches" style="display:none; padding:4px 0;">
+            <div>
+              <div class="toggle-label" style="font-size:11.5px;">🌙 A la batería:</div>
+              <div class="toggle-desc" style="font-size:10px;">"Dotación, buenas noches" por altavoces</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkBuenasNoches" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- PANEL DE EJECUCIÓN (AUTOMÁTICA O MANUAL) -->
+        <div id="panelEjecucionAuto" style="margin-bottom:10px;">
+          <button type="button" class="action-btn primary" id="btnArmarCeremonial" onclick="toggleArmadoCeremonial()" style="width:100%; justify-content:center; padding:12px; font-size:13px; font-weight:900;">
+            <span>🛡️ ARMAR Y ESPERAR HORA CEREMONIAL</span>
+          </button>
+        </div>
+
+        <!-- BOTONES DE CONTROL MANUAL (A LA ORDEN DEL OFICIAL DE GUARDIA) -->
+        <div id="panelEjecucionManual" style="display:none; flex-direction:column; gap:6px; margin-bottom:10px;">
+          <div style="font-size:11.5px; font-weight:800; color:#38bdf8; margin-bottom:2px;">BOTONES DE MANDO MANUAL:</div>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(1)" style="justify-content:space-between;">
+            <span>1. 🗣️ Voz: "Señales a la bandera" (T-5 min)</span>
+            <span>📢</span>
+          </button>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(2)" style="justify-content:space-between;">
+            <span>2. 🗣️ Voz: "A la bandera frente a popa, presenten"</span>
+            <span>📢</span>
+          </button>
+          <button type="button" class="action-btn primary" onclick="ejecutarPasoManual(3)" style="justify-content:space-between;">
+            <span>3. 🇪🇸 Movimiento de Bandera (Chifle / Himnos)</span>
+            <span>🎺</span>
+          </button>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(4)" style="justify-content:space-between;">
+            <span>4. 🗣️ Voz: "Retirada de honores"</span>
+            <span>📢</span>
+          </button>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(5)" style="justify-content:space-between;">
+            <span>5. 📢 Chifle: Pitada de Retirada de Honores</span>
+            <span>⚓</span>
+          </button>
+          <button type="button" class="action-btn" id="btnManualPasoOracion" onclick="ejecutarPasoManual(6)" style="display:none; justify-content:space-between;">
+            <span>6. ⚓ Oración de la Noche</span>
+            <span>🌙</span>
+          </button>
+          <button type="button" class="action-btn" id="btnManualPasoBuenasNoches" onclick="ejecutarPasoManual(7)" style="display:none; justify-content:space-between;">
+            <span>7. 🌙 "Dotación, buenas noches"</span>
+            <span>🔊</span>
+          </button>
+        </div>
+
+        <!-- BOTÓN DE PARADA GENERAL -->
+        <button type="button" class="action-btn danger" onclick="cancelarCeremonialIzado()" style="width:100%; justify-content:center; padding:8px; font-size:11px; margin-top:4px;">
+          <span>⏹️ DETENER / DESARMAR CEREMONIAL</span>
+        </button>
       </div>
     </div>
 
-    <!-- VISTA 5: MÚSICA Y HIMNOS -->
+    <!-- VISTA 5::: MÚSICA Y HIMNOS -->
     <div class="view-section" id="viewMusica">
       <div class="card">
         <div class="card-title">Música Militar e Himnos de las Fuerzas Armadas</div>
@@ -515,7 +734,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792794823</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792823701</div>
 </footer>
 
   <script>
@@ -1412,6 +1631,512 @@ function _legacy_execAuth() {
       if (statusBox) statusBox.style.display = 'none';
       if (btnEj) btnEj.style.display = 'flex';
     }
+
+    
+    // ==========================================
+    // VISTA 4: MOTOR DE IZADO Y ARRIADO DE BANDERA
+    // ==========================================
+    let cerModo = 'izado'; // 'izado' | 'arriado'
+    let cerFuenteOcaso = 'manual'; // 'manual' | 'base' | 'gps'
+    let cerModoDisparo = 'auto'; // 'auto' | 'manual'
+    let cerAcompBandera = 'himno'; // 'himno' | 'chifle' | 'ambos'
+    let cerModalidadOracion = 'leida'; // 'leida' | 'cantada' | 'corneta' | 'ninguna'
+    let cerPaisesCortesia = []; // Lista de países extranjeros presentes
+    let cerHoraObjetivo = '08:00';
+    let cerArmado = false;
+    let cerTimerCuentaAtras = null;
+    let cerDisparoSenalesHecho = false;
+    let cerDisparoEjecutivaHecho = false;
+
+    const BASES_NAVALES = {
+      'Rota': { lat: 36.62, lon: -6.35, nombre: 'Base Naval de Rota (Cádiz)' },
+      'Ferrol': { lat: 43.48, lon: -8.23, nombre: 'Arsenal Militar de Ferrol (A Coruña)' },
+      'Cartagena': { lat: 37.60, lon: -0.98, nombre: 'Arsenal Militar de Cartagena (Murcia)' },
+      'San Fernando': { lat: 36.46, lon: -6.20, nombre: 'La Carraca / San Fernando (Cádiz)' },
+      'Las Palmas': { lat: 28.13, lon: -15.43, nombre: 'Arsenal Militar de Las Palmas' },
+      'Marin': { lat: 42.40, lon: -8.70, nombre: 'Escuela Naval Militar de Marín' },
+      'Mahon': { lat: 39.89, lon: 4.26, nombre: 'Estación Naval de Mahón' }
+    };
+
+    function setCeremonialModo(modo) {
+      cerModo = modo;
+      const btnIz = document.getElementById('btnModoIzado');
+      const btnArr = document.getElementById('btnModoArriado');
+      const boxIz = document.getElementById('boxHoraIzado');
+      const boxArr = document.getElementById('boxHoraArriado');
+      const badge = document.getElementById('badgeCeremonialActivo');
+      const rowOra = document.getElementById('rowOpcionOracion');
+      const rowBN = document.getElementById('rowOpcionBuenasNoches');
+      const btnManOra = document.getElementById('btnManualPasoOracion');
+      const btnManBN = document.getElementById('btnManualPasoBuenasNoches');
+
+      if (modo === 'izado') {
+        if (btnIz) btnIz.className = 'action-btn primary';
+        if (btnArr) btnArr.className = 'action-btn';
+        if (boxIz) boxIz.style.display = 'flex';
+        if (boxArr) boxArr.style.display = 'none';
+        if (badge) { badge.textContent = '🌅 IZADO'; badge.style.color = '#38bdf8'; }
+        if (rowOra) rowOra.style.display = 'none';
+        if (rowBN) rowBN.style.display = 'none';
+        if (btnManOra) btnManOra.style.display = 'none';
+        if (btnManBN) btnManBN.style.display = 'none';
+      } else {
+        if (btnIz) btnIz.className = 'action-btn';
+        if (btnArr) btnArr.className = 'action-btn primary';
+        if (boxIz) boxIz.style.display = 'none';
+        if (boxArr) boxArr.style.display = 'flex';
+        if (badge) { badge.textContent = '🌇 ARRIADO AL OCASO'; badge.style.color = '#fbbf24'; }
+        if (rowOra) rowOra.style.display = 'flex';
+        if (rowBN) rowBN.style.display = 'flex';
+        if (btnManOra) btnManOra.style.display = 'flex';
+        if (btnManBN) btnManBN.style.display = 'flex';
+        if (cerFuenteOcaso === 'base') calcularOcasoBase();
+      }
+      actualizarHoraObjetivo();
+    }
+
+    function setFuenteOcaso(fuente) {
+      cerFuenteOcaso = fuente;
+      const btnM = document.getElementById('btnFuenteManual');
+      const btnB = document.getElementById('btnFuenteBase');
+      const btnG = document.getElementById('btnFuenteGps');
+      const boxM = document.getElementById('subBoxManual');
+      const boxB = document.getElementById('subBoxBase');
+      const boxG = document.getElementById('subBoxGps');
+
+      if (btnM) btnM.className = 'action-btn' + (fuente === 'manual' ? ' primary' : '');
+      if (btnB) btnB.className = 'action-btn' + (fuente === 'base' ? ' primary' : '');
+      if (btnG) btnG.className = 'action-btn' + (fuente === 'gps' ? ' primary' : '');
+
+      if (boxM) boxM.style.display = (fuente === 'manual' ? 'flex' : 'none');
+      if (boxB) boxB.style.display = (fuente === 'base' ? 'flex' : 'none');
+      if (boxG) boxG.style.display = (fuente === 'gps' ? 'flex' : 'none');
+
+      if (fuente === 'base') calcularOcasoBase();
+      else if (fuente === 'manual') actualizarHoraObjetivo();
+    }
+
+    function calcularHoraOcaso(lat, lon, dateObj) {
+      const d = dateObj || new Date();
+      const start = new Date(d.getFullYear(), 0, 0);
+      const diff = d - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      const N = Math.floor(diff / oneDay);
+
+      const lngHour = lon / 15.0;
+      const t = N + ((18 - lngHour) / 24.0);
+      const M = (0.9856 * t) - 3.289;
+      const toRad = Math.PI / 180.0;
+      const toDeg = 180.0 / Math.PI;
+
+      let L = M + (1.916 * Math.sin(M * toRad)) + (0.020 * Math.sin(2 * M * toRad)) + 282.634;
+      L = (L % 360 + 360) % 360;
+
+      let RA = toDeg * Math.atan(0.91764 * Math.tan(L * toRad));
+      RA = (RA % 360 + 360) % 360;
+      const Lquadrant = Math.floor(L / 90.0) * 90;
+      const RAquadrant = Math.floor(RA / 90.0) * 90;
+      RA = (RA + (Lquadrant - RAquadrant)) / 15.0;
+
+      const sinDec = 0.39782 * Math.sin(L * toRad);
+      const cosDec = Math.cos(Math.asin(sinDec));
+      const zenith = 90.8333; // Ocaso oficial
+      const cosH = (Math.cos(zenith * toRad) - (sinDec * Math.sin(lat * toRad))) / (cosDec * Math.cos(lat * toRad));
+
+      if (cosH > 1 || cosH < -1) return null; // Noche polar o sol de medianoche
+
+      const H = (toDeg * Math.acos(cosH)) / 15.0;
+      const T = H + RA - (0.06571 * t) - 6.622;
+      let UT = (T - lngHour) % 24;
+      if (UT < 0) UT += 24;
+
+      // Convertir UT a hora local del navegador
+      const tzOffset = -d.getTimezoneOffset() / 60.0;
+      let localHours = (UT + tzOffset) % 24;
+      if (localHours < 0) localHours += 24;
+
+      const hh = Math.floor(localHours);
+      const mm = Math.round((localHours - hh) * 60);
+      return String(hh).padStart(2, '0') + ':' + String(mm % 60).padStart(2, '0');
+    }
+
+    function calcularOcasoBase() {
+      const sel = document.getElementById('selBaseNaval');
+      const baseKey = sel ? sel.value : 'Rota';
+      const coords = BASES_NAVALES[baseKey] || BASES_NAVALES['Rota'];
+      const ocasoStr = calcularHoraOcaso(coords.lat, coords.lon);
+      const lbl = document.getElementById('lblOcasoCalculadoBase');
+      if (lbl && ocasoStr) lbl.textContent = ocasoStr + 'h';
+      if (ocasoStr) {
+        cerHoraObjetivo = ocasoStr;
+        const lblObj = document.getElementById('lblHoraObjetivo');
+        if (lblObj) lblObj.textContent = ocasoStr;
+      }
+    }
+
+    function obtenerGpsYCalcularOcaso() {
+      const lblCoord = document.getElementById('lblCoordenadasGps');
+      const lblRes = document.getElementById('lblOcasoCalculadoGps');
+      if (lblCoord) lblCoord.textContent = 'Obteniendo posición GPS del buque...';
+
+      if (!('geolocation' in navigator)) {
+        if (lblCoord) lblCoord.textContent = 'Geolocalización no soportada en este navegador.';
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        if (lblCoord) lblCoord.textContent = `Lat: ${lat.toFixed(4)}°, Lon: ${lon.toFixed(4)}°`;
+        const ocaso = calcularHoraOcaso(lat, lon);
+        if (ocaso) {
+          if (lblRes) lblRes.textContent = ocaso + 'h';
+          cerHoraObjetivo = ocaso;
+          const lblObj = document.getElementById('lblHoraObjetivo');
+          if (lblObj) lblObj.textContent = ocaso;
+        }
+      }, err => {
+        if (lblCoord) lblCoord.textContent = 'Error GPS: ' + err.message + '. Usando posición Rota por defecto.';
+        calcularOcasoBase();
+      }, { timeout: 10000, enableHighAccuracy: true });
+    }
+
+    function actualizarHoraObjetivo() {
+      if (cerModo === 'izado') {
+        const inp = document.getElementById('inputHoraIzado');
+        cerHoraObjetivo = inp ? inp.value : '08:00';
+      } else {
+        if (cerFuenteOcaso === 'manual') {
+          const inp = document.getElementById('inputHoraArriadoManual');
+          cerHoraObjetivo = inp ? inp.value : '19:30';
+        } else if (cerFuenteOcaso === 'base') {
+          calcularOcasoBase();
+        }
+      }
+      const lblObj = document.getElementById('lblHoraObjetivo');
+      if (lblObj) lblObj.textContent = cerHoraObjetivo;
+    }
+
+    function setModoDisparo(modo) {
+      cerModoDisparo = modo;
+      const btnA = document.getElementById('btnDisparoAuto');
+      const btnM = document.getElementById('btnDisparoManual');
+      const pAuto = document.getElementById('panelEjecucionAuto');
+      const pMan = document.getElementById('panelEjecucionManual');
+
+      if (btnA) btnA.className = 'action-btn' + (modo === 'auto' ? ' primary' : '');
+      if (btnM) btnM.className = 'action-btn' + (modo === 'manual' ? ' primary' : '');
+
+      if (pAuto) pAuto.style.display = (modo === 'auto' ? 'block' : 'none');
+      if (pMan) pMan.style.display = (modo === 'manual' ? 'flex' : 'none');
+    }
+
+    function setAcompBandera(tipo) {
+      cerAcompBandera = tipo;
+      const bH = document.getElementById('btnAcompHimno');
+      const bC = document.getElementById('btnAcompChifle');
+      const bA = document.getElementById('btnAcompAmbos');
+
+      if (bH) bH.className = 'action-btn' + (tipo === 'himno' ? ' primary' : '');
+      if (bC) bC.className = 'action-btn' + (tipo === 'chifle' ? ' primary' : '');
+      if (bA) bA.className = 'action-btn' + (tipo === 'ambos' ? ' primary' : '');
+    }
+
+    function setModalidadOracion(mod) {
+      cerModalidadOracion = mod;
+      const bV = document.getElementById('btnOracionVoz');
+      const bC = document.getElementById('btnOracionCantada');
+      const bCor = document.getElementById('btnOracionCorneta');
+      const bN = document.getElementById('btnOracionNinguna');
+
+      if (bV) bV.className = 'action-btn' + (mod === 'leida' ? ' primary' : '');
+      if (bC) bC.className = 'action-btn' + (mod === 'cantada' ? ' primary' : '');
+      if (bCor) bCor.className = 'action-btn' + (mod === 'corneta' ? ' primary' : '');
+      if (bN) bN.className = 'action-btn' + (mod === 'ninguna' ? ' primary' : '');
+    }
+
+    function toggleSelectorCortesia() {
+      const box = document.getElementById('boxSelectorCortesia');
+      if (!box) return;
+      box.style.display = (box.style.display === 'none' ? 'flex' : 'none');
+      if (box.style.display === 'flex') {
+        const sel = document.getElementById('selPaisCortesia');
+        if (sel && sel.options.length <= 1) {
+          ANTHEMS_CATALOG.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.name;
+            opt.textContent = p.name;
+            sel.appendChild(opt);
+          });
+        }
+      }
+    }
+
+    function agregarPaisCortesia(nombrePais) {
+      if (!nombrePais || cerPaisesCortesia.includes(nombrePais)) return;
+      cerPaisesCortesia.push(nombrePais);
+      renderPaisesCortesia();
+      const sel = document.getElementById('selPaisCortesia');
+      if (sel) sel.value = '';
+    }
+
+    function limpiarPaisesCortesia() {
+      cerPaisesCortesia = [];
+      renderPaisesCortesia();
+    }
+
+    function renderPaisesCortesia() {
+      const cont = document.getElementById('listaCortesiaPaises');
+      if (!cont) return;
+      cont.innerHTML = '';
+      if (cerPaisesCortesia.length === 0) {
+        cont.innerHTML = '<span style="font-size:11px; color:#64748b; font-style:italic;">Ningún buque extranjero añadido</span>';
+        return;
+      }
+      cerPaisesCortesia.forEach((p, idx) => {
+        const badge = document.createElement('span');
+        badge.style.cssText = 'background:#1e3a8a; color:#38bdf8; font-size:11px; font-weight:700; padding:3px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;';
+        badge.innerHTML = `🎵 ${idx + 1}º ${p} <span style="cursor:pointer; color:#ef4444; font-weight:900;" onclick="eliminarPaisCortesia('${p}')">×</span>`;
+        cont.appendChild(badge);
+      });
+    }
+
+    function eliminarPaisCortesia(p) {
+      cerPaisesCortesia = cerPaisesCortesia.filter(x => x !== p);
+      renderPaisesCortesia();
+    }
+
+    // RELOJ CONTINUO Y EVALUACIÓN DE DISPARO
+    function iniciarRelojCeremonial() {
+      setInterval(() => {
+        const now = new Date();
+        const [objH, objM] = cerHoraObjetivo.split(':').map(Number);
+        const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), objH, objM, 0, 0);
+
+        let diffMs = target - now;
+        if (diffMs < -30000) {
+          // Si ya pasó la hora de hoy, apunta al día siguiente
+          target.setDate(target.getDate() + 1);
+          diffMs = target - now;
+        }
+
+        const diffSec = Math.floor(diffMs / 1000);
+        const hh = Math.floor(diffSec / 3600);
+        const mm = Math.floor((diffSec % 3600) / 60);
+        const ss = diffSec % 60;
+
+        const lblCd = document.getElementById('lblCuentaAtras');
+        if (lblCd) {
+          lblCd.textContent = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+        }
+
+        // EVALUACIÓN DE DISPARO AUTOMÁTICO (SI ESTÁ ARMADO)
+        if (cerArmado && cerModoDisparo === 'auto') {
+          // A T-5 min exactos (300 segundos, tolerancia +/- 1s)
+          if (diffSec <= 300 && diffSec > 290 && !cerDisparoSenalesHecho) {
+            cerDisparoSenalesHecho = true;
+            ejecutarPasoManual(1); // Voz Señales a la bandera
+          }
+
+          // A T-0 exactos (0 segundos)
+          if (diffSec <= 0 && diffSec > -5 && !cerDisparoEjecutivaHecho) {
+            cerDisparoEjecutivaHecho = true;
+            iniciarSecuenciaCompletaAuto();
+          }
+        }
+      }, 1000);
+    }
+
+    function toggleArmadoCeremonial() {
+      cerArmado = !cerArmado;
+      const btn = document.getElementById('btnArmarCeremonial');
+      if (btn) {
+        if (cerArmado) {
+          cerDisparoSenalesHecho = false;
+          cerDisparoEjecutivaHecho = false;
+          btn.className = 'action-btn danger';
+          btn.innerHTML = '<span>🛡️ CEREMONIAL ARMADO (ESPERANDO HORA) — TOCAR PARA DESARMAR</span>';
+          actualizarStatus(`🛡️ Ceremonial ${cerModo.toUpperCase()} armado para las ${cerHoraObjetivo}h`);
+        } else {
+          btn.className = 'action-btn primary';
+          btn.innerHTML = '<span>🛡️ ARMAR Y ESPERAR HORA CEREMONIAL</span>';
+          cerrarStatus();
+        }
+      }
+    }
+
+    function cancelarCeremonialIzado() {
+      cerArmado = false;
+      cerDisparoSenalesHecho = false;
+      cerDisparoEjecutivaHecho = false;
+      const btn = document.getElementById('btnArmarCeremonial');
+      if (btn) {
+        btn.className = 'action-btn primary';
+        btn.innerHTML = '<span>🛡️ ARMAR Y ESPERAR HORA CEREMONIAL</span>';
+      }
+      stopAllAudio();
+    }
+
+    // SECUENCIA AUTOMÁTICA COMPLETA AL LLEGAR A T-0
+    function iniciarSecuenciaCompletaAuto() {
+      // 1. Voz "A la bandera frente a popa, presenten"
+      ejecutarPasoDirectoConAudio(document.getElementById('audAlabandera'), '2. 🗣️ A la bandera frente a popa, presenten', () => {
+        // 2. Movimiento de Bandera (Chifle / Himnos cortesía + España)
+        ejecutarMovimientoBanderaCompleto(() => {
+          // 3. Voz "Retirada de honores"
+          ejecutarPasoDirectoConAudio(document.getElementById('audRetiradaHonoresVoz'), '4. 🗣️ Retirada de honores', () => {
+            // 4. Pitada de Retirada de Chifle
+            ejecutarPasoDirectoConAudio(document.getElementById('audRetiradaChifle'), '5. 📢 Chifle: Retirada de honores', () => {
+              // 5. Si es arriado, Oración de la Noche
+              if (cerModo === 'arriado' && cerModalidadOracion !== 'ninguna') {
+                ejecutarOracion(() => {
+                  // 6. Dotación buenas noches
+                  const chkBN = document.getElementById('chkBuenasNoches');
+                  if (chkBN && chkBN.checked) {
+                    ejecutarPasoDirectoConAudio(document.getElementById('audDotacionBuenasNoches'), '7. 🌙 Dotación, buenas noches', () => {
+                      actualizarStatus('✅ Ceremonial de Arriado completado.');
+                      setTimeout(cerrarStatus, 4000);
+                    });
+                  } else {
+                    actualizarStatus('✅ Ceremonial de Arriado completado.');
+                    setTimeout(cerrarStatus, 4000);
+                  }
+                });
+              } else {
+                actualizarStatus('✅ Ceremonial de Izado completado.');
+                setTimeout(cerrarStatus, 4000);
+              }
+            });
+          });
+        });
+      });
+    }
+
+    // EJECUCIÓN MANUAL PASO A PASO
+    function ejecutarPasoManual(paso) {
+      if (paso === 1) {
+        ejecutarPasoDirectoConAudio(document.getElementById('audSenales'), '1/5 🗣️ Voz: "Señales a la bandera" (Aviso T-5 min)');
+      } else if (paso === 2) {
+        ejecutarPasoDirectoConAudio(document.getElementById('audAlabandera'), '2/5 🗣️ Voz: "A la bandera frente a popa, presenten"');
+      } else if (paso === 3) {
+        ejecutarMovimientoBanderaCompleto();
+      } else if (paso === 4) {
+        ejecutarPasoDirectoConAudio(document.getElementById('audRetiradaHonoresVoz'), '4/5 🗣️ Voz: "Retirada de honores"');
+      } else if (paso === 5) {
+        ejecutarPasoDirectoConAudio(document.getElementById('audRetiradaChifle'), '5/5 📢 Chifle: Retirada de honores');
+      } else if (paso === 6) {
+        ejecutarOracion();
+      } else if (paso === 7) {
+        ejecutarPasoDirectoConAudio(document.getElementById('audDotacionBuenasNoches'), '🌙 Dotación, buenas noches');
+      }
+    }
+
+    function ejecutarPasoDirectoConAudio(elAudio, etiqueta, onFin) {
+      if (!elAudio) {
+        if (onFin) onFin();
+        return;
+      }
+      actualizarStatus(etiqueta);
+      elAudio.currentTime = 0;
+      elAudio.muted = false;
+      let cerrado = false;
+
+      function fin() {
+        if (cerrado) return;
+        cerrado = true;
+        if (onFin) setTimeout(onFin, 600);
+      }
+
+      elAudio.onended = fin;
+      let p = elAudio.play();
+      let dur = (elAudio.duration && !isNaN(elAudio.duration)) ? (elAudio.duration * 1000 + 1000) : 10000;
+      setTimeout(() => { if (!cerrado) fin(); }, dur);
+
+      if (p !== undefined) {
+        p.catch(e => { console.warn('Audio play err:', e); fin(); });
+      }
+    }
+
+    function ejecutarMovimientoBanderaCompleto(callbackFin) {
+      // Si es solo chifle:
+      if (cerAcompBandera === 'chifle') {
+        ejecutarPasoDirectoConAudio(document.getElementById('audChifleLargo'), '3. 📢 Izado/Arriado con Pitada de Chifle', callbackFin);
+        return;
+      }
+
+      // Si hay chifle simultáneo con himno:
+      if (cerAcompBandera === 'ambos') {
+        const chifle = document.getElementById('audChifleLargo');
+        if (chifle) {
+          chifle.currentTime = 0;
+          chifle.play().catch(e => console.warn(e));
+        }
+      }
+
+      // Construcción de la cola de himnos:
+      // Primero los países extranjeros presentes en puerto
+      // Y SIEMPRE EL HIMNO NACIONAL DE ESPAÑA DE ÚLTIMO
+      let cola = [];
+      cerPaisesCortesia.forEach(pNombre => {
+        const item = ANTHEMS_CATALOG.find(a => a.name.toLowerCase() === pNombre.toLowerCase());
+        if (item) {
+          cola.push({ url: item.url, label: 'CORTESÍA EXTRANJERA: ' + item.name });
+        }
+      });
+      // El Himno de España completo de último
+      const elEsp = document.getElementById('audHimnoLargo') || document.getElementById('audHimnoCorto');
+      cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA' });
+
+      reproducirColaBandera(cola, callbackFin);
+    }
+
+    function reproducirColaBandera(cola, onFin) {
+      if (cola.length === 0) {
+        if (onFin) onFin();
+        return;
+      }
+      const item = cola.shift();
+      actualizarStatus('3. 🇪🇸 ' + item.label);
+
+      let audioEl = item.el;
+      if (!audioEl && item.url) {
+        audioEl = document.getElementById('audHimnoExtranjero');
+        if (audioEl) audioEl.src = item.url;
+      }
+
+      ejecutarPasoDirectoConAudio(audioEl, '3. 🇪🇸 ' + item.label, () => {
+        if (cola.length > 0) {
+          setTimeout(() => reproducirColaBandera(cola, onFin), 1200);
+        } else {
+          if (onFin) onFin();
+        }
+      });
+    }
+
+    function ejecutarOracion(onFin) {
+      let elOra = null;
+      let lbl = 'Oración de la Noche';
+      if (cerModalidadOracion === 'leida') {
+        elOra = document.getElementById('audOracionLeida');
+        lbl = '6. 📖 Oración de la Noche (Leída)';
+      } else if (cerModalidadOracion === 'cantada') {
+        elOra = document.getElementById('audOracionCantada');
+        lbl = '6. 🎶 Oración Marinera (Cantada)';
+      } else if (cerModalidadOracion === 'corneta') {
+        elOra = document.getElementById('audOracionCorneta');
+        lbl = '6. 🎺 Toque de Oración a Corneta';
+      }
+
+      if (elOra) {
+        ejecutarPasoDirectoConAudio(elOra, lbl, onFin);
+      } else {
+        if (onFin) onFin();
+      }
+    }
+
+
+    // Iniciar reloj ceremonial
+    iniciarRelojCeremonial();
 
     // Inicializar lista al arrancar
     renderAuthList();
