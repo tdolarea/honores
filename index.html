@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792824768';
+    const APP_VERSION = 'v1792824863';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -481,10 +481,10 @@
         <!-- SELECTOR DE CEREMONIAL: IZADO VS ARRIADO -->
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
           <button type="button" class="action-btn primary" id="btnModoIzado" onclick="setCeremonialModo('izado')" style="justify-content:center; text-align:center; padding:10px;">
-            <span>🌅 IZADO DE BANDERA</span>
+            <span>🌅 IZADO</span>
           </button>
           <button type="button" class="action-btn" id="btnModoArriado" onclick="setCeremonialModo('arriado')" style="justify-content:center; text-align:center; padding:10px;">
-            <span>🌇 ARRIADO AL OCASO</span>
+            <span>🌇 ARRIADO</span>
           </button>
         </div>
 
@@ -731,7 +731,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792824768</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792824863</div>
 </footer>
 
   <script>
