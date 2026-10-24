@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792829724';
+    const APP_VERSION = 'v1792832415';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -177,8 +177,8 @@
   <audio id="audSenales" src="audio/senalesalabandera.mp3" preload="auto" playsinline></audio>
   <audio id="audAlabandera" src="audio/alabanderafrenteapopapresenten.mp3" preload="auto" playsinline></audio>
   <audio id="audChifleLargo" src="audio/chiflecompletobanderalargo.mp3" preload="auto" playsinline></audio>
-  <audio id="audRetiradaHonoresVoz" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
-  <audio id="audRetiradaChifle" src="audio/retiradaComteoAlmte.mp3" preload="auto" playsinline></audio>
+  <audio id="audRetiradaHonoresVoz" src="audio/VOZretiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audRetiradaChifle" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
   <audio id="audOracionLeida" src="audio/VOZORACION.mp3" preload="auto" playsinline></audio>
   <audio id="audOracionCantada" src="audio/OraciondelaNoche.mp3" preload="auto" playsinline></audio>
   <audio id="audOracionCorneta" src="audio/CornetaToquedeOracion.wav" preload="auto" playsinline></audio>
@@ -670,7 +670,7 @@
             <span>📢</span>
           </button>
           <button type="button" class="action-btn primary" onclick="ejecutarPasoManual(3)" style="justify-content:space-between;">
-            <span>3. 🇪🇸 Movimiento de Bandera (Chifle / Himnos)</span>
+            <span>3. 🇪🇸 Movimiento de Bandera (Himno breve / Chifle)</span>
             <span>🎺</span>
           </button>
           <button type="button" class="action-btn" onclick="ejecutarPasoManual(4)" style="justify-content:space-between;">
@@ -727,7 +727,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792829724</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792832415</div>
 </footer>
 
   <script>
@@ -2011,18 +2011,18 @@ function _legacy_execAuth() {
     }
 
     function iniciarSecuenciaCompletaAuto() {
-      // 1. Voz "A la bandera frente a popa, presenten"
+      // 1. Voz: "A la bandera frente a popa, presenten"
       reproducirAudioCeremonialPaso(document.getElementById('audAlabandera'), '2. 🗣️ A la bandera frente a popa, presenten', () => {
-        // 2. Movimiento de Bandera (Chifle / Himnos cortesía + España)
+        // 2. Movimiento de Bandera (Himno Nacional breve y/o chifle)
         ejecutarMovimientoBanderaCompleto(() => {
-          // 3. Voz "Retirada de honores"
-          reproducirAudioCeremonialPaso(document.getElementById('audRetiradaHonoresVoz'), '4. 🗣️ Retirada de honores', () => {
-            // 4. Pitada de Retirada de Chifle
+          // 3. Voz: "Retirada de honores"
+          reproducirAudioCeremonialPaso(document.getElementById('audRetiradaHonoresVoz'), '4. 🗣️ Voz: Retirada de honores', () => {
+            // 4. Chifle: Pitada de Retirada de honores
             reproducirAudioCeremonialPaso(document.getElementById('audRetiradaChifle'), '5. 📢 Chifle: Retirada de honores', () => {
-              // 5. Si es arriado, Oración de la Noche
+              // 5. Si es arriado: Oración de la Noche
               if (cerModo === 'arriado' && cerModalidadOracion !== 'ninguna') {
                 ejecutarOracion(() => {
-                  // 6. Dotación buenas noches
+                  // 6. Dotación, buenas noches
                   const chkBN = document.getElementById('chkBuenasNoches');
                   if (chkBN && chkBN.checked) {
                     reproducirAudioCeremonialPaso(document.getElementById('audDotacionBuenasNoches'), '7. 🌙 Dotación, buenas noches', () => {
@@ -2045,6 +2045,24 @@ function _legacy_execAuth() {
     }
 
     // EJECUCIÓN MANUAL PASO A PASO
+    function ejecutarPasoManual(paso) {
+      if (paso === 1) {
+        reproducirAudioCeremonialPaso(document.getElementById('audSenales'), '1/5 🗣️ Voz: "Señales a la bandera" (Aviso T-5 min)');
+      } else if (paso === 2) {
+        reproducirAudioCeremonialPaso(document.getElementById('audAlabandera'), '2/5 🗣️ Voz: "A la bandera frente a popa, presenten"');
+      } else if (paso === 3) {
+        ejecutarMovimientoBanderaCompleto();
+      } else if (paso === 4) {
+        reproducirAudioCeremonialPaso(document.getElementById('audRetiradaHonoresVoz'), '4/5 🗣️ Voz: "Retirada de honores"');
+      } else if (paso === 5) {
+        reproducirAudioCeremonialPaso(document.getElementById('audRetiradaChifle'), '5/5 📢 Chifle: Retirada de honores');
+      } else if (paso === 6) {
+        ejecutarOracion();
+      } else if (paso === 7) {
+        reproducirAudioCeremonialPaso(document.getElementById('audDotacionBuenasNoches'), '🌙 Dotación, buenas noches');
+      }
+    }
+
     function ejecutarPasoManual(paso) {
       if (paso === 1) {
         reproducirAudioCeremonialPaso(document.getElementById('audSenales'), '1/5 🗣️ Voz: "Señales a la bandera" (Aviso T-5 min)');
@@ -2119,8 +2137,8 @@ function _legacy_execAuth() {
         }
       });
       // Himno Nacional de España completo de último
-      const elEsp = document.getElementById('audHimnoLargo') || document.getElementById('audHimnoCorto');
-      cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA' });
+      const elEsp = document.getElementById('audHimnoCorto');
+      cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA (breve)' });
 
       reproducirColaBanderaSecuencial(cola, callbackFin);
     }

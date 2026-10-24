@@ -1,4 +1,4 @@
-// SW Honores PWA v1792829724
+// SW Honores PWA v1792832415
 self.addEventListener('install', e => {
   self.skipWaiting();
 });
@@ -9,10 +9,5 @@ self.addEventListener('activate', e => {
   );
 });
 self.addEventListener('fetch', e => {
-  // Network first para index.html y sw.js
-  if (e.request.mode === 'navigate' || e.request.url.includes('index.html')) {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-  } else {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-  }
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
