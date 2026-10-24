@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792835821';
+    const APP_VERSION = 'v1792836604';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -669,8 +669,8 @@
             <span>2. 🗣️ Voz: "A la bandera frente a popa, presenten"</span>
             <span>📢</span>
           </button>
-          <button type="button" class="action-btn primary" onclick="ejecutarPasoManual(3)" style="justify-content:space-between;">
-            <span>3. 🇪🇸 Movimiento de Bandera (Himno breve / Chifle)</span>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(3)" style="justify-content:space-between;">
+            <span>3. 🇪🇸 Himno / Chifle</span>
             <span>🎺</span>
           </button>
           <button type="button" class="action-btn" onclick="ejecutarPasoManual(4)" style="justify-content:space-between;">
@@ -727,7 +727,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792835821</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792836604</div>
 </footer>
 
   <script>
@@ -2063,33 +2063,12 @@ function _legacy_execAuth() {
       }
     }
 
-    function ejecutarPasoManual(paso) {
-      if (paso === 1) {
-        reproducirAudioCeremonialPaso(document.getElementById('audSenales'), '1/5 🗣️ Voz: "Señales a la bandera" (Aviso T-5 min)');
-      } else if (paso === 2) {
-        reproducirAudioCeremonialPaso(document.getElementById('audAlabandera'), '2/5 🗣️ Voz: "A la bandera frente a popa, presenten"');
-      } else if (paso === 3) {
-        ejecutarMovimientoBanderaCompleto();
-      } else if (paso === 4) {
-        reproducirAudioCeremonialPaso(document.getElementById('audRetiradaHonoresVoz'), '4/5 🗣️ Voz: "Retirada de honores"');
-      } else if (paso === 5) {
-        reproducirAudioCeremonialPaso(document.getElementById('audRetiradaChifle'), '5/5 📢 Chifle: Retirada de honores');
-      } else if (paso === 6) {
-        ejecutarOracion();
-      } else if (paso === 7) {
-        reproducirAudioCeremonialPaso(document.getElementById('audDotacionBuenasNoches'), '🌙 Dotación, buenas noches');
-      }
-    }
-
-    // Reproductor ceremonial estricto: NUNCA corta antes de tiempo ni solapa
     function reproducirAudioCeremonialPaso(elAudio, etiqueta, onFin) {
       if (!elAudio) {
         if (onFin) onFin();
         return;
       }
       actualizarStatus(etiqueta);
-      elAudio.currentTime = 0;
-      elAudio.muted = false;
       let cerrado = false;
 
       function avanzar() {
@@ -2100,21 +2079,41 @@ function _legacy_execAuth() {
         }
       }
 
+      try {
+        elAudio.currentTime = 0;
+        elAudio.muted = false;
+      } catch(e) {}
+
       elAudio.onended = avanzar;
 
       let p = elAudio.play();
       if (p !== undefined) {
         p.catch(e => {
           console.warn('Audio play err:', etiqueta, e);
-          avanzar();
+          // Si falló el play directo por política de navegador o carga, intentar con audGeneral
+          try {
+            audGeneral.src = elAudio.src || elAudio.currentSrc;
+            audGeneral.currentTime = 0;
+            audGeneral.muted = false;
+            audGeneral.onended = avanzar;
+            audGeneral.play().catch(err2 => {
+              console.warn('Fallback audGeneral err:', err2);
+              avanzar();
+            });
+          } catch(e3) {
+            avanzar();
+          }
         });
       }
     }
 
     function ejecutarMovimientoBanderaCompleto(callbackFin) {
+      stopAllAudio();
+
       // 1. Si es SOLO CHIFLE:
       if (cerAcompBandera === 'chifle') {
-        reproducirAudioCeremonialPaso(document.getElementById('audChifleLargo'), '3. 📢 Izado/Arriado con Pitada de Chifle', callbackFin);
+        const chifle = document.getElementById('audChifleLargo');
+        reproducirAudioCeremonialPaso(chifle, '3. 📢 Pitada de Chifle', callbackFin);
         return;
       }
 
@@ -2122,13 +2121,15 @@ function _legacy_execAuth() {
       if (cerAcompBandera === 'ambos') {
         const chifle = document.getElementById('audChifleLargo');
         if (chifle) {
-          chifle.currentTime = 0;
-          chifle.play().catch(e => console.warn('Chifle ambos err:', e));
+          try {
+            chifle.currentTime = 0;
+            chifle.muted = false;
+            chifle.play().catch(e => console.warn('Chifle ambos err:', e));
+          } catch(e) {}
         }
       }
 
-      // 3. Cola de himnos:
-      // Primero países extranjeros si los hay, y SIEMPRE España de último
+      // 3. Cola de himnos (países extranjeros primero si los hay)
       let cola = [];
       cerPaisesCortesia.forEach(pNombre => {
         const item = ANTHEMS_CATALOG.find(a => a.name.toLowerCase() === pNombre.toLowerCase());
@@ -2136,8 +2137,14 @@ function _legacy_execAuth() {
           cola.push({ url: item.url, label: 'CORTESÍA: ' + item.name });
         }
       });
-      // Himno Nacional de España completo de último
-      const elEsp = document.getElementById('audHimnoCorto');
+
+      // Himno Nacional de España (breve)
+      let elEsp = document.getElementById('audHimnoCorto');
+      if (!elEsp) {
+        elEsp = new Audio('audio/Espania_corto.mp3');
+      } else {
+        elEsp.src = 'audio/Espania_corto.mp3';
+      }
       cola.push({ el: elEsp, label: 'HIMNO NACIONAL DE ESPAÑA (breve)' });
 
       reproducirColaBanderaSecuencial(cola, callbackFin);
