@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792935158';
+    const APP_VERSION = 'v1792938242';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -276,98 +276,23 @@
     
 
     <!-- VISTA 1: PORTALÓN -->
-        <!-- VISTA 1: CHIFLE -->
-    <div class="view-section active" id="viewPortalon">
-      <div class="card" style="margin-bottom:14px;">
-        <!-- CABECERA CON GRÁFICO OFICIAL DEL CHIFLE -->
-        <div style="display:flex; justify-content:center; align-items:center; padding:4px 0 10px 0;">
-          <img src="img/CHFLE.jpg" alt="Chifle Marinero de la Armada" style="max-height:85px; border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,0.4); object-fit:contain;">
-        </div>
-
-        <!-- REPRODUCTOR / ESTADO DE CHIFLE CON BOTÓN DE APAGADO ROJO ENTERO -->
-        <div id="playerChifleActivo" style="display:none; background:#0b152d; border:1.5px solid #ef4444; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
-          <div style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:6px;">
-            ▶️ CHIFLEANDO: <span style="color:#f8fafc; font-size:13px;" id="lblChifleActivoTxt">--</span>
-          </div>
-          <button type="button" class="action-btn danger" onclick="detenerChifleGeneral()" style="width:100%; justify-content:center; padding:10px; font-size:13px; font-weight:900; background:#dc2626; border-color:#ef4444; color:#fff; box-shadow:0 2px 8px rgba(239,68,68,0.4);">
-            ⏹️ DETENER CHIFLE / CORTAR PITADA
+    <div class="view-section" id="viewPortalon">
+      <div class="card">
+        <div class="card-title">Chifle en el Portalón (Ceremonial Naval)</div>
+        <div class="btn-grid" style="grid-template-columns: 1fr;">
+          <button class="action-btn primary" id="btnChifleMando" style="padding:16px;" onclick="tocarChifleMando()">
+            <span style="font-size:14px;">🎺 CHIFLE Almirante o Comandante</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn primary disabled" id="btnChifleRetirada" style="padding:16px;" onclick="tocarChifleRetirada()">
+            <span style="font-size:14px;">🎺 CHIFLE Retirada Almte / Comte</span>
+            
+          </button>
+          <button class="action-btn primary" id="btnChifleOficiales" style="padding:16px;" onclick="tocarChifleOficiales()">
+            <span style="font-size:14px;">🎺 CHIFLE Oficiales</span>
+            <span>⚓</span>
           </button>
         </div>
-
-        <!-- BLOQUE 1: PORTALÓN -->
-        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
-          <div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span>⚓ 1. PORTALÓN</span>
-          </div>
-          <div class="btn-grid" style="grid-template-columns: 1fr; gap:6px;">
-            <button type="button" class="action-btn primary" id="btnChifleMando" style="padding:12px;" onclick="tocarChifleMando()">
-              <span style="font-size:13.5px;">🎺 CHIFLE Almirante o Comandante</span>
-              <span>⚓</span>
-            </button>
-            <button type="button" class="action-btn primary disabled" id="btnChifleRetirada" style="padding:12px;" onclick="tocarChifleRetirada()">
-              <span style="font-size:13.5px;">🎺 CHIFLE Retirada Almte / Comte</span>
-              <span>⚓</span>
-            </button>
-            <button type="button" class="action-btn primary" id="btnChifleOficiales" style="padding:12px;" onclick="tocarChifleOficiales()">
-              <span style="font-size:13.5px;">🎺 CHIFLE Oficiales</span>
-              <span>⚓</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- BLOQUE 2: MANIOBRA -->
-        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
-          <div style="font-size:12.5px; font-weight:800; color:#38bdf8; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span>⚓ 2. MANIOBRA</span>
-          </div>
-          <!-- FILA 1: BÁSICOS DE MANIOBRA -->
-          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin-bottom:6px;">
-            <button type="button" class="action-btn" onclick="tocarChifleDirecto('audio/MANentrar.mp3', 'Maniobra: ENTRA')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:4px;">
-              <span style="font-size:15px;">📥</span>
-              <span style="font-size:11.5px; font-weight:800;">ENTRA</span>
-            </button>
-            <button type="button" class="action-btn" onclick="tocarChifleDirecto('audio/MANforte.mp3', 'Maniobra: FORTE')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:4px;">
-              <span style="font-size:15px;">🛑</span>
-              <span style="font-size:11.5px; font-weight:800;">FORTE</span>
-            </button>
-            <button type="button" class="action-btn" onclick="tocarChifleDirecto('audio/MANlargar.mp3', 'Maniobra: LARGAR')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:4px;">
-              <span style="font-size:15px;">📤</span>
-              <span style="font-size:11.5px; font-weight:800;">LARGAR</span>
-            </button>
-          </div>
-          <!-- FILA 2: MANIOBRA RAS (APROVISIONAMIENTO EN LA MAR) -->
-          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
-            <button type="button" class="action-btn" onclick="tocarChifleDirecto('https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_listo_y_a_cubierto.mp3', 'RAS: Listo y a cubierto')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:3px;">
-              <span style="font-size:15px;">🛡️</span>
-              <span style="font-size:10px; font-weight:800; line-height:1.2;">Listo y a cubierto</span>
-            </button>
-            <button type="button" class="action-btn" onclick="tocarChifleDirecto('https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_pasada_la_maniobra.mp3', 'RAS: Pasada la maniobra')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:3px;">
-              <span style="font-size:15px;">⚓</span>
-              <span style="font-size:10px; font-weight:800; line-height:1.2;">Pasada la maniobra</span>
-            </button>
-            <button type="button" class="action-btn" onclick="tocarChifleDirecto('https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_voy_a_lanzar_guias.mp3', 'RAS: Voy a lanzar guías')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:3px;">
-              <span style="font-size:15px;">🎯</span>
-              <span style="font-size:10px; font-weight:800; line-height:1.2;">Voy a lanzar guías</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- BLOQUE 3: JUAN SEBASTIÁN DE ELCANO -->
-        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12.5px; font-weight:800; color:#38bdf8;">⛵ 3. JUAN SEBASTIÁN DE ELCANO</span>
-            <span style="font-size:10.5px; color:#94a3b8;" id="lblElcanoCount">22 Toques</span>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <select id="selChifleJSE" style="flex:1; background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:8px;">
-              <option value="">Seleccione toque de Elcano...</option>
-            </select>
-            <button type="button" class="action-btn primary" onclick="tocarChifleJSE()" style="padding:8px 12px; font-size:12px; min-height:36px;">
-              ▶️ Tocar
-            </button>
-          </div>
-        </div>
-
       </div>
     </div>
 
@@ -881,176 +806,27 @@
     </div>
 
     <!-- VISTA 5::: MÚSICA Y HIMNOS -->
-        <!-- VISTA 4: REPOSITORIO DE MÚSICA MILITAR -->
     <div class="view-section" id="viewMusica">
-      <div class="card" style="margin-bottom:14px;">
-        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-          <span>🎼 MÚSICA MILITAR Y CORNETA</span>
-          <span style="font-size:11px; color:#38bdf8; font-weight:700;">Canales Simultáneos</span>
+      <div class="card">
+        <div class="card-title">Música Militar e Himnos de las Fuerzas Armadas</div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="playAudio('audio/Himno_nacional_de_Espana.mp3', 'Himno Nacional de España (Completo)')">
+            <span>Himno Nacional (Banda)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/MarchadeInfantes.mp3', 'Marcha de Infantes')">
+            <span>Marcha de Infantes</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
+            <span>Salve Marinera</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/Espania_corto.mp3', 'Marcha Real (Versión Breve)')">
+            <span>Marcha Real (Breve)</span>
+            <span>🇪🇸</span>
+          </button>
         </div>
-        <div style="font-size:11.5px; color:#94a3b8; line-height:1.4; margin-bottom:12px;">
-          Banda y Corneta pueden sonar <strong>simultáneamente</strong> para dar órdenes de mando mientras suena la música. Diseñe y guarde playlists para ensayos de desfiles.
-        </div>
-
-        <!-- MONITOR DE CANALES DE AUDIO ACTIVOS (BANDA Y CORNETA INDEPENDIENTES) -->
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
-          <!-- CANAL BANDA -->
-          <div id="boxCanalBanda" style="background:#0b152d; border:1px solid #1e3a8a; border-radius:6px; padding:8px; display:flex; flex-direction:column; justify-content:space-between; min-height:60px;">
-            <div>
-              <div style="font-size:10px; font-weight:800; color:#fbbf24; text-transform:uppercase;">🎺 CANAL BANDA:</div>
-              <div style="font-size:11.5px; font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="lblCanalBandaTxt">En silencio</div>
-            </div>
-            <button type="button" class="action-btn danger" id="btnStopBanda" onclick="detenerCanalBanda()" style="display:none; width:100%; justify-content:center; padding:5px; font-size:11px; font-weight:800; background:#dc2626; border-color:#ef4444; color:#fff; margin-top:6px;">
-              ⏹️ PARAR BANDA
-            </button>
-          </div>
-          <!-- CANAL CORNETA -->
-          <div id="boxCanalCorneta" style="background:#0b152d; border:1px solid #1e3a8a; border-radius:6px; padding:8px; display:flex; flex-direction:column; justify-content:space-between; min-height:60px;">
-            <div>
-              <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase;">📯 CANAL CORNETA:</div>
-              <div style="font-size:11.5px; font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="lblCanalCornetaTxt">En silencio</div>
-            </div>
-            <button type="button" class="action-btn danger" id="btnStopCorneta" onclick="detenerCanalCorneta()" style="display:none; width:100%; justify-content:center; padding:5px; font-size:11px; font-weight:800; background:#dc2626; border-color:#ef4444; color:#fff; margin-top:6px;">
-              ⏹️ PARAR CORNETA
-            </button>
-          </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- BLOQUE 1: BANDA DE MÚSICA (UNIFICADA)    -->
-        <!-- ========================================== -->
-        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
-          <div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:10px;">
-            🎺 BLOQUE 1: BANDA DE MÚSICA
-          </div>
-
-          <!-- SELECTORES DE BANDA (4 CATEGORÍAS) -->
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:10px;">
-            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
-              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">🎺 Marchas (21):</div>
-              <select id="selMarchasClasicas" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selMarchasClasicas')">
-                <option value="">Seleccione...</option>
-              </select>
-            </div>
-            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
-              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">🎖️ Cuerpos (14):</div>
-              <select id="selHimnosCuerpos" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selHimnosCuerpos')">
-                <option value="">Seleccione...</option>
-              </select>
-            </div>
-            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
-              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">⚓ Religiosa (5):</div>
-              <select id="selMusicaReligiosa" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selMusicaReligiosa')">
-                <option value="">Seleccione...</option>
-              </select>
-            </div>
-            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
-              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">🌍 Nacionales (156):</div>
-              <select id="selHimnosNacionales" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selHimnosNacionales')">
-                <option value="">Seleccione...</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- BOTONES COMUNES DE BANDA: Play | Añadir a Playlist | Ver Letra -->
-          <div style="display:flex; gap:6px; justify-content:center;">
-            <button type="button" class="action-btn primary" onclick="reproducirBandaSeleccionada()" style="flex:1; justify-content:center; padding:9px; font-size:12px; font-weight:800;">
-              ▶️ Play
-            </button>
-            <button type="button" class="action-btn" onclick="anadirBandaAPlaylist()" style="flex:1; justify-content:center; padding:9px; font-size:12px; font-weight:800;">
-              ➕ Playlist
-            </button>
-            <button type="button" class="action-btn" onclick="verLetraDesdeSelectoresBanda()" style="flex:1; justify-content:center; padding:9px; font-size:12px; font-weight:800;">
-              📜 Letra
-            </button>
-          </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- BLOQUE 2: TOQUES DE CORNETA                -->
-        <!-- ========================================== -->
-        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12.5px; font-weight:800; color:#38bdf8;">📯 BLOQUE 2: TOQUES DE CORNETA</span>
-            <span style="font-size:10.5px; color:#94a3b8;">25 Toques</span>
-          </div>
-          <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b; margin-bottom:8px;">
-            <select id="selToquesCorneta" style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:8px;">
-              <option value="">Seleccione toque de corneta...</option>
-            </select>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="action-btn primary" onclick="reproducirCornetaSeleccionada()" style="flex:1; justify-content:center; padding:9px; font-size:12px; font-weight:800;">
-              ▶️ Play
-            </button>
-            <button type="button" class="action-btn" onclick="anadirCornetaAPlaylist()" style="flex:1; justify-content:center; padding:9px; font-size:12px; font-weight:800;">
-              ➕ Playlist
-            </button>
-          </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- BLOQUE 3: LISTAS DE REPRODUCCIÓN (PLAYLISTS)-->
-        <!-- ========================================== -->
-        <div style="background:#070d1e; border:1.5px solid #1e3a8a; border-radius:8px; padding:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12.5px; font-weight:800; color:#10b981;">📋 BLOQUE 3: LISTAS DE REPRODUCCIÓN</span>
-            <span style="font-size:10.5px; color:#10b981; font-weight:700;" id="lblPlaylistCountBadge">0 Listas</span>
-          </div>
-          <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin-bottom:10px;">
-            Añada toques y marchas desde los bloques de arriba con <strong>➕ Playlist</strong>. Ensayos y desfiles guardados de forma permanente.
-          </div>
-
-          <div style="display:flex; gap:6px; margin-bottom:10px;">
-            <select id="selPlaylistsGuardadas" style="flex:1; background:#0b152d; border:1.5px solid #10b981; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:7px 8px;" onchange="cargarPlaylistSeleccionada()">
-              <option value="">Seleccione una lista existente...</option>
-            </select>
-            <button type="button" class="action-btn" onclick="crearNuevaPlaylistPrompt()" style="padding:6px 10px; font-size:11.5px; white-space:nowrap;">
-              ➕ Nueva Lista
-            </button>
-            <button type="button" class="action-btn danger" onclick="borrarPlaylistActiva()" style="padding:6px 8px; font-size:11.5px;" title="Eliminar lista">
-              🗑️
-            </button>
-          </div>
-
-          <div style="display:flex; gap:6px; margin-bottom:10px;">
-            <button type="button" class="action-btn primary" id="btnPlayPlaylist" onclick="iniciarReproduccionPlaylist()" style="flex:1; justify-content:center; padding:9px; font-size:12.5px; font-weight:800;">
-              ▶️ Reproducir Lista
-            </button>
-            <button type="button" class="action-btn danger" id="btnStopPlaylist" onclick="detenerReproduccionPlaylist()" style="display:none; flex:1; justify-content:center; padding:9px; font-size:12.5px; font-weight:900; background:#dc2626; border-color:#ef4444; color:#fff;">
-              ⏹️ DETENER LISTA
-            </button>
-          </div>
-
-          <div id="boxEditorPlaylist" style="display:none; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e293b;">
-            <div style="font-size:11.5px; font-weight:800; color:#f8fafc; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-              <span id="lblTituloPlaylistActiva">Lista: --</span>
-              <span style="font-size:10.5px; color:#94a3b8;" id="lblItemsCount">0 pistas</span>
-            </div>
-
-            <div id="listaPistasPlaylist" style="display:flex; flex-direction:column; gap:4px; max-height:220px; overflow-y:auto; margin-bottom:10px; border:1px solid #1e293b; border-radius:4px; padding:4px; background:#070d1e;">
-            </div>
-
-            <div style="display:flex; gap:6px; justify-content:space-between; align-items:center;">
-              <div style="display:flex; gap:4px;">
-                <button type="button" class="action-btn" onclick="moverPistaSeleccionada(-1)" style="padding:6px 10px; font-size:11.5px; font-weight:700;">
-                  ▲ Subir
-                </button>
-                <button type="button" class="action-btn" onclick="moverPistaSeleccionada(1)" style="padding:6px 10px; font-size:11.5px; font-weight:700;">
-                  ▼ Bajar
-                </button>
-                <button type="button" class="action-btn danger" onclick="borrarPistaSeleccionada()" style="padding:6px 10px; font-size:11.5px; font-weight:700;">
-                  🗑️ Borrar Pista
-                </button>
-              </div>
-              <button type="button" class="action-btn" onclick="guardarListaBotonManual()" style="background:#065f46; border-color:#10b981; color:#fff; padding:6px 12px; font-size:11.5px; font-weight:800;">
-                💾 Guardar Lista
-              </button>
-            </div>
-          </div>
-
-        </div>
-
       </div>
     </div>
   </main>
@@ -1058,7 +834,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792935158</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792938242</div>
 </footer>
 
   <script>
@@ -1107,112 +883,59 @@
       if (typeof onBuqueAudioFin === 'function') onBuqueAudioFin();
     }
 
-    // --- REPRODUCTOR MAESTRO DE CHIFLE (DOBLE MOTOR DOM + DINÁMICO) ---
-    let canalChifleAudio = null;
-
-    function reproducirAudioUniversal(elDOM, fallbackUrl, label, onEndCallback) {
-      detenerChifleGeneral();
-      const box = document.getElementById('playerChifleActivo');
-      const lbl = document.getElementById('lblChifleActivoTxt');
-      if (lbl) lbl.textContent = label;
-      if (box) box.style.display = 'block';
-
-      let sonando = false;
-
-      // 1. Intentar con el elemento DOM existente
-      if (elDOM && typeof elDOM.play === 'function') {
-        try {
-          elDOM.currentTime = 0;
-          currentActiveAudio = elDOM;
-          const p = elDOM.play();
-          if (p !== undefined) {
-            p.then(() => {
-              sonando = true;
-              console.log('Audio sonando vía elemento DOM:', label);
-            }).catch(err => {
-              console.warn('DOM play falló, activando motor dinámico:', err);
-              iniciarMotorDinamico(fallbackUrl, onEndCallback);
-            });
-          }
-          elDOM.onended = () => {
-            if (box) box.style.display = 'none';
-            if (typeof onEndCallback === 'function') onEndCallback();
-          };
-        } catch(e) {
-          iniciarMotorDinamico(fallbackUrl, onEndCallback);
-        }
-      } else {
-        iniciarMotorDinamico(fallbackUrl, onEndCallback);
-      }
-
-      function iniciarMotorDinamico(url, cb) {
-        try {
-          if (canalChifleAudio) {
-            try { canalChifleAudio.pause(); } catch(e){}
-          }
-          canalChifleAudio = new Audio(url);
-          currentActiveAudio = canalChifleAudio;
-          canalChifleAudio.play().then(() => {
-            console.log('Audio sonando vía motor dinámico:', label);
-          }).catch(e => {
-            console.error('Error total al reproducir audio:', e);
-            if (box) box.style.display = 'none';
-            if (typeof cb === 'function') cb();
-          });
-          canalChifleAudio.onended = () => {
-            if (box) box.style.display = 'none';
-            if (typeof cb === 'function') cb();
-          };
-        } catch(err) {
-          console.error('Excepción crítica audio:', err);
-          if (box) box.style.display = 'none';
-          if (typeof cb === 'function') cb();
-        }
-      }
-    }
-
     function tocarChifleMando() {
+      stopAllAudio();
       ultimoToque = 'mando';
       bloquearTodosBotonesPortalon();
-      reproducirAudioUniversal(audMando, 'audio/ComteoAlmte.mp3', 'Almirante o Comandante (Entrada)', onAudioTerminado);
+      
+      const statusBox = document.getElementById('audioStatusBar');
+      const statusText = document.getElementById('audioStatusText');
+      if (statusBox) statusBox.style.display = 'flex';
+      if (statusText) statusText.textContent = '▶️ CHIFLE: Almirante o Comandante';
+
+      currentActiveAudio = audMando;
+      audMando.currentTime = 0;
+      audMando.play().catch(e => {
+        console.error('Error audMando:', e);
+        onAudioTerminado();
+      });
     }
 
     function tocarChifleOficiales() {
+      stopAllAudio();
       ultimoToque = 'oficiales';
       bloquearTodosBotonesPortalon();
-      reproducirAudioUniversal(audOficiales, 'audio/oficiales.mp3', 'Oficiales', onAudioTerminado);
+
+      const statusBox = document.getElementById('audioStatusBar');
+      const statusText = document.getElementById('audioStatusText');
+      if (statusBox) statusBox.style.display = 'flex';
+      if (statusText) statusText.textContent = '▶️ CHIFLE: Oficiales';
+
+      currentActiveAudio = audOficiales;
+      audOficiales.currentTime = 0;
+      audOficiales.play().catch(e => {
+        console.error('Error audOficiales:', e);
+        onAudioTerminado();
+      });
     }
 
     function tocarChifleRetirada() {
       if (!mandoChifleActivo) return;
+      stopAllAudio();
       ultimoToque = 'retirada';
       bloquearTodosBotonesPortalon();
-      reproducirAudioUniversal(audRetirada, 'audio/retiradaComteoAlmte.mp3', 'Retirada Almirante o Comandante', onAudioTerminado);
-    }
 
-    function tocarChifleDirecto(url, nombre) {
-      reproducirAudioUniversal(null, url, nombre, () => {
-        const b = document.getElementById('playerChifleActivo');
-        if (b) b.style.display = 'none';
+      const statusBox = document.getElementById('audioStatusBar');
+      const statusText = document.getElementById('audioStatusText');
+      if (statusBox) statusBox.style.display = 'flex';
+      if (statusText) statusText.textContent = '▶️ CHIFLE: Retirada Almte / Comte';
+
+      currentActiveAudio = audRetirada;
+      audRetirada.currentTime = 0;
+      audRetirada.play().catch(e => {
+        console.error('Error audRetirada:', e);
+        onAudioTerminado();
       });
-    }
-
-    function tocarChifleJSE() {
-      const sel = document.getElementById('selChifleJSE');
-      if (!sel || !sel.value) return;
-      tocarChifleDirecto(sel.value, sel.options[sel.selectedIndex].text);
-    }
-
-    function detenerChifleGeneral() {
-      if (canalChifleAudio) {
-        try { canalChifleAudio.pause(); canalChifleAudio.currentTime = 0; } catch(e){}
-        canalChifleAudio = null;
-      }
-      stopAllAudio();
-      desbloquearSegunCeremonial();
-      const box = document.getElementById('playerChifleActivo');
-      if (box) box.style.display = 'none';
-      cerrarStatus();
     }
 
     function playAudio(src, label) {
@@ -1367,14 +1090,12 @@ function _legacy_execAuth() {
       actualizarEstadoBuques();
     }
 
-    let canalBuqueAudio = null;
-
     function tocarHonoresBabor() {
       if (buqueSonidoEnCurso || buqueHonorTocado) return;
       buqueSonidoEnCurso = true;
       buqueHonorTocado = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuqueUniversal(audBuqueBabor, 'audio/Honoresporbabor_AudioDenoise.mp3', 'HONORES POR BABOR');
+      reproducirAudioBuque(audBuqueBabor, 'HONORES POR BABOR');
     }
 
     function tocarHonoresEstribor() {
@@ -1382,51 +1103,30 @@ function _legacy_execAuth() {
       buqueSonidoEnCurso = true;
       buqueHonorTocado = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuqueUniversal(audBuqueEstribor, 'audio/Honoresporestribor_AudioDenoise.mp3', 'HONORES POR ESTRIBOR');
+      reproducirAudioBuque(audBuqueEstribor, 'HONORES POR ESTRIBOR');
     }
 
     function tocarHonoresRetirada() {
       if (buqueSonidoEnCurso || !buqueHonorTocado) return;
       buqueSonidoEnCurso = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuqueUniversal(audBuqueRetirada, 'audio/Retiradadehonores_AudioDenoise.mp3', 'RETIRADA DE HONORES');
-      buqueHonorTocado = false;
+      reproducirAudioBuque(audBuqueRetirada, 'RETIRADA DE HONORES');
+      buqueHonorTocado = false; // Consumada la retirada, el ciclo se reinicia
     }
 
-    function reproducirAudioBuqueUniversal(audioEl, fallbackUrl, label) {
+    function reproducirAudioBuque(audioEl, label) {
       stopAllAudio();
       const statusBox = document.getElementById('audioStatusBar');
       const statusText = document.getElementById('audioStatusText');
       if (statusBox) statusBox.style.display = 'flex';
       if (statusText) statusText.textContent = `▶️ ${label}`;
 
-      let ok = false;
-      if (audioEl && typeof audioEl.play === 'function') {
-        try {
-          audioEl.currentTime = 0;
-          currentActiveAudio = audioEl;
-          const p = audioEl.play();
-          if (p !== undefined) {
-            p.then(() => { ok = true; }).catch(err => {
-              reintentarBuqueDinamico(fallbackUrl);
-            });
-          }
-        } catch(e) {
-          reintentarBuqueDinamico(fallbackUrl);
-        }
-      } else {
-        reintentarBuqueDinamico(fallbackUrl);
-      }
-
-      function reintentarBuqueDinamico(url) {
-        if (canalBuqueAudio) { try { canalBuqueAudio.pause(); } catch(e){} }
-        canalBuqueAudio = new Audio(url);
-        currentActiveAudio = canalBuqueAudio;
-        canalBuqueAudio.play().catch(e => {
-          console.error('Error buque dinámico:', e);
+      if (audioEl) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(e => {
+          console.error('Error reproducirAudioBuque:', e);
           onBuqueAudioFin();
         });
-        canalBuqueAudio.onended = () => { onBuqueAudioFin(); };
       }
     }
 
@@ -1542,8 +1242,6 @@ function _legacy_execAuth() {
       if (event && event.target) event.target.classList.add('active');
       cambiarHusoHorario('auto');
       renderAuthList();
-      inicializarTodosLosSelectores();
-      showView('portalon');
     }
 
     function seleccionarPosicionArma(pos) {
@@ -1714,8 +1412,6 @@ function _legacy_execAuth() {
       
 
       renderAuthList();
-      inicializarTodosLosSelectores();
-      showView('portalon');
     }
 
 
@@ -2933,8 +2629,6 @@ function _legacy_execAuth() {
     // ==========================================
     try {
       renderAuthList();
-      inicializarTodosLosSelectores();
-      showView('portalon');
     } catch(e) { console.error('Error renderAuthList init:', e); }
 
     try {
@@ -2945,9 +2639,7 @@ function _legacy_execAuth() {
     } catch(e) { console.error('Error reloj init:', e); }
 
     window.addEventListener('DOMContentLoaded', () => {
-      try { renderAuthList();
-      inicializarTodosLosSelectores();
-      showView('portalon'); } catch(e){}
+      try { renderAuthList(); } catch(e){}
       try { restablecerConfiguracionPorDefecto(); } catch(e){}
       try {
         actualizarHoraObjetivo();
@@ -2956,456 +2648,6 @@ function _legacy_execAuth() {
       } catch(e){}
     });
 
-  
-    // ==========================================
-    // EXTENSIONES MÚSICA MILITAR Y PLAYLISTS
-    // ==========================================
-    const CATALOGO_CHIFLE_JSE = [{"name": "MANIOBRA GENERAL", "file": "JSE_MANIOBRA_GENERAL.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_MANIOBRA_GENERAL.mp3"}, {"name": "Baldeo", "file": "JSE_Baldeo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_Baldeo.mp3"}, {"name": "Baupres", "file": "JSE_baupres.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_baupres.mp3"}, {"name": "Braceo", "file": "JSE_braceo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo.mp3"}, {"name": "Braceo vergas simultaneo a BR", "file": "JSE_braceo_vergas_simultaneo_a_br.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo_vergas_simultaneo_a_br.mp3"}, {"name": "Braceo vergas simultaneo a ER", "file": "JSE_braceo_vergas_simultaneo_a_ER.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo_vergas_simultaneo_a_ER.mp3"}, {"name": "Contramaestre", "file": "JSE_contramaestre.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_contramaestre.mp3"}, {"name": "Dentro y abajo", "file": "JSE_dentro_y_abajo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_dentro_y_abajo.mp3"}, {"name": "Descubierta", "file": "JSE_descubierta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_descubierta.mp3"}, {"name": "Descubierta gaviero listo", "file": "JSE_descubierta_gaviero_listo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_descubierta_gaviero_listo.mp3"}, {"name": "Gaviero", "file": "JSE_gaviero.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gaviero.mp3"}, {"name": "Gavieros arriba", "file": "JSE_gavieros_arriba.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gavieros_arriba.mp3"}, {"name": "Gavieros fuera", "file": "JSE_gavieros_fuera.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gavieros_fuera.mp3"}, {"name": "Juanete", "file": "JSE_juanete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_juanete.mp3"}, {"name": "Llamada a la guardia de cubierta", "file": "JSE_llamada_a_la_guardia_de_cubierta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_llamada_a_la_guardia_de_cubierta.mp3"}, {"name": "Mayor popel", "file": "JSE_mayor_popel.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mayor_popel.mp3"}, {"name": "Mayor proel", "file": "JSE_mayor_proel.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mayor_proel.mp3"}, {"name": "Mesana", "file": "JSE_mesana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mesana.mp3"}, {"name": "Trinquete", "file": "JSE_trinquete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_trinquete.mp3"}, {"name": "Velacho alto", "file": "JSE_velacho_alto.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_velacho_alto.mp3"}, {"name": "Velacho bajo", "file": "JSE_velacho_bajo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_velacho_bajo.mp3"}, {"name": "Verga trinquete", "file": "JSE_verga_trinquete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_verga_trinquete.mp3"}];
-    const CATALOGO_MARCHAS_CLASICAS = [{"file": "Bajo La Doble Aguila.mp3", "name": "Bajo La Doble Aguila", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Bajo La Doble Aguila.mp3"}, {"file": "Cantinera.mp3", "name": "Cantinera", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Cantinera.mp3"}, {"file": "El abanico.mp3", "name": "El abanico", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El abanico.mp3"}, {"file": "El turuta.mp3", "name": "El turuta", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El turuta.mp3"}, {"file": "El viejo almirante.mp3", "name": "El viejo almirante", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El viejo almirante.mp3"}, {"file": "Ganando Barlovento.mp3", "name": "Ganando Barlovento", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Ganando Barlovento.mp3"}, {"file": "Heroina.mp3", "name": "Heroina", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Heroina.mp3"}, {"file": "La Orgia Dorada.mp3", "name": "La Orgia Dorada", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La Orgia Dorada.mp3"}, {"file": "La guardia de alabarderos.mp3", "name": "La guardia de alabarderos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La guardia de alabarderos.mp3"}, {"file": "La vuelta de los voluntarios.mp3", "name": "La vuelta de los voluntarios", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La vuelta de los voluntarios.mp3"}, {"file": "Las corsarias.mp3", "name": "Las corsarias", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Las corsarias.mp3"}, {"file": "Legionarios del aire.mp3", "name": "Legionarios del aire", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Legionarios del aire.mp3"}, {"file": "Los Generales.mp3", "name": "Los Generales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Generales.mp3"}, {"file": "Los Quintos.mp3", "name": "Los Quintos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Quintos.mp3"}, {"file": "Marcha de infantes.mp3", "name": "Marcha de infantes", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Marcha de infantes.mp3"}, {"file": "Mares y vientos.mp3", "name": "Mares y vientos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Mares y vientos.mp3"}, {"file": "Paso ligero.mp3", "name": "Paso ligero", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Paso ligero.mp3"}, {"file": "Proa a la mar.mp3", "name": "Proa a la mar", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Proa a la mar.mp3"}, {"file": "San Marcial.mp3", "name": "San Marcial", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Marcial.mp3"}, {"file": "San Quintin.mp3", "name": "San Quintin", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Quintin.mp3"}, {"file": "Vuelos triunfales.mp3", "name": "Vuelos triunfales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Vuelos triunfales.mp3"}];
-    const CATALOGO_HIMNOS_CUERPOS = [{"file": "Espania_corto.mp3", "name": "Espania corto", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Espania_corto.mp3"}, {"file": "Espania_largo.mp3", "name": "Espania largo", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Espania_largo.mp3"}, {"file": "Himno ARMADA.mp3", "name": "Himno ARMADA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno ARMADA.mp3"}, {"file": "Himno ARTILLERIA.mp3", "name": "Himno ARTILLERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno ARTILLERIA.mp3"}, {"file": "Himno BRIPAC.mp3", "name": "Himno BRIPAC", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno BRIPAC.mp3"}, {"file": "Himno CABALLERIA.mp3", "name": "Himno CABALLERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno CABALLERIA.mp3"}, {"file": "Himno EJERCITO AIRE ESPACIO.mp3", "name": "Himno EJERCITO AIRE ESPACIO", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno EJERCITO AIRE ESPACIO.mp3"}, {"file": "Himno GUARDIA CIVIL.mp3", "name": "Himno GUARDIA CIVIL", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno GUARDIA CIVIL.mp3"}, {"file": "Himno GUARDIA REAL.mp3", "name": "Himno GUARDIA REAL", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno GUARDIA REAL.mp3"}, {"file": "Himno INF MARINA.mp3", "name": "Himno INF MARINA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INF MARINA.mp3"}, {"file": "Himno INFANTERIA.mp3", "name": "Himno INFANTERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INFANTERIA.mp3"}, {"file": "Himno INGENIEROS.mp3", "name": "Himno INGENIEROS", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INGENIEROS.mp3"}, {"file": "Himno LEGION.mp3", "name": "Himno LEGION", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno LEGION.mp3"}, {"file": "Himno UME.mp3", "name": "Himno UME", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno UME.mp3"}];
-    const CATALOGO_RELIGIOSA = [{"file": "La muerte no es el final.mp3", "name": "La muerte no es el final", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La muerte no es el final.mp3"}, {"file": "Novio de la muerte.mp3", "name": "Novio de la muerte", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Novio de la muerte.mp3"}, {"file": "Oracion de la Noche.mp3", "name": "Oracion de la Noche", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Oracion de la Noche.mp3"}, {"file": "Oracion.mp3", "name": "Oracion", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Oracion.mp3"}, {"file": "Salve Marinera.mp3", "name": "Salve Marinera", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Salve Marinera.mp3"}];
-    const CATALOGO_MARCHAS = [...CATALOGO_MARCHAS_CLASICAS, ...CATALOGO_HIMNOS_CUERPOS, ...CATALOGO_RELIGIOSA];
-    const CATALOGO_CORNETAS = [{"file": "ALTO.mp3", "name": "ALTO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ALTO.mp3"}, {"file": "ARMEN.mp3", "name": "ARMEN", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ARMEN.mp3"}, {"file": "ATENCION.mp3", "name": "ATENCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ATENCION.mp3"}, {"file": "CAMBIO DE HOMBRO.mp3", "name": "CAMBIO DE HOMBRO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/CAMBIO DE HOMBRO.mp3"}, {"file": "CUBRIRSE.mp3", "name": "CUBRIRSE", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/CUBRIRSE.mp3"}, {"file": "DEFRENTE PASO FUNERALA.mp3", "name": "DEFRENTE PASO FUNERALA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE PASO FUNERALA.mp3"}, {"file": "DEFRENTE PASO LIGERO.mp3", "name": "DEFRENTE PASO LIGERO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE PASO LIGERO.mp3"}, {"file": "DEFRENTE.mp3", "name": "DEFRENTE", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE.mp3"}, {"file": "DERECHA.mp3", "name": "DERECHA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DERECHA.mp3"}, {"file": "DESCANSO.mp3", "name": "DESCANSO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DESCANSO.mp3"}, {"file": "DIANA.mp3", "name": "DIANA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DIANA.mp3"}, {"file": "DISCRECCION.mp3", "name": "DISCRECCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DISCRECCION.mp3"}, {"file": "FIN_DISCRECCION.mp3", "name": "FIN DISCRECCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIN_DISCRECCION.mp3"}, {"file": "FIRMES AUTORIDAD PRINCIPAL.mp3", "name": "FIRMES AUTORIDAD PRINCIPAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIRMES AUTORIDAD PRINCIPAL.mp3"}, {"file": "FIRMES.mp3", "name": "FIRMES", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIRMES.mp3"}, {"file": "HIMNOMACIONAL.mp3", "name": "HIMNOMACIONAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/HIMNOMACIONAL.mp3"}, {"file": "IZQUIERDA.mp3", "name": "IZQUIERDA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/IZQUIERDA.mp3"}, {"file": "LLAMADA GENERAL.mp3", "name": "LLAMADA GENERAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/LLAMADA GENERAL.mp3"}, {"file": "LLAMADA_MANDOS.mp3", "name": "LLAMADA MANDOS", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/LLAMADA_MANDOS.mp3"}, {"file": "MEDIA_VUELTA_AR.mp3", "name": "MEDIA VUELTA AR", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/MEDIA_VUELTA_AR.mp3"}, {"file": "ORACION_CORNETA.mp3", "name": "ORACION CORNETA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ORACION_CORNETA.mp3"}, {"file": "PRESENTEN_ARMAS.mp3", "name": "PRESENTEN ARMAS", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/PRESENTEN_ARMAS.mp3"}, {"file": "RETRETA.mp3", "name": "RETRETA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/RETRETA.mp3"}, {"file": "SOBRE EL HOMBRO DERECHO.mp3", "name": "SOBRE EL HOMBRO DERECHO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/SOBRE EL HOMBRO DERECHO.mp3"}, {"file": "SOBRE EL HOMBRO.mp3", "name": "SOBRE EL HOMBRO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/SOBRE EL HOMBRO.mp3"}];
-    const DICCIONARIO_LETRAS = {"Salve Marinera": "¡Salve, Estrella de los mares,\nde los mares iris de eterna ventura!\n¡Salve, fénix de hermosura,\nMadre del Amor Hermoso!\n\nA ti clamamos,\na ti suspiramos,\ngimiendo y llorando\nen este valle de lágrimas.\n\nEa, pues, Señora,\nAbogada nuestra,\nvuelve a nosotros esos tus ojos\nmisericordiosos.\n\nY después de este destierro,\nmuéstranos a Jesús,\nfruto bendito de tu vientre.\n\n¡Oh clementísima!\n¡Oh piadosa!\n¡Oh dulce Virgen María!\n\nSálvanos, Virgen del Carmen,\nMadre del Amor Hermoso,\nReina de los mares,\nReina de la Armada.", "Himno ARMADA": "De la patria el orgullo y grandeza\npor las rutas del mar a cantar,\ncon las velas al viento y la proa\nrumbo a España trazando en el mar.\n\nNoble Armada que al cielo levanta\nsu estandarte de gloria inmortal,\nen las olas tu nombre agiganta\nnuestra fe en el destino naval.\n\n¡Viva España! la voz que nos guía,\n¡Viva el Rey! nuestro grito de honor,\nque en la mar nuestra estirpe porfía\ncon coraje, victoria y valor.", "Himno INF MARINA": "Infantes de marina marchemos a luchar,\nla Patria engrandezcamos y su alta nombradía,\nsirviendo leales al suelo y a la mar.\n\nGloria a los valientes que supieron morir\npor España y su honor combatir.\n\nEmpuñad las armas con firmeza y valor,\nque la Infantería de Marina es pundonor.\n\n¡Valientes por tierra y por mar!", "La muerte no es el final": "Tú nos dijiste que la muerte\nno es el final del camino,\nque aunque de nuevo el polvo vuelve,\nla vida empieza en tu amor.\n\nCuando la pena nos alcanza\ndel compañero perdido,\ncuando el adiós dolorido\nbusca en la fe su esperanza.\n\nEn tu palabra confiamos\ncon la certeza que Tú\nya le has devuelto a la vida,\nya le has llevado a la luz.\n\nYa le has devuelto a la vida,\nya le has llevado a la luz.", "Novio de la muerte": "Nadie en el Tercio sabía\nquién era aquel legionario\ntan audaz y temerario\nque a la Legión se alistó.\n\nNadie sabía su historia,\nmas la Legión suponía\nque un gran dolor le mordía\ncomo un lobo el corazón.\n\nMas si alguno quién era le preguntaba,\ncon dolor y rudeza le contestaba:\n«Soy un hombre a quien la suerte\nhirió con zarpa de fiera;\nsoy un novio de la muerte\nque va a unirse en lazo fuerte\ncon tal leal compañera».\n\n¡Legionarios a luchar,\nlegionarios a morir!", "Himno LEGION": "El clarín de la Legión\nsuena ya en el horizonte,\nbrava estirpe de leones\nque combaten con honor.\n\nLegionarios a luchar,\ncon valor y disciplina,\npor España combatir\nhasta vencer o morir.\n\n¡Viva España! ¡Viva el Rey!\n¡Viva la Legión!", "Himno GUARDIA CIVIL": "Instituto, gloria a ti,\npor tu honor quiero vivir.\nViva España, Viva el Rey,\nViva el Orden y la Ley,\nViva la Honrada Guardia Civil.\n\nBenemérito Instituto,\nguarda fiel de España entera,\nque en el monte y la trinchera\ndas tu vida por cumplir.\n\nViva España, Viva el Rey,\nViva el Orden y la Ley,\nViva la Honrada Guardia Civil.", "Himno GUARDIA REAL": "Guardia Real de España,\nlealtad hasta morir,\nal Rey y a la Corona\ndispuestos a servir.\n\nCon paso firme y noble,\ncustodios del honor,\nmarchemos siempre unidos\ncon fe y con pundonor.\n\n¡Por España y por el Rey!", "Himno EJERCITO AIRE ESPACIO": "Alcen los ojos a las alturas,\nque en el azul de nuestro cielo\nvuelan las alas de la victoria\nguardando a España con gran denuedo.\n\nVolad, pilotos, rumbo a la gloria,\nque en vuestras alas late la historia.\n¡Viva España, viva el Rey!", "Himno INFANTERIA": "Ardor guerrero vibra en nuestras voces,\nmarchemos firmes a vencer o morir,\nque los infantes no temen la muerte\nsi por España nos toca rendir.\n\n¡Infantería, noble y valiente!\n¡Por la Patria y por el Rey!", "Himno ARTILLERIA": "Artilleros, en pie de combate,\ncon las piezas apuntando al honor,\nque el estruendo de nuestros cañones\nes la voz de la Patria y su ardor.\n\n¡Fuego al cañón por España!", "Himno CABALLERIA": "Jinetes de noble estirpe,\nal galope con valor,\nla lanza firme en la mano\npor España y por su honor.\n\n¡Santiago y cierra España!", "Himno INGENIEROS": "Con el pico y con la pala,\ncon la pólvora y el puente,\nlos ingenieros marchemos\nsiempre firmes y al frente.\n\n¡Por la Patria y el honor!", "Himno UME": "Cuando el desastre asola nuestra tierra\ny el dolor clama auxilio y hermandad,\nallí está la Unidad Militar de Emergencias\ncon coraje, entrega y lealtad.\n\nPara servir a España y a su gente.", "Himno BRIPAC": "Paracaidistas en el cielo,\nsaltando al viento sin temor,\nalas de honor en nuestro pecho\ndispuestos siempre con valor.\n\n¡Sobre la tierra y el cielo, por España!", "Oracion de la Noche": "Tú que velas por nosotros en las sombras,\nguía nuestro rumbo por la mar serena,\nSeñor de los ejércitos y mares,\nacoge a los que velan y a los que descansan.\n\nDanos tu paz en la noche.", "Ganando Barlovento": "Bravos marinos de España,\nrumbo trazado en la mar,\ncon gallardía y coraje\nganando barlovento van.\n\nRuge la ola y el viento,\nfirme el timón al compás,\ngloria y honor a la Armada\nque nunca cederá jamás.", "El turuta": "Al son del clarín y el parche,\nmarchemos con gallardía,\nque la tropa va cantando\ncon valor y nombradía.\n\n¡Viva la marcha ligera!", "Las corsarias": "Banderita tú eres roja,\nbanderita tú eres gualda,\nllevas sangre, llevas oro\nen el fondo de tu alma.\n\nEl día que yo me muera\nsi estoy lejos de mi patria,\nsólo quiero que me cubran\ncon la Bandera de España.", "Cantinera": "Cantinera de la tropa,\nlleva el vino y la alegría,\nque en la marcha y en el puesto\ntu sonrisa es compañía.", "Marcha de infantes": "Marchan los infantes\ncon marcial compás,\npaso decidido\nsin mirar atrás.\n\n¡Por la Patria, marcha ya!"};
-
-    // --- CANALES SIMULTÁNEOS BANDA Y CORNETA ---
-    let canalAudioBanda = null;
-    let canalAudioCorneta = null;
-
-    function sincronizarSelectoresBanda(selectorActivoId) {
-      const selectores = ['selMarchasClasicas', 'selHimnosCuerpos', 'selMusicaReligiosa', 'selHimnosNacionales'];
-      selectores.forEach(id => {
-        const sel = document.getElementById(id);
-        if (sel && id !== selectorActivoId) sel.value = '';
-      });
-    }
-
-    function obtenerValorBandaSeleccionado() {
-      const selectores = ['selMarchasClasicas', 'selHimnosCuerpos', 'selMusicaReligiosa', 'selHimnosNacionales'];
-      for (let id of selectores) {
-        const sel = document.getElementById(id);
-        if (sel && sel.value) {
-          return { url: sel.value, nombre: sel.options[sel.selectedIndex].text, selectId: id };
-        }
-      }
-      return null;
-    }
-
-    function reproducirBandaSeleccionada() {
-      const banda = obtenerValorBandaSeleccionado();
-      if (!banda) { alert('Seleccione una marcha, himno o pieza musical.'); return; }
-      tocarCanalBanda(banda.url, banda.nombre);
-    }
-
-    function anadirBandaAPlaylist() {
-      const banda = obtenerValorBandaSeleccionado();
-      if (!banda) { alert('Seleccione una marcha o himno primero.'); return; }
-      if (!activePlaylistId || !appPlaylists[activePlaylistId]) { alert('Seleccione o cree una lista en el Bloque 3 primero.'); return; }
-      let tipo = 'marcha';
-      if (banda.selectId === 'selHimnosCuerpos') tipo = 'cuerpo';
-      if (banda.selectId === 'selMusicaReligiosa') tipo = 'religiosa';
-      if (banda.selectId === 'selHimnosNacionales') tipo = 'himno';
-      appPlaylists[activePlaylistId].pistas.push({ tipo, nombre: banda.nombre, url: banda.url });
-      guardarPlaylistsEnStorage();
-      renderizarPistasPlaylist();
-      alert(`Pista "${banda.nombre}" añadida a la lista.`);
-    }
-
-    function verLetraDesdeSelectoresBanda() {
-      const banda = obtenerValorBandaSeleccionado();
-      if (!banda) { alert('Seleccione una marcha o himno primero.'); return; }
-      const res = buscarLetra(banda.nombre);
-      if (res) abrirModalLetra(res.titulo, res.texto);
-      else alert(`No hay letra registrada para "${banda.nombre}". Esta obra es estrictamente instrumental.`);
-    }
-
-    function tocarCanalBanda(url, titulo) {
-      detenerCanalBanda();
-      const lbl = document.getElementById('lblCanalBandaTxt');
-      const btn = document.getElementById('btnStopBanda');
-      if (lbl) lbl.textContent = titulo;
-      if (btn) btn.style.display = 'block';
-      canalAudioBanda = new Audio(url);
-      canalAudioBanda.play().catch(e => console.warn('Banda play error:', e));
-      canalAudioBanda.onended = () => { detenerCanalBanda(); };
-    }
-
-    function detenerCanalBanda() {
-      if (canalAudioBanda) {
-        try { canalAudioBanda.pause(); canalAudioBanda.currentTime = 0; } catch(e){}
-        canalAudioBanda = null;
-      }
-      const lbl = document.getElementById('lblCanalBandaTxt');
-      const btn = document.getElementById('btnStopBanda');
-      if (lbl) lbl.textContent = 'En silencio';
-      if (btn) btn.style.display = 'none';
-    }
-
-    function reproducirCornetaSeleccionada() {
-      const sel = document.getElementById('selToquesCorneta');
-      if (!sel || !sel.value) { alert('Seleccione un toque de corneta.'); return; }
-      tocarCanalCorneta(sel.value, sel.options[sel.selectedIndex].text);
-    }
-
-    function anadirCornetaAPlaylist() {
-      const sel = document.getElementById('selToquesCorneta');
-      if (!sel || !sel.value) { alert('Seleccione un toque de corneta.'); return; }
-      if (!activePlaylistId || !appPlaylists[activePlaylistId]) { alert('Seleccione o cree una lista en el Bloque 3 primero.'); return; }
-      appPlaylists[activePlaylistId].pistas.push({ tipo: 'corneta', nombre: sel.options[sel.selectedIndex].text, url: sel.value });
-      guardarPlaylistsEnStorage();
-      renderizarPistasPlaylist();
-      alert(`Toque "${sel.options[sel.selectedIndex].text}" añadido a la lista.`);
-    }
-
-    function tocarCanalCorneta(url, titulo) {
-      detenerCanalCorneta();
-      const lbl = document.getElementById('lblCanalCornetaTxt');
-      const btn = document.getElementById('btnStopCorneta');
-      if (lbl) lbl.textContent = titulo;
-      if (btn) btn.style.display = 'block';
-      canalAudioCorneta = new Audio(url);
-      canalAudioCorneta.play().catch(e => console.warn('Corneta play error:', e));
-      canalAudioCorneta.onended = () => { detenerCanalCorneta(); };
-    }
-
-    function detenerCanalCorneta() {
-      if (canalAudioCorneta) {
-        try { canalAudioCorneta.pause(); canalAudioCorneta.currentTime = 0; } catch(e){}
-        canalAudioCorneta = null;
-      }
-      const lbl = document.getElementById('lblCanalCornetaTxt');
-      const btn = document.getElementById('btnStopCorneta');
-      if (lbl) lbl.textContent = 'En silencio';
-      if (btn) btn.style.display = 'none';
-    }
-
-    // --- GESTIÓN DE LETRAS ---
-    function buscarLetra(nombre) {
-      if (!nombre) return null;
-      const limpio = nombre.replace(/\.mp3|\.wav/gi, '').trim();
-      if (DICCIONARIO_LETRAS[limpio]) return { titulo: limpio, texto: DICCIONARIO_LETRAS[limpio] };
-      for (let k of Object.keys(DICCIONARIO_LETRAS)) {
-        if (limpio.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(limpio.toLowerCase())) {
-          return { titulo: k, texto: DICCIONARIO_LETRAS[k] };
-        }
-      }
-      return null;
-    }
-
-    function abrirModalLetra(titulo, texto) {
-      const modal = document.getElementById('modalLetraMilitar');
-      const lblT = document.getElementById('lblModalTituloLetra');
-      const lblC = document.getElementById('lblModalCuerpoLetra');
-      if (lblT) lblT.textContent = titulo;
-      if (lblC) lblC.textContent = texto;
-      if (modal) modal.style.display = 'flex';
-    }
-
-    function cerrarModalLetra() {
-      const modal = document.getElementById('modalLetraMilitar');
-      if (modal) modal.style.display = 'none';
-    }
-
-    // --- LISTAS DE REPRODUCCIÓN (PLAYLISTS) ---
-    const STORAGE_KEY_PLAYLISTS = 'honores_playlists_v1';
-    let appPlaylists = {};
-    let activePlaylistId = null;
-    let playlistEnReproduccion = false;
-    let playlistIndexActual = 0;
-    let playlistAudioHandle = null;
-    let pistaSeleccionadaIndex = null;
-
-    function cargarPlaylistsDesdeStorage() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_PLAYLISTS);
-        if (raw) {
-          appPlaylists = JSON.parse(raw);
-        } else {
-          appPlaylists = {
-            'desfile_ordenanza': {
-              nombre: 'Desfile y Parada Militar (Ejemplo)',
-              pistas: [
-                { tipo: 'corneta', nombre: 'Atención', url: 'https://raw.githubusercontent.com/tdolarea/cornetas/main/ATENCION.mp3' },
-                { tipo: 'corneta', nombre: 'Firmes', url: 'https://raw.githubusercontent.com/tdolarea/cornetas/main/FIRMES.mp3' },
-                { tipo: 'corneta', nombre: 'De frente paso ligero', url: 'https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE%20PASO%20LIGERO.mp3' },
-                { tipo: 'marcha', nombre: 'Ganando Barlovento', url: 'https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Ganando%20Barlovento.mp3' },
-                { tipo: 'marcha', nombre: 'Salve Marinera', url: 'https://raw.githubusercontent.com/td…alve%20Marinera.mp3' }
-              ]
-            }
-          };
-          guardarPlaylistsEnStorage();
-        }
-      } catch(e) { appPlaylists = {}; }
-      refrescarSelectorPlaylists();
-    }
-
-    function guardarPlaylistsEnStorage() {
-      try { localStorage.setItem(STORAGE_KEY_PLAYLISTS, JSON.stringify(appPlaylists)); } catch(e){}
-      refrescarSelectorPlaylists();
-    }
-
-    function refrescarSelectorPlaylists() {
-      const sel = document.getElementById('selPlaylistsGuardadas');
-      const badge = document.getElementById('lblPlaylistCountBadge');
-      if (!sel) return;
-      sel.innerHTML = '<option value="">Seleccione una lista existente...</option>';
-      const keys = Object.keys(appPlaylists);
-      if (badge) badge.textContent = keys.length + ' Lista' + (keys.length === 1 ? '' : 's');
-      keys.forEach(k => {
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = appPlaylists[k].nombre;
-        if (k === activePlaylistId) opt.selected = true;
-        sel.appendChild(opt);
-      });
-    }
-
-    function crearNuevaPlaylistPrompt() {
-      const nombre = prompt('Nombre de la nueva Lista (ej. "Desfile Armada"):');
-      if (!nombre || !nombre.trim()) return;
-      const id = 'pl_' + Date.now();
-      appPlaylists[id] = { nombre: nombre.trim(), pistas: [] };
-      activePlaylistId = id;
-      pistaSeleccionadaIndex = null;
-      guardarPlaylistsEnStorage();
-      cargarPlaylistSeleccionada();
-    }
-
-    function borrarPlaylistActiva() {
-      if (!activePlaylistId) return;
-      if (!confirm('¿Eliminar la lista "' + (appPlaylists[activePlaylistId] ? appPlaylists[activePlaylistId].nombre : '') + '"?')) return;
-      detenerReproduccionPlaylist();
-      delete appPlaylists[activePlaylistId];
-      activePlaylistId = null;
-      pistaSeleccionadaIndex = null;
-      guardarPlaylistsEnStorage();
-      const bEdit = document.getElementById('boxEditorPlaylist');
-      if (bEdit) bEdit.style.display = 'none';
-    }
-
-    function cargarPlaylistSeleccionada() {
-      const sel = document.getElementById('selPlaylistsGuardadas');
-      if (!sel) return;
-      activePlaylistId = sel.value;
-      const boxEdit = document.getElementById('boxEditorPlaylist');
-      if (!activePlaylistId || !appPlaylists[activePlaylistId]) {
-        if (boxEdit) boxEdit.style.display = 'none';
-        return;
-      }
-      if (boxEdit) boxEdit.style.display = 'block';
-      const pl = appPlaylists[activePlaylistId];
-      const lblTit = document.getElementById('lblTituloPlaylistActiva');
-      if (lblTit) lblTit.textContent = '📋 ' + pl.nombre;
-      pistaSeleccionadaIndex = null;
-      renderizarPistasPlaylist();
-    }
-
-    function renderizarPistasPlaylist() {
-      const cont = document.getElementById('listaPistasPlaylist');
-      const badgeCount = document.getElementById('lblItemsCount');
-      if (!cont || !activePlaylistId) return;
-      const pl = appPlaylists[activePlaylistId];
-      if (!pl) return;
-      if (badgeCount) badgeCount.textContent = pl.pistas.length + ' pista' + (pl.pistas.length === 1 ? '' : 's');
-      cont.innerHTML = '';
-      if (pl.pistas.length === 0) {
-        cont.innerHTML = '<div style="font-size:11px; color:#64748b; font-style:italic; padding:12px; text-align:center;">Lista vacía. Añada toques de corneta o marchas con el botón [➕ Playlist] de arriba.</div>';
-        pistaSeleccionadaIndex = null;
-        return;
-      }
-      pl.pistas.forEach((p, idx) => {
-        const row = document.createElement('div');
-        const icon = p.tipo === 'corneta' ? '📯' : (p.tipo === 'himno' ? '🌍' : '🎺');
-        const esActual = playlistEnReproduccion && playlistIndexActual === idx;
-        const esSeleccionado = pistaSeleccionadaIndex === idx;
-        let bg = esActual ? '#1e3a8a' : (esSeleccionado ? '#1e293b' : '#0b152d');
-        let border = esActual ? '#38bdf8' : (esSeleccionado ? '#10b981' : '#1e3a8a');
-        row.style.cssText = `background:${bg}; border:1.5px solid ${border}; border-radius:4px; padding:7px 9px; display:flex; justify-content:space-between; align-items:center; font-size:12px; cursor:pointer;`;
-        row.onclick = () => { pistaSeleccionadaIndex = idx; renderizarPistasPlaylist(); };
-        row.innerHTML = `<div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
-            <span style="font-weight:900; color:${esSeleccionado ? '#10b981' : '#38bdf8'}; font-size:11px;">${idx + 1}.</span>
-            <span>${icon}</span>
-            <span style="font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.nombre}</span>
-          </div>
-          <div>${esSeleccionado ? '<span style="font-size:10px; color:#10b981; font-weight:800;">✓ Seleccionada</span>' : ''}</div>`;
-        cont.appendChild(row);
-      });
-    }
-
-    function moverPistaSeleccionada(dir) {
-      if (!activePlaylistId || !appPlaylists[activePlaylistId] || pistaSeleccionadaIndex === null) {
-        alert('Haga clic sobre una pista para seleccionarla primero.');
-        return;
-      }
-      const pistas = appPlaylists[activePlaylistId].pistas;
-      const target = pistaSeleccionadaIndex + dir;
-      if (target < 0 || target >= pistas.length) return;
-      const temp = pistas[pistaSeleccionadaIndex];
-      pistas[pistaSeleccionadaIndex] = pistas[target];
-      pistas[target] = temp;
-      pistaSeleccionadaIndex = target;
-      guardarPlaylistsEnStorage();
-      renderizarPistasPlaylist();
-    }
-
-    function borrarPistaSeleccionada() {
-      if (!activePlaylistId || !appPlaylists[activePlaylistId] || pistaSeleccionadaIndex === null) {
-        alert('Haga clic sobre una pista para seleccionarla primero.');
-        return;
-      }
-      const nombre = appPlaylists[activePlaylistId].pistas[pistaSeleccionadaIndex]?.nombre;
-      if (!confirm(`¿Eliminar de la lista "${nombre}"?`)) return;
-      appPlaylists[activePlaylistId].pistas.splice(pistaSeleccionadaIndex, 1);
-      pistaSeleccionadaIndex = null;
-      guardarPlaylistsEnStorage();
-      renderizarPistasPlaylist();
-    }
-
-    function guardarListaBotonManual() {
-      if (!activePlaylistId || !appPlaylists[activePlaylistId]) {
-        alert('No hay ninguna lista seleccionada para guardar.');
-        return;
-      }
-      guardarPlaylistsEnStorage();
-      alert(`💾 Lista "${appPlaylists[activePlaylistId].nombre}" guardada correctamente.`);
-    }
-
-    function iniciarReproduccionPlaylist() {
-      if (!activePlaylistId || !appPlaylists[activePlaylistId]) { alert('Seleccione o cree una lista primero.'); return; }
-      const pl = appPlaylists[activePlaylistId];
-      if (pl.pistas.length === 0) { alert('La lista no tiene pistas agregadas.'); return; }
-      detenerCanalBanda();
-      detenerCanalCorneta();
-      detenerReproduccionPlaylist();
-      playlistEnReproduccion = true;
-      playlistIndexActual = 0;
-      const btnPlay = document.getElementById('btnPlayPlaylist');
-      const btnStop = document.getElementById('btnStopPlaylist');
-      if (btnPlay) btnPlay.style.display = 'none';
-      if (btnStop) btnStop.style.display = 'block';
-      reproducirSiguientePistaPlaylist();
-    }
-
-    function reproducirSiguientePistaPlaylist() {
-      if (!playlistEnReproduccion || !activePlaylistId) return;
-      const pl = appPlaylists[activePlaylistId];
-      if (!pl || playlistIndexActual >= pl.pistas.length) {
-        detenerReproduccionPlaylist();
-        actualizarStatus('✅ Lista finalizada con éxito.');
-        setTimeout(cerrarStatus, 3000);
-        return;
-      }
-      renderizarPistasPlaylist();
-      const pista = pl.pistas[playlistIndexActual];
-      actualizarStatus('▶️ (' + (playlistIndexActual + 1) + '/' + pl.pistas.length + ') ' + pista.nombre);
-      playlistAudioHandle = new Audio(pista.url);
-      playlistAudioHandle.play().catch(e => { console.warn('Err playlist track:', e); avanzarPistaConDelay(); });
-      playlistAudioHandle.onended = () => { avanzarPistaConDelay(); };
-    }
-
-    function avanzarPistaConDelay() {
-      if (!playlistEnReproduccion) return;
-      playlistIndexActual++;
-      setTimeout(reproducirSiguientePistaPlaylist, 1500);
-    }
-
-    function detenerReproduccionPlaylist() {
-      playlistEnReproduccion = false;
-      if (playlistAudioHandle) {
-        try { playlistAudioHandle.pause(); playlistAudioHandle.currentTime = 0; } catch(e){}
-        playlistAudioHandle = null;
-      }
-      const btnPlay = document.getElementById('btnPlayPlaylist');
-      const btnStop = document.getElementById('btnStopPlaylist');
-      if (btnPlay) btnPlay.style.display = 'block';
-      if (btnStop) btnStop.style.display = 'none';
-      renderizarPistasPlaylist();
-      cerrarStatus();
-    }
-
-    // --- INICIALIZADOR DE SELECTORES ---
-    function inicializarTodosLosSelectores() {
-      const selJSE = document.getElementById('selChifleJSE');
-      if (selJSE && selJSE.options.length <= 1) {
-        CATALOGO_CHIFLE_JSE.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.url;
-          opt.textContent = item.name;
-          selJSE.appendChild(opt);
-        });
-      }
-
-      const selMClas = document.getElementById('selMarchasClasicas');
-      if (selMClas && selMClas.options.length <= 1) {
-        CATALOGO_MARCHAS_CLASICAS.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.url;
-          opt.textContent = item.name;
-          selMClas.appendChild(opt);
-        });
-      }
-
-      const selHCuerpo = document.getElementById('selHimnosCuerpos');
-      if (selHCuerpo && selHCuerpo.options.length <= 1) {
-        CATALOGO_HIMNOS_CUERPOS.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.url;
-          opt.textContent = item.name;
-          selHCuerpo.appendChild(opt);
-        });
-      }
-
-      const selRel = document.getElementById('selMusicaReligiosa');
-      if (selRel && selRel.options.length <= 1) {
-        CATALOGO_RELIGIOSA.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.url;
-          opt.textContent = item.name;
-          selRel.appendChild(opt);
-        });
-      }
-
-      const selH = document.getElementById('selHimnosNacionales');
-      if (selH && selH.options.length <= 1) {
-        ANTHEMS_CATALOG.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.url;
-          opt.textContent = item.name;
-          selH.appendChild(opt);
-        });
-      }
-
-      const selC = document.getElementById('selToquesCorneta');
-      if (selC && selC.options.length <= 1) {
-        CATALOGO_CORNETAS.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.url;
-          opt.textContent = item.name;
-          selC.appendChild(opt);
-        });
-      }
-
-      cargarPlaylistsDesdeStorage();
-    }
-
   </script>
-
-    <!-- MODAL POPUP PARA VISUALIZAR LETRAS MILITARES -->
-    <div id="modalLetraMilitar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2,6,23,0.85); backdrop-filter:blur(4px); z-index:99999; justify-content:center; align-items:center; padding:16px;">
-      <div style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:10px; width:100%; max-width:480px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
-        <div style="padding:12px 14px; border-bottom:1px solid #1e3a8a; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase;">📜 LETRA OFICIAL</div>
-            <div style="font-size:14px; font-weight:800; color:#fff;" id="lblModalTituloLetra">--</div>
-          </div>
-          <button type="button" class="action-btn danger" onclick="cerrarModalLetra()" style="padding:4px 10px; font-size:12px; min-height:28px;">
-            ✕ Cerrar
-          </button>
-        </div>
-        <div style="padding:14px; overflow-y:auto; font-size:13px; color:#e2e8f0; line-height:1.6; white-space:pre-wrap; font-family:inherit;" id="lblModalCuerpoLetra">
-        </div>
-      </div>
-    </div>
-
 </body>
 </html>
