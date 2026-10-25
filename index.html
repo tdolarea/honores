@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792912740';
+    const APP_VERSION = 'v1792913604';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -834,7 +834,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792912740</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792913604</div>
 </footer>
 
   <script>
@@ -2540,7 +2540,10 @@ function _legacy_execAuth() {
 
       // Caso 1: Solo chifle
       if (cerAcompBandera === 'chifle') {
-        reproducirElementoCeremonial(elChifle, '3. 📢 Pitada de Chifle', callbackFin);
+        reproducirElementoCeremonial(elChifle, '3. 📢 Pitada de Chifle', () => {
+          // Esperar 20 segundos para que la dotacion pueda doblar la bandera
+          setTimeout(callbackFin, 20000);
+        });
         return;
       }
 
