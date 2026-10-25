@@ -155,7 +155,1076 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792923041';
+    const APP_VERSION = 'v1792923728';
+    if (localStorage.getItem('app_ver') !== APP_VERSION) {
+      localStorage.setItem('app_ver', APP_VERSION);
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          for (let name of names) caches.delete(name);
+        });
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          for (let reg of regs) reg.unregister();
+        });
+      }
+    }
+  </script>
+
+
+  
+    <!-- Reproductores dedicados para Izado y Arriado -->
+<!-- Reproductores estáticos precargados para Ceremonial de Izado y Arriado -->
+  <!-- Izado (Voces Elena + Himno + Chifle) -->
+  <audio id="audIzado1" src="audio/VOZELENASENALES.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado2" src="audio/VOZELENALABANDERAFRENTEAPOPA.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado3Himno" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado3Chifle" src="audio/chifleiniciohimno.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado4" src="audio/VOZELENARETIRADADEHONORES.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado5" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
+
+  <!-- Arriado (Voces Carmen/Masculina + Himno + Chifle + Oraciones + Dotacion) -->
+  <audio id="audArriado1" src="audio/senalesalabandera.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado2" src="audio/alabanderafrenteapopapresenten.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado3Himno" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado3Chifle" src="audio/chifleiniciohimno.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado4" src="audio/VOZretiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado5" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado6Leida" src="audio/VOZORACION.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado6Cantada" src="audio/OraciondelaNoche.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado6Corneta" src="audio/CornetaToquedeOracion.wav" preload="auto" playsinline></audio>
+  <audio id="audArriado7" src="audio/dotacionbuenasnoches.mp3" preload="auto" playsinline></audio>
+
+  <!-- Eliminar players dinámicos fallidos -->
+  <!-- Reproductores estáticos precargados para Ceremonial de Autoridades -->
+  <audio id="audFirmes" src="audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3" preload="auto" playsinline></audio>
+  <audio id="audPresenten" src="audio/cornetapresentenarmas.wav" preload="auto" playsinline></audio>
+  <audio id="audHombro" src="audio/CORNETASOBREELHOMBRO.mp3" preload="auto" playsinline></audio>
+  <audio id="audEjecHimno" src="audio/cornetaordenhimnonacional.wav" preload="auto" playsinline></audio>
+  <audio id="audEjecMarcha" src="audio/cornetaejecutivamarchadeinfantes.wav" preload="auto" playsinline></audio>
+  <audio id="audDescanso" src="audio/Cornetadescanso.wav" preload="auto" playsinline></audio>
+  <audio id="audDescansoHombro" src="audio/CORNETASOBREELHOMBRO.mp3" preload="auto" playsinline></audio>
+
+  <audio id="audViva07" src="audio/vivaespana07.mp3" preload="auto" playsinline></audio>
+  <audio id="audViva05" src="audio/vivaespana05.mp3" preload="auto" playsinline></audio>
+  <audio id="audViva04" src="audio/vivaespana04.mp3" preload="auto" playsinline></audio>
+  <audio id="audViva03" src="audio/vivaespana03.mp3" preload="auto" playsinline></audio>
+  <audio id="audViva02" src="audio/vivaespana02.mp3" preload="auto" playsinline></audio>
+  <audio id="audViva01" src="audio/vivaaespana01.mp3" preload="auto" playsinline></audio>
+
+  <audio id="audSalvas21" src="audio/salvasdeordenanza21salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
+  <audio id="audSalvas19" src="audio/salvasdeordenanza19salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
+  <audio id="audSalvas17" src="audio/salvasdeordenanza17salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
+  <audio id="audSalvas15" src="audio/salvasdeordenanza15salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
+  <audio id="audSalvas13" src="audio/salvasdeordenanza13salvas(mp3cut.net).mp3" preload="auto" playsinline></audio>
+
+  <audio id="audHimnoLargo" src="audio/Espania_largo.mp3" preload="auto" playsinline></audio>
+  <audio id="audHimnoCorto" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
+  <audio id="audHimnoMarcha" src="audio/MarchadeInfantes.mp3" preload="auto" playsinline></audio>
+  <audio id="audHimnoExtranjero" preload="auto" playsinline></audio>
+
+
+  
+
+
+  
+
+
+  <!-- Reproductores de audio estáticos predefinidos para Portalón -->
+
+  
+
+
+  <!-- Reproductores estáticos para Honores entre Buques -->
+  <audio id="audBuqueBabor" src="audio/Honoresporbabor_AudioDenoise.mp3" preload="auto" playsinline></audio>
+  <audio id="audBuqueEstribor" src="audio/Honoresporestribor_AudioDenoise.mp3" preload="auto" playsinline></audio>
+  <audio id="audBuqueRetirada" src="audio/Retiradadehonores_AudioDenoise.mp3" preload="auto" playsinline></audio>
+
+  <audio id="audMando" src="audio/ComteoAlmte.mp3" preload="auto" playsinline></audio>
+  <audio id="audOficiales" src="audio/oficiales.mp3" preload="auto" playsinline></audio>
+  <audio id="audRetirada" src="audio/retiradaComteoAlmte.mp3" preload="auto" playsinline></audio>
+  <audio id="audGeneral" preload="auto" playsinline></audio>
+
+  
+
+  <header style="justify-content:center; text-align:center;">
+    <div class="brand" style="justify-content:center;">
+      <img src="img/banderaespana.jpg" alt="🇪🇸" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 3 2\'%3E%3Crect width=\'3\' height=\'2\' fill=\'%23c60b1e\'/%3E%3Crect width=\'3\' height=\'1\' y=\'0.5\' fill=\'%23ffc400\'/%3E%3C/svg%3E';" style="width:40px; height:28px; border-radius:4px; object-fit:cover;" />
+      <div>
+        <div class="brand-title">Honores de Ordenanza</div>
+        <div class="brand-sub">PWA Web App</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="navPortalon" onclick="showView('portalon')">🚪 Portalón</button>
+    <button class="nav-btn" id="navBuques" onclick="showView('buques')">⚓ Buques</button>
+    <button class="nav-btn active" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
+    <button class="nav-btn" id="navIzado" onclick="showView('izado')">🌅 Izado/Arriado</button>
+    <button class="nav-btn" id="navMusica" onclick="showView('musica')">🎺 Música / Himnos</button>
+  </div>
+
+  <main>
+    <!-- BANNER PWA IOS / ANDROID -->
+    <div class="install-banner" id="pwaBanner">
+      <span>📱 <b>Instalar en iPhone/Android:</b> Añadir a pantalla de inicio para usar 100% offline en la mar.</span>
+      <span style="cursor:pointer; font-weight:900;" onclick="document.getElementById('pwaBanner').style.display='none'">✕</span>
+    </div>
+
+    <!-- ESTADO DE AUDIO -->
+    
+
+    <!-- VISTA 1: PORTALÓN -->
+        <!-- VISTA 1: CHIFLE (PORTALÓN, MANIOBRA Y JUAN SEBASTIÁN DE ELCANO) -->
+        <!-- VISTA 1: CHIFLE -->
+    <div class="view-section" id="viewPortalon">
+      <div class="card" style="margin-bottom:14px;">
+        <!-- CABECERA CON GRÁFICO OFICIAL DEL CHIFLE -->
+        <div style="display:flex; justify-content:center; align-items:center; padding:6px 0 12px 0;">
+          <img src="img/CHFLE.jpg" alt="Chifle Marinero de la Armada" style="max-height:85px; border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,0.4); object-fit:contain;">
+        </div>
+
+        <!-- REPRODUCTOR / ESTADO DE CHIFLE ACTIVO -->
+        <div id="playerChifleActivo" style="display:none; background:#0b152d; border:1.5px solid #38bdf8; border-radius:8px; padding:10px 12px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:10.5px; font-weight:800; color:#38bdf8; text-transform:uppercase;">▶️ CHIFLEANDO:</div>
+            <button type="button" class="action-btn danger" onclick="detenerChifle()" style="padding:3px 8px; font-size:10.5px; min-height:24px;">
+              ⏹️ Cortar
+            </button>
+          </div>
+          <div style="font-size:13.5px; font-weight:800; color:#f8fafc; margin-top:2px;" id="lblChifleActivoTxt">--</div>
+        </div>
+
+        <!-- BLOQUE 1: PORTALÓN -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
+          <div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span>⚓ 1. PORTALÓN</span>
+          </div>
+          <div class="btn-grid" style="grid-template-columns: 1fr; gap:6px;">
+            <button type="button" class="action-btn primary" id="btnChifleMando" style="padding:12px;" onclick="tocarChifleMando()">
+              <span style="font-size:13.5px;">🎺 CHIFLE Almirante o Comandante</span>
+              <span>⚓</span>
+            </button>
+            <button type="button" class="action-btn primary disabled" id="btnChifleRetirada" style="padding:12px;" onclick="tocarChifleRetirada()">
+              <span style="font-size:13.5px;">🎺 CHIFLE Retirada Almte / Comte</span>
+              <span>⚓</span>
+            </button>
+            <button type="button" class="action-btn primary" id="btnChifleOficiales" style="padding:12px;" onclick="tocarChifleOficiales()">
+              <span style="font-size:13.5px;">🎺 CHIFLE Oficiales</span>
+              <span>⚓</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BLOQUE 2: MANIOBRA -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
+          <div style="font-size:12.5px; font-weight:800; color:#38bdf8; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span>⚓ 2. MANIOBRA</span>
+          </div>
+          <!-- FILA 1: BÁSICOS DE MANIOBRA -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; margin-bottom:6px;">
+            <button type="button" class="action-btn" onclick="tocarChifleUrl('https://raw.githubusercontent.com/tdolarea/chifle/main/MAN_entrar.mp3', 'Maniobra: ENTRA')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:4px;">
+              <span style="font-size:15px;">📥</span>
+              <span style="font-size:11.5px; font-weight:800;">ENTRA</span>
+            </button>
+            <button type="button" class="action-btn" onclick="tocarChifleUrl('https://raw.githubusercontent.com/tdolarea/chifle/main/MAN_forte.mp3', 'Maniobra: FORTE')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:4px;">
+              <span style="font-size:15px;">🛑</span>
+              <span style="font-size:11.5px; font-weight:800;">FORTE</span>
+            </button>
+            <button type="button" class="action-btn" onclick="tocarChifleUrl('https://raw.githubusercontent.com/tdolarea/chifle/main/MAN_largar.mp3', 'Maniobra: LARGAR')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:4px;">
+              <span style="font-size:15px;">📤</span>
+              <span style="font-size:11.5px; font-weight:800;">LARGAR</span>
+            </button>
+          </div>
+          <!-- FILA 2: MANIOBRA RAS (APROVISIONAMIENTO EN LA MAR) -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
+            <button type="button" class="action-btn" onclick="tocarChifleUrl('https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_listo_y_a_cubierto.mp3', 'RAS: Listo y a cubierto')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:3px;">
+              <span style="font-size:15px;">🛡️</span>
+              <span style="font-size:10px; font-weight:800; line-height:1.2;">Listo y a cubierto</span>
+            </button>
+            <button type="button" class="action-btn" onclick="tocarChifleUrl('https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_pasada_la_maniobra.mp3', 'RAS: Pasada la maniobra')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:3px;">
+              <span style="font-size:15px;">⚓</span>
+              <span style="font-size:10px; font-weight:800; line-height:1.2;">Pasada la maniobra</span>
+            </button>
+            <button type="button" class="action-btn" onclick="tocarChifleUrl('https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_voy_a_lanzar_guias.mp3', 'RAS: Voy a lanzar guías')" style="padding:10px 4px; justify-content:center; text-align:center; flex-direction:column; gap:3px;">
+              <span style="font-size:15px;">🎯</span>
+              <span style="font-size:10px; font-weight:800; line-height:1.2;">Voy a lanzar guías</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BLOQUE 3: JUAN SEBASTIÁN DE ELCANO -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12.5px; font-weight:800; color:#38bdf8;">⛵ 3. JUAN SEBASTIÁN DE ELCANO</span>
+            <span style="font-size:10.5px; color:#94a3b8;" id="lblElcanoCount">22 Toques</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <select id="selChifleJSE" style="flex:1; background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:8px;">
+              <option value="">Seleccione toque de Elcano...</option>
+            </select>
+            <button type="button" class="action-btn primary" onclick="tocarChifleJSE()" style="padding:8px 12px; font-size:12px; min-height:36px;">
+              ▶️ Tocar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VISTA 2: HONORES ENTRE BUQUES -->
+        <!-- VISTA 2: HONORES ENTRE BUQUES -->
+    <div class="view-section" id="viewBuques">
+      <div class="card">
+        <div class="card-title">Honores entre Buques en la Mar</div>
+        
+        <!-- CUADRÍCULA DE 2 COLUMNAS A LA MISMA ALTURA: BABOR (ROJO) Y ESTRIBOR (VERDE) -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <!-- BABOR (ROJO, IZQUIERDA, DOBLE ALTURA) -->
+          <button class="action-btn" id="btnBuqueBabor" 
+            style="background:#7f1d1d; border:2px solid #ef4444; color:#fee2e2; min-height:120px; flex-direction:column; justify-content:center; gap:8px; text-align:center; padding:12px;" 
+            onclick="tocarHonoresBabor()">
+            <span style="font-size:24px;">🔴</span>
+            <span style="font-size:14px; font-weight:800; line-height:1.2;">HONORES POR<br>BABOR</span>
+            
+          </button>
+
+          <!-- ESTRIBOR (VERDE, DERECHA, DOBLE ALTURA) -->
+          <button class="action-btn" id="btnBuqueEstribor" 
+            style="background:#064e3b; border:2px solid #10b981; color:#d1fae5; min-height:120px; flex-direction:column; justify-content:center; gap:8px; text-align:center; padding:12px;" 
+            onclick="tocarHonoresEstribor()">
+            <span style="font-size:24px;">🟢</span>
+            <span style="font-size:14px; font-weight:800; line-height:1.2;">HONORES POR<br>ESTRIBOR</span>
+            
+          </button>
+        </div>
+
+        <!-- BOTÓN RETIRADA DE HONORES (ANCHO COMPLETO, BLOQUEADO HASTA TOCAR BR O ER) -->
+        <div style="margin-top:6px;">
+          <button class="action-btn primary disabled" id="btnBuqueRetirada" 
+            style="padding:16px; width:100%; justify-content:space-between;" 
+            onclick="tocarHonoresRetirada()">
+            <span style="font-size:14px; font-weight:700;">🎺 RETIRADA DE HONORES</span>
+            
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VISTA 3: HONORES A AUTORIDADES -->
+        <!-- VISTA 3: HONORES A AUTORIDADES (REDISEÑADA Y LIMPIA) -->
+        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
+        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
+        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
+        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
+    <div class="view-section active" id="viewAuth">
+      <div class="card">
+        <div class="card-title">
+          <span>👑 Honores a Autoridades</span>
+          
+        </div>
+
+        <!-- FILTROS POR CATEGORÍA -->
+        <div class="category-pills" id="authCatPills">
+          <button class="cat-pill active" onclick="filterAuthCat('todas')">Todas</button>
+          <button class="cat-pill" onclick="filterAuthCat('corona')">👑 Corona</button>
+          <button class="cat-pill" onclick="filterAuthCat('gobierno')">🏛️ Gobierno</button>
+          <button class="cat-pill" onclick="filterAuthCat('mando')">⚓ Aut Militar</button>
+          <button class="cat-pill" onclick="filterAuthCat('extranjeras')">🌍 Extranjeras</button>
+          <button class="cat-pill" onclick="filterAuthCat('organismos')">🌐 Organismos</button>
+        </div>
+
+        <!-- LISTA DE AUTORIDADES LIMPIA (SOLO NOMBRE) -->
+        <div id="authListContainer" style="max-height:260px; overflow-y:auto; padding-right:4px;">
+          <!-- Generado dinámicamente -->
+        </div>
+
+        <!-- PANEL DE CONTROL REGLAMENTARIO DE LA AUTORIDAD SELECCIONADA -->
+        <div id="authConfigPanel" style="display:none; margin-top:14px; border-top:1.5px solid #1e3a8a; padding-top:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+              <div style="font-size:14px; font-weight:900; color:#38bdf8;" id="cfgAuthName">SM El Rey</div>
+              <div style="font-size:11px; color:#94a3b8;" id="cfgAuthSub">Honores reglamentarios de Ordenanza</div>
+            </div>
+            <button class="action-btn" style="min-height:30px; padding:4px 10px; font-size:11px;" onclick="resetAuthSelection()">
+              ↩️ Cambiar
+            </button>
+          </div>
+
+          
+
+          <!-- SELECTOR DE HIMNO (EXTRANJEROS Y ORGANISMOS) -->
+          <!-- CONFIGURACIÓN DE LA SECUENCIA CEREMONIAL -->
+          
+          <!-- 1. TOQUES DE CORNETA (FIRMES + EJECUTIVA + DESCANSO) -->
+          <div class="toggle-row" id="rowCorneta">
+            <div>
+              <div class="toggle-label">🎺 Toques de Corneta</div>
+              <div class="toggle-desc">Firmes, Ejecutiva de Marcha/Himno y Descanso</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkCorneta" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- 2. SELECTOR POSICIÓN DEL ARMA -->
+          <div class="toggle-row" id="rowArma" style="flex-direction:column; align-items:flex-start; gap:8px;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <div class="toggle-label">🎖️ Posición del Arma:</div>
+              <span style="font-size:11px; color:#38bdf8; font-weight:700;" id="lblArmaActual">Presenten Armas</span>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px; width:100%;">
+              <button type="button" class="action-btn primary" id="btnArmaPresenten" style="font-size:11px; padding:8px 4px; justify-content:center; text-align:center;" onclick="seleccionarPosicionArma('presenten')">
+                Presenten
+              </button>
+              <button type="button" class="action-btn" id="btnArmaHombro" style="font-size:11px; padding:8px 4px; justify-content:center; text-align:center;" onclick="seleccionarPosicionArma('hombro')">
+                Sobre Hombro
+              </button>
+              <button type="button" class="action-btn" id="btnArmaFirmes" style="font-size:11px; padding:8px 4px; justify-content:center; text-align:center;" onclick="seleccionarPosicionArma('ninguno')">
+                En Firmes
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. VOCES DE VIVA ESPAÑA -->
+          <div class="toggle-row" id="rowVivas">
+            <div>
+              <div class="toggle-label" id="lblVivas">🗣️ Saludo a la voz</div>
+              <div class="toggle-desc" id="descVivas">7 Voces de Viva España</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkVivas" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- 4. SALVAS DE ORDENANZA -->
+          <div class="toggle-row" id="rowSalvas">
+            <div>
+              <div class="toggle-label" id="lblSalvas">💥 Salvas de Ordenanza</div>
+              <div class="toggle-desc" id="descSalvas">21 Salvas de Ordenanza simultáneas con el himno</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkSalvas" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- 5. MÚSICA / HIMNOS -->
+          <div id="anthemPickerBox" style="display:none; background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:10px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:12px; font-weight:700; color:#f8fafc;" id="lblAnthemPickerTitle">🎵 Seleccione Himno:</span>
+              <span style="font-size:11px; color:#38bdf8; font-weight:800;" id="selectedAnthemName">Francia</span>
+            </div>
+            <input type="text" id="txtAnthemSearch" placeholder="🔍 Buscar país u organismo (156 disponibles)..." 
+              style="width:100%; padding:8px 10px; background:#0b152d; border:1px solid #334155; border-radius:6px; color:#fff; font-size:12px; margin-bottom:8px;"
+              oninput="onSearchAnthemInput(this.value)">
+            <div id="anthemResultsList" style="max-height:130px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;">
+              <!-- Lista de resultados -->
+            </div>
+            <div style="font-size:10.5px; color:#94a3b8; margin-top:6px; font-style:italic;" id="anthemOrderExplanation">
+              Orden protocolario: 1º Himno Extranjero ➔ 2º Himno Nacional de España.
+            </div>
+          </div>
+
+          <div class="toggle-row" id="rowMusica">
+            <div>
+              <div class="toggle-label" id="lblMusica">🎺 Música / Himnos</div>
+              <div class="toggle-desc" id="descMusica">Himno Nacional de España</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkMusica" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- BOTONES DE ACCIÓN Y BARRA ROJA INTEGRADA ABAJO (DISEÑO EXACTO SUPERIOR) -->
+          <div style="margin-top:16px;">
+            <!-- BOTÓN EJECUTIVA (VISIBLE EN REPOSO) -->
+            <button id="btnEjecutivaPrincipal" class="action-btn primary" 
+              style="background:#0284c7; border-color:#38bdf8; justify-content:center; font-size:15px; font-weight:900; padding:15px; width:100%; letter-spacing:0.5px; box-shadow:0 4px 12px rgba(2,132,199,0.3);" 
+              onclick="executeConfiguredAuth()">
+              <span>▶️ Ejecutiva</span>
+            </button>
+
+            <!-- BARRA ROJA ACTIVA ABAJO (CORTADA DE ARRIBA: .status-bar Y .status-bar-stop-btn) -->
+            <div id="audioStatusBar" class="status-bar" style="display:none; margin-bottom:0; justify-content:space-between; align-items:center;">
+              <span id="audioStatusText" style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                <span style="font-size:18px;">🔊</span>
+                <span id="audioStatusInnerTxt" style="white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">Reproduciendo toque...</span>
+              </span>
+              <button type="button" class="status-bar-stop-btn" onclick="stopAllAudio()">🛑 PARAR SONIDO</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-section" id="viewIzado">
+      <div class="card">
+        
+
+        <!-- SELECTOR DE SITUACIÓN OPERATIVA DEL BUQUE -->
+        <div style="background:#070d1e; border:1px solid #334155; border-radius:8px; padding:6px 10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:11.5px; font-weight:800; color:#94a3b8; display:flex; align-items:center; gap:6px;">
+            <span>🚢 SITUACIÓN DEL BUQUE:</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="action-btn primary" id="btnSitPuerto" onclick="setSituacionBuque('puerto')" style="font-size:11px; padding:5px 10px; min-height:28px;">
+              ⚓ En Puerto / Fondeo
+            </button>
+            <button type="button" class="action-btn" id="btnSitMar" onclick="setSituacionBuque('mar')" style="font-size:11px; padding:5px 10px; min-height:28px;">
+              🌊 Navegando (En la Mar)
+            </button>
+          </div>
+        </div>
+
+        <!-- SELECTOR DE CEREMONIAL: IZADO VS ARRIADO -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
+          <button type="button" class="action-btn primary" id="btnModoIzado" onclick="setCeremonialModo('izado')" style="justify-content:center; text-align:center; padding:10px;">
+            <span>🌅 IZADO</span>
+          </button>
+          <button type="button" class="action-btn" id="btnModoArriado" onclick="setCeremonialModo('arriado')" style="justify-content:center; text-align:center; padding:10px;">
+            <span>🌇 ARRIADO</span>
+          </button>
+        </div>
+
+        <!-- PANEL DE PROGRAMACIÓN HORARIA -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:12px; font-weight:800; color:#38bdf8; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+            <span>⏰ PROGRAMACIÓN HORARIA</span>
+            <span style="font-size:11px; color:#94a3b8;" id="lblInfoOcaso"></span>
+          </div>
+
+          <!-- VENTANA SIMPLIFICADA DE HUSO HORARIO -->
+            <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:6px; padding:8px 10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:11.5px; font-weight:800; color:#94a3b8;">🌐 HUSO HORARIO:</span>
+                  <span style="font-size:12px; font-weight:900; color:#38bdf8;" id="lblHusoTextoVisible">UTC+2 (Bravo · B)</span>
+                </div>
+                <button type="button" class="action-btn" id="btnToggleHuso" onclick="toggleSelectorHuso()" style="padding:3px 8px; font-size:11px; min-height:26px;">
+                  ⚙️ Cambiar
+                </button>
+              </div>
+
+              <!-- DESPLEGABLE OCULTO (SOLO SI SE OPRIME CAMBIAR) -->
+              <div id="boxDesplegableHuso" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #1e3a8a;">
+                <select id="selHusoHorario" style="width:100%; background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:800; padding:6px 8px;" onchange="onSeleccionarHuso(this.value)">
+                  <option value="auto" selected>📱 Hora del Dispositivo (Auto)</option>
+                  <option value="0">UTC +0 (Zulu · Z · GMT)</option>
+                  <option value="1">UTC +1 (Alfa · A · Invierno Península)</option>
+                  <option value="2">UTC +2 (Bravo · B · Verano Península)</option>
+                  <option value="3">UTC +3 (Charlie · C · Mediterráneo Oriental)</option>
+                  <option value="4">UTC +4 (Delta · D · Golfo Pérsico)</option>
+                  <option value="-1">UTC -1 (November · N · Invierno Canarias)</option>
+                  <option value="-2">UTC -2 (Oscar · O)</option>
+                  <option value="-3">UTC -3 (Papa · P)</option>
+                  <option value="-4">UTC -4 (Quebec · Q · Atlántico Occidental)</option>
+                  <option value="-5">UTC -5 (Romeo · R · Caribe / Colombia)</option>
+                </select>
+              </div>
+            </div>
+
+
+          <!-- MODO IZADO: HORA FIJA (08:00 POR DEFECTO O MANUAL) -->
+          <div id="boxHoraIzado" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#f8fafc;">Hora de Izado:</div>
+              <div style="font-size:11px; color:#94a3b8;">Por defecto a las 08:00h (ajustable)</div>
+            </div>
+            <input type="time" id="inputHoraIzado" value="08:00" 
+              style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:800; padding:6px 10px; text-align:center;"
+              oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
+          </div>
+
+          <!-- MODO ARRIADO: MANUAL / LOCALIDAD / GPS -->
+          <div id="boxHoraArriado" style="display:none; flex-direction:column; gap:10px;">
+            
+            <div style="font-size:11.5px; font-weight:800; color:#cbd5e1; margin-top:2px;">POSICIÓN PARA EL CÁLCULO DEL OCASO:</div>
+            
+            <!-- SELECTOR DE FUENTE DE POSICIÓN: 4 BOTONES -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+              <button type="button" class="action-btn primary" id="btnFuenteBase" onclick="setFuenteOcaso('base')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                ⚓ Localidad / Base
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteGps" onclick="setFuenteOcaso('gps')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                📡 Posición GPS
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteCoordManual" onclick="setFuenteOcaso('coord')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                ✏️ Coord. Manuales
+              </button>
+              <button type="button" class="action-btn" id="btnFuenteManual" onclick="setFuenteOcaso('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+                📝 Hora Manual
+              </button>
+            </div>
+
+            <!-- OP 1: POR BASE NAVAL / LOCALIDAD -->
+            <div id="subBoxBase" style="display:flex; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Seleccionar Base Naval / Localidad:</div>
+              <select id="selBaseNaval" style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12.5px; font-weight:700; padding:8px;" onchange="calcularOcasoBase()">
+                <option value="Rota">Base Naval de Rota</option>
+                <option value="Ferrol">Arsenal de Ferrol</option>
+                <option value="Cartagena">Arsenal de Cartagena</option>
+                <option value="San Fernando">Base Naval de La Carraca / San Fernando</option>
+                <option value="Las Palmas">Arsenal de Las Palmas</option>
+                <option value="Marin">ENM de Marín</option>
+                <option value="Mahon">Estación Naval de Mahón</option>
+                <option value="Ceuta">CN de Ceuta</option>
+                <option value="Melilla">CN de Melilla</option>
+                <option value="Malaga">Puerto de Málaga</option>
+                <option value="Alicante">Puerto de Alicante</option>
+                <option value="Valencia">CN de Valencia</option>
+                <option value="Barcelona">CN de Barcelona</option>
+                <option value="Palma">CN de Palma de Mallorca</option>
+              </select>
+            </div>
+
+            <!-- OP 2: POR GPS EN LA MAR -->
+            <div id="subBoxGps" style="display:none; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Lectura GPS Satelital del Buque:</div>
+              <button type="button" class="action-btn primary" onclick="obtenerGpsYCalcularOcaso()" style="justify-content:center; font-size:12px; padding:10px; font-weight:800;">
+                <span>📡 Leer Coordenadas GPS y Calcular Ocaso</span>
+              </button>
+              <div style="font-size:11px; color:#94a3b8; text-align:center;" id="lblCoordenadasGps">Coordenadas no leídas aún</div>
+            </div>
+
+            <!-- OP 3: COORDENADAS MANUALES (LATITUD Y LONGITUD) -->
+            <div id="subBoxCoord" style="display:none; flex-direction:column; gap:8px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Introducir Coordenadas Manuales:</div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <div>
+                  <div style="font-size:10.5px; color:#94a3b8; margin-bottom:2px;">Latitud (° N / -S):</div>
+                  <input type="number" step="0.0001" id="inputCoordLat" value="36.6200" placeholder="Ej: 36.6200"
+                    style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:14px; font-weight:800; padding:6px 8px; text-align:center;"
+                    oninput="calcularOcasoCoordManual()">
+                </div>
+                <div>
+                  <div style="font-size:10.5px; color:#94a3b8; margin-bottom:2px;">Longitud (° E / -W):</div>
+                  <input type="number" step="0.0001" id="inputCoordLon" value="-6.3500" placeholder="Ej: -6.3500"
+                    style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:14px; font-weight:800; padding:6px 8px; text-align:center;"
+                    oninput="calcularOcasoCoordManual()">
+                </div>
+              </div>
+              <div style="font-size:10px; color:#64748b; font-style:italic;">Formato decimal (ej. Rota: Lat 36.6200, Lon -6.3500).</div>
+            </div>
+
+            <!-- OP 4: ENTRADA DIRECTA POR ORDEN DIARIA -->
+            <div id="subBoxManual" style="display:none; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                  <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Hora fijada manualmente:</div>
+                  <div style="font-size:10px; color:#94a3b8;">Entrada horaria fija sin cálculo solar</div>
+                </div>
+                <input type="time" id="inputHoraArriadoManual" value="19:30" 
+                  style="background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:900; padding:6px 10px; text-align:center;"
+                  oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
+              </div>
+            </div>
+          </div>
+
+          <!-- TARJETA DESTACADA EN PANTALLA: POSICIÓN Y HORA DEL ARRIADO -->
+          <div style="margin-top:12px; background:#0b152d; border:1.5px solid #1e3a8a; border-radius:8px; padding:12px;">
+            <!-- LÍNEA 1: POSICIÓN EN PANTALLA (SOLICITUD EXPLÍCITA) -->
+            <div id="rowPosicionPantalla" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid #1e293b; flex-wrap:wrap; gap:4px;">
+              <span style="font-size:11px; font-weight:800; color:#94a3b8; display:flex; align-items:center; gap:4px;">
+                📍 POSICIÓN EN PANTALLA:
+              </span>
+              <span style="font-size:12px; font-weight:900; color:#38bdf8; text-align:right;" id="lblPosicionDisplay">
+                36°37.2'N, 006°21.0'W · Base Naval de Rota
+              </span>
+            </div>
+
+            <!-- LÍNEA 2: HORA DEL ARRIADO / OCASO Y CUENTA ATRÁS -->
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;" id="lblTituloHoraEfectiva">🎯 HORA DEL ARRIADO:</div>
+                <div style="font-size:22px; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums;" id="lblHoraCeremonialDisplay">19:30h</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">⏱️ HORA LOCAL SISTEMA:</div>
+                <div style="font-size:22px; font-weight:900; color:#38bdf8; font-variant-numeric:tabular-nums;" id="lblCuentaAtras">--:--:--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODO DE EJECUCIÓN: AUTOMÁTICO VS MANUAL -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:14px;">
+          <button type="button" class="action-btn primary" id="btnDisparoAuto" class="action-btn" onclick="setModoDisparo('auto')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+            ⏱️ Ejecución Automática
+          </button>
+          <button type="button" class="action-btn" id="btnDisparoManual" class="action-btn primary" onclick="setModoDisparo('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
+            👆 Ejecución Manual
+          </button>
+        </div>
+
+        <!-- CONFIGURACIÓN CEREMONIAL Y CORTESÍA -->
+        <div style="background:#0f172a; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px;">
+          <div style="font-size:12px; font-weight:800; color:#38bdf8;">⚙️ Opciones:</div>
+
+          <!-- ACOMPAÑAMIENTO AL MOVER LA BANDERA -->
+          <div id="boxOpcionesAudioBandera">
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">Audio:</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
+              <button type="button" class="action-btn primary" id="btnAcompHimno" class="action-btn" onclick="setAcompBandera('himno')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                🎺 Himno Nacional
+              </button>
+              <button type="button" class="action-btn" id="btnAcompChifle" class="action-btn primary" onclick="setAcompBandera('chifle')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                📢 Solo Chifle
+              </button>
+              <button type="button" class="action-btn" id="btnAcompAmbos" onclick="setAcompBandera('ambos')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
+                🎺+📢 Ambos
+              </button>
+            </div>
+          </div>
+
+          <!-- BUQUES EXTRANJEROS EN PUERTO (CORTESÍA) -->
+          <div id="boxOpcionesBuquesCortesia">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Buques Extranjeros en Puerto:</div>
+              <span style="font-size:10.5px; color:#38bdf8; cursor:pointer;" onclick="toggleSelectorCortesia()">[+ Añadir País]</span>
+            </div>
+            
+            <div id="listaCortesiaPaises" style="display:flex; flex-wrap:wrap; gap:4px; min-height:24px;">
+              <span style="font-size:11px; color:#64748b; font-style:italic;" id="lblSinCortesia">Ningún buque extranjero añadido</span>
+            </div>
+            <!-- DESPLEGABLE RÁPIDO PARA AÑADIR CORTESÍA -->
+            <div id="boxSelectorCortesia" style="display:none; margin-top:6px; background:#070d1e; padding:6px; border-radius:6px; border:1px solid #334155;">
+              <select id="selPaisCortesia" style="width:75%; background:#0b152d; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; padding:4px;" onchange="agregarPaisCortesia(this.value)">
+                <option value="">Seleccione país presente...</option>
+              </select>
+              <button type="button" class="action-btn" onclick="limpiarPaisesCortesia()" style="font-size:10px; padding:4px 6px;">Borrar</button>
+            </div>
+          </div>
+
+          <!-- OPCIÓN EXCLUSIVA DEL ARRIADO: ORACIÓN -->
+          <div id="rowOpcionOracion" style="display:none; flex-direction:column; gap:6px;">
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Modalidad de la Oración:</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:4px;">
+              <button type="button" class="action-btn primary" id="btnOracionVoz" onclick="setModalidadOracion('leida')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                📖 Leída
+              </button>
+              <button type="button" class="action-btn" id="btnOracionCantada" onclick="setModalidadOracion('cantada')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                🎶 Cantada
+              </button>
+              <button type="button" class="action-btn" id="btnOracionCorneta" onclick="setModalidadOracion('corneta')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                🎺 Corneta
+              </button>
+              <button type="button" class="action-btn" id="btnOracionNinguna" onclick="setModalidadOracion('ninguna')" style="font-size:10px; padding:6px 2px; justify-content:center;">
+                ✕ Ninguna
+              </button>
+            </div>
+          </div>
+
+          <!-- OPCIÓN EXCLUSIVA DEL ARRIADO: A LA BATERÍA (DOTACIÓN BUENAS NOCHES) -->
+          <div class="toggle-row" id="rowOpcionBuenasNoches" style="display:none; padding:4px 0;">
+            <div>
+              <div class="toggle-label" style="font-size:11.5px;">🌙 "Dotación, buenas noches"</div>
+              
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkBuenasNoches" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- PANEL DE EJECUCIÓN (AUTOMÁTICA O MANUAL) -->
+        <div id="panelEjecucionAuto" style="margin-bottom:10px;">
+          <button type="button" class="action-btn primary" id="btnArmarCeremonial" onclick="toggleArmadoCeremonial()" style="width:100%; justify-content:center; padding:12px; font-size:13px; font-weight:900;">
+            <span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>
+          </button>
+        </div>
+
+        <!-- BOTONES DE CONTROL MANUAL (A LA ORDEN DEL OFICIAL DE GUARDIA) -->
+        <div id="panelEjecucionManual" style="display:none; flex-direction:column; gap:6px; margin-bottom:10px;">
+          <div style="font-size:11.5px; font-weight:800; color:#38bdf8; margin-bottom:2px;">BOTONES DE MANDO MANUAL:</div>
+          <div id="panelPasosBandera" style="display:flex; flex-direction:column; gap:6px;">
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(1)" style="justify-content:space-between;">
+            <span>1. 🗣️ Voz: "Señales a la bandera" (T-5 min)</span>
+            <span>📢</span>
+          </button>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(2)" style="justify-content:space-between;">
+            <span>2. 🗣️ Voz: "A la bandera frente a popa, presenten"</span>
+            <span>📢</span>
+          </button>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(3)" style="justify-content:space-between;">
+            <span>3. 🇪🇸 Himno / Chifle</span>
+            <span>🎺</span>
+          </button>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(4)" style="justify-content:space-between;">
+            <span>4. 🗣️ Voz: "Retirada de honores"</span>
+            <span>📢</span>
+          </button>
+          <button type="button" class="action-btn" onclick="ejecutarPasoManual(5)" style="justify-content:space-between;">
+            <span>5. 📢 Chifle: Pitada de Retirada de Honores</span>
+            <span>⚓</span>
+          </button>
+          </div>
+          <button type="button" class="action-btn" id="btnManualPasoOracion" onclick="ejecutarPasoManual(6)" style="display:none; justify-content:space-between;">
+            <span>6. ⚓ Oración de la Noche</span>
+            <span>🌙</span>
+          </button>
+          <button type="button" class="action-btn" id="btnManualPasoBuenasNoches" onclick="ejecutarPasoManual(7)" style="display:none; justify-content:space-between;">
+            <span>7. 🌙 "Dotación, buenas noches"</span>
+            <span>🔊</span>
+          </button>
+        </div>
+
+        <!-- BOTÓN DE PARADA GENERAL -->
+        <button type="button" class="action-btn danger" id="btnDetenerSecuenciaGeneral" onclick="cancelarCeremonialIzado()" style="width:100%; justify-content:center; padding:8px; font-size:11px; margin-top:4px;">
+          <span>⏹️ DETENER SECUENCIA</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- VISTA 5::: MÚSICA Y HIMNOS -->
+        <!-- VISTA 4: REPOSITORIO DE MÚSICA MILITAR -->
+        <!-- VISTA 4: REPOSITORIO DE MÚSICA MILITAR -->
+        <!-- VISTA 4: REPOSITORIO DE MÚSICA MILITAR -->
+    <div class="view-section" id="viewMusica">
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>🎼 MÚSICA MILITAR Y CORNETA</span>
+          <span style="font-size:11px; color:#38bdf8; font-weight:700;">Canales Simultáneos</span>
+        </div>
+        <div style="font-size:11.5px; color:#94a3b8; line-height:1.4; margin-bottom:12px;">
+          Banda y Corneta pueden sonar <strong>simultáneamente</strong> para dar órdenes de mando mientras suena la música. Diseñe y guarde playlists para ensayos de desfiles.
+        </div>
+
+        <!-- MONITOR DE CANALES DE AUDIO ACTIVOS (BANDA Y CORNETA INDEPENDIENTES) -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+          <!-- CANAL BANDA -->
+          <div id="boxCanalBanda" style="background:#0b152d; border:1px solid #1e3a8a; border-radius:6px; padding:8px; display:flex; flex-direction:column; justify-content:space-between; min-height:60px;">
+            <div>
+              <div style="font-size:10px; font-weight:800; color:#fbbf24; text-transform:uppercase;">🎺 CANAL BANDA:</div>
+              <div style="font-size:11.5px; font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="lblCanalBandaTxt">En silencio</div>
+            </div>
+            <button type="button" class="action-btn danger" id="btnStopBanda" onclick="detenerCanalBanda()" style="display:none; padding:3px 6px; font-size:10px; min-height:22px; margin-top:4px; justify-content:center;">
+              ⏹️ Parar Banda
+            </button>
+          </div>
+          <!-- CANAL CORNETA -->
+          <div id="boxCanalCorneta" style="background:#0b152d; border:1px solid #1e3a8a; border-radius:6px; padding:8px; display:flex; flex-direction:column; justify-content:space-between; min-height:60px;">
+            <div>
+              <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase;">📯 CANAL CORNETA:</div>
+              <div style="font-size:11.5px; font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="lblCanalCornetaTxt">En silencio</div>
+            </div>
+            <button type="button" class="action-btn danger" id="btnStopCorneta" onclick="detenerCanalCorneta()" style="display:none; padding:3px 6px; font-size:10px; min-height:22px; margin-top:4px; justify-content:center;">
+              ⏹️ Parar Corneta
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- BLOQUE 1: BANDA DE MÚSICA (UNIFICADA)    -->
+        <!-- ========================================== -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
+          <div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:10px;">
+            🎺 BLOQUE 1: BANDA DE MÚSICA
+          </div>
+
+          <!-- SELECTORES DE BANDA (4 TIPOS) -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:10px;">
+            <!-- Marchas Militares -->
+            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
+              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">🎺 Marchas:</div>
+              <select id="selMarchasClasicas" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selMarchasClasicas')">
+                <option value="">Seleccione...</option>
+              </select>
+            </div>
+            <!-- Himnos Cuerpos -->
+            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
+              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">🎖️ Cuerpos:</div>
+              <select id="selHimnosCuerpos" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selHimnosCuerpos')">
+                <option value="">Seleccione...</option>
+              </select>
+            </div>
+            <!-- Música Religiosa -->
+            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
+              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">⚓ Religiosa:</div>
+              <select id="selMusicaReligiosa" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selMusicaReligiosa')">
+                <option value="">Seleccione...</option>
+              </select>
+            </div>
+            <!-- Himnos Nacionales -->
+            <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
+              <div style="font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:4px;">🌍 Nacionales:</div>
+              <select id="selHimnosNacionales" style="width:100%; background:#070d1e; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; font-weight:700; padding:6px;" onchange="sincronizarSelectoresBanda('selHimnosNacionales')">
+                <option value="">Seleccione...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- BOTONES COMUNES DE BANDA: Play | Añadir a Playlist | Ver Letra -->
+          <div style="display:flex; gap:6px; justify-content:center;">
+            <button type="button" class="action-btn primary" onclick="reproducirBandaSeleccionada()" style="flex:1; justify-content:center; padding:8px; font-size:12px; font-weight:800;">
+              ▶️ Play
+            </button>
+            <button type="button" class="action-btn" onclick="anadirBandaAPlaylist()" style="flex:1; justify-content:center; padding:8px; font-size:12px; font-weight:800;">
+              ➕ Playlist
+            </button>
+            <button type="button" class="action-btn" onclick="verLetraDesdeSelectoresBanda()" style="flex:1; justify-content:center; padding:8px; font-size:12px; font-weight:800;">
+              📜 Letra
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- BLOQUE 2: TOQUES DE CORNETA                -->
+        <!-- ========================================== -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12.5px; font-weight:800; color:#38bdf8;">📯 BLOQUE 2: TOQUES DE CORNETA</span>
+            <span style="font-size:10.5px; color:#94a3b8;">25 Toques</span>
+          </div>
+          <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b; margin-bottom:8px;">
+            <select id="selToquesCorneta" style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:8px;">
+              <option value="">Seleccione toque de corneta...</option>
+            </select>
+          </div>
+          <!-- BOTONES DEBAJO DE LA BARRA: Play | Añadir a Playlist -->
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="action-btn primary" onclick="reproducirCornetaSeleccionada()" style="flex:1; justify-content:center; padding:8px; font-size:12px; font-weight:800;">
+              ▶️ Play
+            </button>
+            <button type="button" class="action-btn" onclick="anadirCornetaAPlaylist()" style="flex:1; justify-content:center; padding:8px; font-size:12px; font-weight:800;">
+              ➕ Playlist
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- BLOQUE 3: PLAYLISTS PARA ENSAYOS Y DESFILES-->
+        <!-- ========================================== -->
+        <div style="background:#070d1e; border:1.5px solid #1e3a8a; border-radius:8px; padding:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12.5px; font-weight:800; color:#10b981;">📋 BLOQUE 3: PLAYLISTS DE DESFILE Y ENSAYOS</span>
+            <span style="font-size:10.5px; color:#10b981; font-weight:700;" id="lblPlaylistCountBadge">0 Playlists</span>
+          </div>
+          <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin-bottom:10px;">
+            Cree secuencias concatenadas combinando toques de corneta y marchas militares. Se conservan guardadas permanentemente.
+          </div>
+
+          <!-- SELECTOR DE PLAYLIST GUARDADA Y CONTROLES -->
+          <div style="background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e293b; margin-bottom:10px;">
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <select id="selPlaylistsGuardadas" style="flex:1; background:#070d1e; border:1.5px solid #10b981; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;" onchange="cargarPlaylistSeleccionada()">
+                <option value="">Seleccione playlist guardada...</option>
+              </select>
+              <button type="button" class="action-btn" onclick="crearNuevaPlaylistPrompt()" style="padding:6px 8px; font-size:11px;">
+                ➕ Nueva
+              </button>
+              <button type="button" class="action-btn danger" onclick="borrarPlaylistActiva()" style="padding:6px 8px; font-size:11px;" title="Borrar Playlist">
+                🗑️
+              </button>
+            </div>
+
+            <!-- CONTROLES DE REPRODUCCIÓN DE LA PLAYLIST -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+              <button type="button" class="action-btn primary" id="btnPlayPlaylist" onclick="iniciarReproduccionPlaylist()" style="flex:1; justify-content:center; padding:8px; font-size:12px;">
+                ▶️ Reproducir Playlist
+              </button>
+              <button type="button" class="action-btn danger" id="btnStopPlaylist" onclick="detenerReproduccionPlaylist()" style="display:none; flex:1; justify-content:center; padding:8px; font-size:12px;">
+                ⏹️ Detener Playlist
+              </button>
+            </div>
+          </div>
+
+          <!-- EDITOR DE ITEMS DE LA PLAYLIST ACTIVA -->
+          <div id="boxEditorPlaylist" style="display:none; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e293b;">
+            <div style="font-size:11.5px; font-weight:800; color:#f8fafc; margin-bottom:6px; display:flex; justify-content:space-between;">
+              <span id="lblTituloPlaylistActiva">Editando: --</span>
+              <span style="font-size:10.5px; color:#94a3b8;" id="lblItemsCount">0 pistas</span>
+            </div>
+
+            <!-- AGREGADOR RÁPIDO DE PISTA -->
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <select id="selTipoPistaAdd" style="width:38%; background:#070d1e; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:11px; padding:6px;" onchange="actualizarOpcionesAddPista()">
+                <option value="corneta">📯 Corneta</option>
+                <option value="marcha">🎺 Marcha</option>
+                <option value="cuerpo">🎖️ Himno Cuerpo</option>
+                <option value="religiosa">⚓ Religiosa / Fúnebre</option>
+                <option value="himno">🌍 Himno Nacional</option>
+              </select>
+              <select id="selPistaEspecificaAdd" style="flex:1; background:#070d1e; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:11px; padding:6px;">
+              </select>
+              <button type="button" class="action-btn primary" onclick="agregarPistaAPlaylist()" style="padding:6px 10px; font-size:11px;">
+                ➕
+              </button>
+            </div>
+
+            <!-- LISTA DE PISTAS ORDENADAS -->
+            <div id="listaPistasPlaylist" style="display:flex; flex-direction:column; gap:4px; max-height:220px; overflow-y:auto;">
+              <!-- Elementos dinámicos -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>html>
+<html lang="es">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta charset="UTF-8">
+  <title>Honores de Ordenanza · Armada Española</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#070d1e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Honores">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="img/banderaespana.jpg">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: #070d1e; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; }
+    
+    header {
+      background: #0f172a; border-bottom: 2px solid #1e3a8a; padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand img { width: 38px; height: 38px; border-radius: 6px; object-fit: cover; border: 1.5px solid #38bdf8; }
+    .brand-title { font-size: 15px; font-weight: 800; color: #38bdf8; line-height: 1.15; }
+    .brand-sub { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+
+    .nav-bar {
+      display: flex; background: #0b152d; border-bottom: 1px solid #1e3a8a; overflow-x: auto;
+      padding: 6px 8px; gap: 6px; -webkit-overflow-scrolling: touch; position: relative; z-index: 101;
+      touch-action: pan-x;
+    }
+    .nav-btn {
+      background: transparent; border: none; color: #94a3b8; padding: 10px 14px; font-size: 12px;
+      font-weight: 800; border-radius: 6px; cursor: pointer; white-space: nowrap; text-transform: uppercase;
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .nav-btn.active { background: #0284c7; color: white; box-shadow: 0 2px 6px rgba(2,132,199,0.4); }
+
+    main { flex: 1; padding: 14px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    .card {
+      background: #0f172a; border: 1px solid #1e3a8a; border-radius: 10px; padding: 14px; margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .card-title {
+      font-size: 13px; font-weight: 800; color: #38bdf8; text-transform: uppercase; margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; padding-bottom: 6px;
+    }
+
+    .btn-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    @media (min-width: 480px) { .btn-grid { grid-template-columns: 1fr 1fr; } }
+
+    .action-btn {
+      background: #1e293b; border: 1.5px solid #334155; color: #f8fafc; padding: 12px 14px; border-radius: 8px;
+      font-size: 12.5px; font-weight: 800; cursor: pointer; text-align: left; display: flex; align-items: center;
+      justify-content: space-between; transition: 0.15s; min-height: 48px;
+    }
+    .action-btn:active { transform: scale(0.98); background: #0284c7; border-color: #38bdf8; }
+    .action-btn.danger { background: #450a0a; border-color: #ef4444; color: #fca5a5; }
+    .action-btn.danger:active { background: #dc2626; color: white; }
+    .action-btn.primary { background: #0c4a6e; border-color: #0284c7; color: #e0f2fe; }
+
+    .auth-select {
+      width: 100%; padding: 12px; background: #070d1e; border: 1.5px solid #0284c7; border-radius: 8px;
+      color: #f8fafc; font-size: 13.5px; font-weight: 700; margin-bottom: 12px; outline: none;
+    }
+
+    .status-bar {
+      background: #7f1d1d; border: 2px solid #ef4444; border-radius: 8px; padding: 12px 16px;
+      color: #fef2f2; font-size: 13px; font-weight: 800; margin-bottom: 14px; display: flex;
+      align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(239,68,68,0.4);
+      animation: pulseAlert 2s infinite;
+    }
+    @keyframes pulseAlert {
+      0% { border-color: #ef4444; }
+      50% { border-color: #f87171; }
+      100% { border-color: #ef4444; }
+    }
+    .status-bar-stop-btn {
+      background: #dc2626; border: 1.5px solid #fecaca; color: white; padding: 8px 16px;
+      border-radius: 6px; font-size: 13px; font-weight: 900; cursor: pointer; text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-bar-stop-btn:active { background: #991b1b; transform: scale(0.96); }
+
+    .action-btn.disabled {
+      opacity: 0.4; cursor: not-allowed; pointer-events: none; border-color: #334155; filter: grayscale(1);
+    }
+
+    .install-banner {
+      background: #1e3a8a; border: 1px solid #38bdf8; border-radius: 8px; padding: 10px 14px;
+      color: #e0f2fe; font-size: 11px; margin-bottom: 14px; display: flex; align-items: center;
+      justify-content: space-between; gap: 8px;
+    }
+
+    footer {
+      background: #070d1e; border-top: 1px solid #1e293b; padding: 12px; text-align: center;
+      font-size: 11px; color: #64748b; font-weight: 600;
+    }
+  
+    /* Switch toggle styles */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: #070d1e; border: 1px solid #1e293b;
+      border-radius: 8px; margin-bottom: 8px;
+    }
+    .toggle-label { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+    .toggle-desc { font-size: 11px; color: #94a3b8; font-weight: 500; }
+    .switch {
+      position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #334155; transition: .2s; border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: white; transition: .2s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #0284c7; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .category-pills {
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cat-pill {
+      background: #1e293b; border: 1px solid #334155; color: #cbd5e1;
+      padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+      cursor: pointer; white-space: nowrap;
+    }
+    .cat-pill.active { background: #0369a1; border-color: #38bdf8; color: white; }
+
+    .auth-btn-card {
+      background: #0b152d; border: 1.5px solid #1e3a8a; border-radius: 8px; padding: 12px;
+      cursor: pointer; text-align: left; transition: 0.15s; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .auth-btn-card:hover, .auth-btn-card:active {
+      border-color: #38bdf8; background: #0f2347; transform: translateY(-1px);
+    }
+    .auth-btn-card.selected {
+      border-color: #38bdf8; background: #0c4a6e; box-shadow: 0 0 10px rgba(56,189,248,0.3);
+    }
+
+  </style>
+</head>
+<body>
+
+  <script>
+    // Forzar purga de caché vieja en móviles
+    const APP_VERSION = 'v1792923728';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -1240,7 +2309,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792923041';
+    const APP_VERSION = 'v1792923728';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -2073,7 +3142,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792923041</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792923728</div>
 </footer>
 
   <script>
@@ -4001,6 +5070,124 @@ function _legacy_execAuth() {
     function cerrarModalLetra() {
       const modal = document.getElementById('modalLetraMilitar');
       if (modal) modal.style.display = 'none';
+    }
+
+
+    
+    // ==========================================
+    // SINCRONIZACIÓN DE SELECTORES DE BANDA
+    // ==========================================
+    function sincronizarSelectoresBanda(selectorActivoId) {
+      const selectores = ['selMarchasClasicas', 'selHimnosCuerpos', 'selMusicaReligiosa', 'selHimnosNacionales'];
+      
+      selectores.forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel && id !== selectorActivoId) {
+          sel.value = '';
+        }
+      });
+    }
+
+    function obtenerValorBandaSeleccionado() {
+      const selectores = ['selMarchasClasicas', 'selHimnosCuerpos', 'selMusicaReligiosa', 'selHimnosNacionales'];
+      
+      for (let id of selectores) {
+        const sel = document.getElementById(id);
+        if (sel && sel.value) {
+          return {
+            url: sel.value,
+            nombre: sel.options[sel.selectedIndex].text,
+            selectId: id
+          };
+        }
+      }
+      return null;
+    }
+
+    function reproducirBandaSeleccionada() {
+      const banda = obtenerValorBandaSeleccionado();
+      if (!banda) {
+        alert('Seleccione una marcha, himno de cuerpo, obra religiosa o himno nacional.');
+        return;
+      }
+      tocarCanalBanda(banda.url, banda.nombre);
+    }
+
+    function anadirBandaAPlaylist() {
+      const banda = obtenerValorBandaSeleccionado();
+      if (!banda) {
+        alert('Seleccione una marcha, himno de cuerpo, obra religiosa o himno nacional.');
+        return;
+      }
+      if (!activePlaylistId || !appPlaylists[activePlaylistId]) {
+        alert('Seleccione o cree una playlist primero.');
+        return;
+      }
+
+      // Inferir tipo
+      let tipo = 'marcha';
+      if (banda.selectId === 'selHimnosCuerpos') tipo = 'cuerpo';
+      if (banda.selectId === 'selMusicaReligiosa') tipo = 'religiosa';
+      if (banda.selectId === 'selHimnosNacionales') tipo = 'himno';
+
+      const nuevaPista = {
+        tipo: tipo,
+        nombre: banda.nombre,
+        url: banda.url
+      };
+
+      appPlaylists[activePlaylistId].pistas.push(nuevaPista);
+      guardarPlaylistsEnStorage();
+      renderizarPistasPlaylist();
+      sincronizarSelectoresBanda(''); // Reset
+      alert('Pista añadida a la playlist.');
+    }
+
+    function verLetraDesdeSelectoresBanda() {
+      const banda = obtenerValorBandaSeleccionado();
+      if (!banda) {
+        alert('Seleccione una marcha, himno de cuerpo, obra religiosa o himno nacional.');
+        return;
+      }
+      const res = buscarLetra(banda.nombre);
+      if (res) {
+        abrirModalLetra(res.titulo, res.texto);
+      } else {
+        alert(`No hay letra registrada para "${banda.nombre}". Esta obra es estrictamente instrumental o no dispone de texto oficial registrado.`);
+      }
+    }
+
+    function reproducirCornetaSeleccionada() {
+      const sel = document.getElementById('selToquesCorneta');
+      if (!sel || !sel.value) {
+        alert('Seleccione un toque de corneta.');
+        return;
+      }
+      const nombre = sel.options[sel.selectedIndex].text;
+      tocarCanalCorneta(sel.value, nombre);
+    }
+
+    function anadirCornetaAPlaylist() {
+      const sel = document.getElementById('selToquesCorneta');
+      if (!sel || !sel.value) {
+        alert('Seleccione un toque de corneta.');
+        return;
+      }
+      if (!activePlaylistId || !appPlaylists[activePlaylistId]) {
+        alert('Seleccione o cree una playlist primero.');
+        return;
+      }
+
+      const nuevaPista = {
+        tipo: 'corneta',
+        nombre: sel.options[sel.selectedIndex].text,
+        url: sel.value
+      };
+
+      appPlaylists[activePlaylistId].pistas.push(nuevaPista);
+      guardarPlaylistsEnStorage();
+      renderizarPistasPlaylist();
+      alert('Pista de corneta añadida a la playlist.');
     }
 
 
