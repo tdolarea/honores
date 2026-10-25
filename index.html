@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792871272';
+    const APP_VERSION = 'v1792911963';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -664,7 +664,7 @@
             <!-- LÍNEA 2: HORA DEL ARRIADO / OCASO Y CUENTA ATRÁS -->
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div>
-                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;" id="lblTituloHoraEfectiva">🎯 HORA DEL ARRIADO (OCASO):</div>
+                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;" id="lblTituloHoraEfectiva">🎯 HORA DEL ARRIADO:</div>
                 <div style="font-size:22px; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums;" id="lblHoraCeremonialDisplay">19:30h</div>
               </div>
               <div style="text-align:right;">
@@ -836,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792871272</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792911963</div>
 </footer>
 
   <script>
@@ -2164,7 +2164,7 @@ function _legacy_execAuth() {
 
       const lblTit = document.getElementById('lblTituloHoraEfectiva');
       if (lblTit) {
-        lblTit.textContent = (cerModo === 'izado') ? '🎯 HORA DEL IZADO:' : '🎯 HORA DEL ARRIADO (OCASO):';
+        lblTit.textContent = (cerModo === 'izado') ? '🎯 HORA DEL IZADO:' : '🎯 HORA DEL ARRIADO:';
       }
       refrescarPosicionYHoraEnPantalla();
     }
@@ -2355,7 +2355,7 @@ function _legacy_execAuth() {
     }
 
         function restablecerConfiguracionPorDefecto() {
-      // 1. Desarmar automático si estaba armado
+      // 1. Desarmar automático y desactivar botón rojo
       cerArmado = false;
       cerDisparoSenalesHecho = false;
       cerDisparoEjecutivaHecho = false;
@@ -2367,29 +2367,25 @@ function _legacy_execAuth() {
       }
       if (btnDetener) btnDetener.style.display = 'block';
 
-      // 2. Buque en puerto
-      setSituacionBuque('puerto');
-
-      // 3. Modo hora manual
-      setFuenteOcaso('manual');
-
-      // 4. Activación manual
+      // 2. Conmutar modo a EJECUCIÓN MANUAL
       setModoDisparo('manual');
 
-      // 5. Sonido sólo chifle
+      // 3. Situación del buque por defecto: Buque en Puerto
+      setSituacionBuque('puerto');
+
+      // 4. Modo de hora por defecto: Hora Manual
+      setFuenteOcaso('manual');
+
+      // 5. Opciones ceremoniales por defecto
       setAcompBandera('chifle');
-
-      // 6. Sin países extranjeros
       limpiarPaisesCortesia();
-
-      // 7. Oración por voz leída
       setModalidadOracion('leida');
 
-      // 8. Buenas noches marcadas
+      // 6. Buenas noches marcadas por defecto
       const chkBN = document.getElementById('chkBuenasNoches');
       if (chkBN) chkBN.checked = true;
 
-      // 9. Refrescar display y reloj
+      // 7. Refrescar display y reloj
       actualizarHoraObjetivo();
       refrescarPosicionYHoraEnPantalla();
       actualizarTickReloj();
@@ -2403,26 +2399,40 @@ function _legacy_execAuth() {
       setTimeout(cerrarStatus, 3000);
     }
 
+    function finalizarSecuenciaAutoCompleta(msgExito) {
+      actualizarStatus(msgExito || '✅ Ceremonial completado.');
+      setTimeout(() => {
+        cerrarStatus();
+        restablecerConfiguracionPorDefecto();
+      }, 3000);
+    }
+
+    function finalizarSecuenciaAutoCompleta(msgExito) {
+      actualizarStatus(msgExito || '✅ Ceremonial completado.');
+      setTimeout(() => {
+        cerrarStatus();
+        restablecerConfiguracionPorDefecto();
+      }, 3000);
+    }
+
     function iniciarSecuenciaCompletaAuto() {
-      // Si el buque está NAVEGANDO: La bandera permanece izada, NO se arria ni se toca himno/chifle
+      // 1. Si el buque está NAVEGANDO (EN LA MAR)
       if (cerSituacionBuque === 'mar') {
-        actualizarStatus('🌊 Buque navegando: Bandera permanece izada. Iniciando Oración de la Noche al Ocaso...');
+        actualizarStatus('🌊 Buque navegando: Bandera permanece izada. Iniciando Oración al Ocaso...');
         ejecutarOracion(() => {
           const chkBN = document.getElementById('chkBuenasNoches');
           if (chkBN && chkBN.checked) {
             reproducirElementoCeremonial(document.getElementById('audArriado7'), '🌙 Dotación, buenas noches', () => {
-              actualizarStatus('✅ Ceremonial al Ocaso en la mar completado.');
-              setTimeout(() => { cerrarStatus(); restablecerConfiguracionPorDefecto(); }, 3500);
+              finalizarSecuenciaAutoCompleta('✅ Ceremonial al Ocaso en la mar completado. Modo cambiado a manual.');
             });
           } else {
-            actualizarStatus('✅ Ceremonial al Ocaso en la mar completado.');
-            setTimeout(cerrarStatus, 4000);
+            finalizarSecuenciaAutoCompleta('✅ Ceremonial al Ocaso en la mar completado. Modo cambiado a manual.');
           }
         });
         return;
       }
 
-      // Si está EN PUERTO / FONDEADO: Ceremonial completo de bandera
+      // 2. Si está EN PUERTO / FONDEADO: Ceremonial completo de Bandera
       const el2 = (cerModo === 'izado') ? document.getElementById('audIzado2') : document.getElementById('audArriado2');
       reproducirElementoCeremonial(el2, '2. 🗣️ A la bandera frente a popa, presenten', () => {
         ejecutarMovimientoBanderaCompleto(() => {
@@ -2430,22 +2440,29 @@ function _legacy_execAuth() {
           reproducirElementoCeremonial(el4, '4. 🗣️ Voz: Retirada de honores', () => {
             const el5 = (cerModo === 'izado') ? document.getElementById('audIzado5') : document.getElementById('audArriado5');
             reproducirElementoCeremonial(el5, '5. 📢 Chifle: Retirada de honores', () => {
+              // Si es Arriado en puerto: Oración de la Noche
               if (cerModo === 'arriado' && cerModalidadOracion !== 'ninguna') {
                 ejecutarOracion(() => {
                   const chkBN = document.getElementById('chkBuenasNoches');
                   if (chkBN && chkBN.checked) {
                     reproducirElementoCeremonial(document.getElementById('audArriado7'), '7. 🌙 Dotación, buenas noches', () => {
-                      actualizarStatus('✅ Ceremonial de Arriado completado.');
-                      setTimeout(cerrarStatus, 4000);
+                      finalizarSecuenciaAutoCompleta('✅ Ceremonial de Arriado completado. Modo cambiado a manual.');
                     });
                   } else {
-                    actualizarStatus('✅ Ceremonial de Arriado completado.');
-                    setTimeout(() => { cerrarStatus(); restablecerConfiguracionPorDefecto(); }, 3500);
+                    finalizarSecuenciaAutoCompleta('✅ Ceremonial de Arriado completado. Modo cambiado a manual.');
                   }
                 });
+              } else if (cerModo === 'arriado') {
+                const chkBN = document.getElementById('chkBuenasNoches');
+                if (chkBN && chkBN.checked) {
+                  reproducirElementoCeremonial(document.getElementById('audArriado7'), '7. 🌙 Dotación, buenas noches', () => {
+                    finalizarSecuenciaAutoCompleta('✅ Ceremonial de Arriado completado. Modo cambiado a manual.');
+                  });
+                } else {
+                  finalizarSecuenciaAutoCompleta('✅ Ceremonial de Arriado completado. Modo cambiado a manual.');
+                }
               } else {
-                actualizarStatus('✅ Ceremonial de Izado completado.');
-                setTimeout(() => { cerrarStatus(); restablecerConfiguracionPorDefecto(); }, 3500);
+                finalizarSecuenciaAutoCompleta('✅ Ceremonial de Izado completado. Modo cambiado a manual.');
               }
             });
           });
@@ -2453,11 +2470,6 @@ function _legacy_execAuth() {
       });
     }
 
-    
-
-    // ==========================================
-    // REPRODUCTOR Y CONTROL DE AUDIO CEREMONIAL ESTÁTICO (DOM PRECARGADO)
-    // ==========================================
     function pararAudioCeremonial(elExcluido) {
       const ids = [
         'audIzado1','audIzado2','audIzado3Himno','audIzado3Chifle','audIzado4','audIzado5',
