@@ -174,7 +174,7 @@
 
 <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792941759';
+    const APP_VERSION = 'v1792942621';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -252,7 +252,7 @@
     </div>
   </header>
 
-    <div class="nav-bar">
+      <div class="nav-bar">
     <button class="nav-btn active" id="navPortalon" onclick="showView('portalon')">🚪 Portalón</button>
     <button class="nav-btn" id="navBuques" onclick="showView('buques')">⚓ Buques</button>
     <button class="nav-btn" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
@@ -270,7 +270,7 @@
     
 
     <!-- VISTA 1: PORTALÓN -->
-    <div class="view-section" id="viewPortalon">
+    <div class="view-section active" id="viewPortalon">
       <div class="card">
         <div class="card-title">Chifle en el Portalón (Ceremonial Naval)</div>
         <div class="btn-grid" style="grid-template-columns: 1fr;">
@@ -336,7 +336,7 @@
         <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
         <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
         <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
-    <div class="view-section active" id="viewAuth">
+    <div class="view-section" id="viewAuth">
       <div class="card">
         <div class="card-title">
           <span>👑 Honores a Autoridades</span>
@@ -504,356 +504,12 @@
       </div>
     </div>
 
-    <!-- VISTA 5: MÚSICA Y HIMNOS -->
-    <div class="view-section" id="viewMusica">
-      <div class="card">
-        <div class="card-title">Música Militar e Himnos de las Fuerzas Armadas</div>
-        <div class="btn-grid">
-          <button class="action-btn" onclick="playAudio('audio/Himno_nacional_de_Espana.mp3', 'Himno Nacional de España (Completo)')">
-            <span>Himno Nacional (Banda)</span>
-            <span>🇪🇸</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/MarchadeInfantes.mp3', 'Marcha de Infantes')">
-            <span>Marcha de Infantes</span>
-            <span>🎺</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
-            <span>Salve Marinera</span>
-            <span>⚓</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/Espania_corto.mp3', 'Marcha Real (Versión Breve)')">
-            <span>Marcha Real (Breve)</span>
-            <span>🇪🇸</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  
-
-    <div class="view-section" id="viewIzado">
-      <div class="card">
-        
-
-        <!-- SELECTOR DE SITUACIÓN OPERATIVA DEL BUQUE -->
-        <div style="background:#070d1e; border:1px solid #334155; border-radius:8px; padding:6px 10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-size:11.5px; font-weight:800; color:#94a3b8; display:flex; align-items:center; gap:6px;">
-            <span>🚢 SITUACIÓN DEL BUQUE:</span>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="action-btn primary" id="btnSitPuerto" onclick="setSituacionBuque('puerto')" style="font-size:11px; padding:5px 10px; min-height:28px;">
-              ⚓ En Puerto / Fondeo
-            </button>
-            <button type="button" class="action-btn" id="btnSitMar" onclick="setSituacionBuque('mar')" style="font-size:11px; padding:5px 10px; min-height:28px;">
-              🌊 Navegando (En la Mar)
-            </button>
-          </div>
-        </div>
-
-        <!-- SELECTOR DE CEREMONIAL: IZADO VS ARRIADO -->
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:14px;">
-          <button type="button" class="action-btn primary" id="btnModoIzado" onclick="setCeremonialModo('izado')" style="justify-content:center; text-align:center; padding:10px;">
-            <span>🌅 IZADO</span>
-          </button>
-          <button type="button" class="action-btn" id="btnModoArriado" onclick="setCeremonialModo('arriado')" style="justify-content:center; text-align:center; padding:10px;">
-            <span>🌇 ARRIADO</span>
-          </button>
-        </div>
-
-        <!-- PANEL DE PROGRAMACIÓN HORARIA -->
-        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:14px;">
-          <div style="font-size:12px; font-weight:800; color:#38bdf8; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-            <span>⏰ PROGRAMACIÓN HORARIA</span>
-            <span style="font-size:11px; color:#94a3b8;" id="lblInfoOcaso"></span>
-          </div>
-
-          <!-- VENTANA SIMPLIFICADA DE HUSO HORARIO -->
-            <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:6px; padding:8px 10px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span style="font-size:11.5px; font-weight:800; color:#94a3b8;">🌐 HUSO HORARIO:</span>
-                  <span style="font-size:12px; font-weight:900; color:#38bdf8;" id="lblHusoTextoVisible">UTC+2 (Bravo · B)</span>
-                </div>
-                <button type="button" class="action-btn" id="btnToggleHuso" onclick="toggleSelectorHuso()" style="padding:3px 8px; font-size:11px; min-height:26px;">
-                  ⚙️ Cambiar
-                </button>
-              </div>
-
-              <!-- DESPLEGABLE OCULTO (SOLO SI SE OPRIME CAMBIAR) -->
-              <div id="boxDesplegableHuso" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #1e3a8a;">
-                <select id="selHusoHorario" style="width:100%; background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:800; padding:6px 8px;" onchange="onSeleccionarHuso(this.value)">
-                  <option value="auto" selected>📱 Hora del Dispositivo (Auto)</option>
-                  <option value="0">UTC +0 (Zulu · Z · GMT)</option>
-                  <option value="1">UTC +1 (Alfa · A · Invierno Península)</option>
-                  <option value="2">UTC +2 (Bravo · B · Verano Península)</option>
-                  <option value="3">UTC +3 (Charlie · C · Mediterráneo Oriental)</option>
-                  <option value="4">UTC +4 (Delta · D · Golfo Pérsico)</option>
-                  <option value="-1">UTC -1 (November · N · Invierno Canarias)</option>
-                  <option value="-2">UTC -2 (Oscar · O)</option>
-                  <option value="-3">UTC -3 (Papa · P)</option>
-                  <option value="-4">UTC -4 (Quebec · Q · Atlántico Occidental)</option>
-                  <option value="-5">UTC -5 (Romeo · R · Caribe / Colombia)</option>
-                </select>
-              </div>
-            </div>
-
-
-          <!-- MODO IZADO: HORA FIJA (08:00 POR DEFECTO O MANUAL) -->
-          <div id="boxHoraIzado" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-            <div>
-              <div style="font-size:13px; font-weight:700; color:#f8fafc;">Hora de Izado:</div>
-              <div style="font-size:11px; color:#94a3b8;">Por defecto a las 08:00h (ajustable)</div>
-            </div>
-            <input type="time" id="inputHoraIzado" value="08:00" 
-              style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:800; padding:6px 10px; text-align:center;"
-              oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
-          </div>
-
-          <!-- MODO ARRIADO: MANUAL / LOCALIDAD / GPS -->
-          <div id="boxHoraArriado" style="display:none; flex-direction:column; gap:10px;">
-            
-            <div style="font-size:11.5px; font-weight:800; color:#cbd5e1; margin-top:2px;">POSICIÓN PARA EL CÁLCULO DEL OCASO:</div>
-            
-            <!-- SELECTOR DE FUENTE DE POSICIÓN: 4 BOTONES -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-              <button type="button" class="action-btn primary" id="btnFuenteBase" onclick="setFuenteOcaso('base')" style="font-size:11px; padding:8px 4px; justify-content:center;">
-                ⚓ Localidad / Base
-              </button>
-              <button type="button" class="action-btn" id="btnFuenteGps" onclick="setFuenteOcaso('gps')" style="font-size:11px; padding:8px 4px; justify-content:center;">
-                📡 Posición GPS
-              </button>
-              <button type="button" class="action-btn" id="btnFuenteCoordManual" onclick="setFuenteOcaso('coord')" style="font-size:11px; padding:8px 4px; justify-content:center;">
-                ✏️ Coord. Manuales
-              </button>
-              <button type="button" class="action-btn" id="btnFuenteManual" onclick="setFuenteOcaso('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
-                📝 Hora Manual
-              </button>
-            </div>
-
-            <!-- OP 1: POR BASE NAVAL / LOCALIDAD -->
-            <div id="subBoxBase" style="display:flex; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
-              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Seleccionar Base Naval / Localidad:</div>
-              <select id="selBaseNaval" style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12.5px; font-weight:700; padding:8px;" onchange="calcularOcasoBase()">
-                <option value="Rota">Base Naval de Rota</option>
-                <option value="Ferrol">Arsenal de Ferrol</option>
-                <option value="Cartagena">Arsenal de Cartagena</option>
-                <option value="San Fernando">Base Naval de La Carraca / San Fernando</option>
-                <option value="Las Palmas">Arsenal de Las Palmas</option>
-                <option value="Marin">ENM de Marín</option>
-                <option value="Mahon">Estación Naval de Mahón</option>
-                <option value="Ceuta">CN de Ceuta</option>
-                <option value="Melilla">CN de Melilla</option>
-                <option value="Malaga">Puerto de Málaga</option>
-                <option value="Alicante">Puerto de Alicante</option>
-                <option value="Valencia">CN de Valencia</option>
-                <option value="Barcelona">CN de Barcelona</option>
-                <option value="Palma">CN de Palma de Mallorca</option>
-              </select>
-            </div>
-
-            <!-- OP 2: POR GPS EN LA MAR -->
-            <div id="subBoxGps" style="display:none; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
-              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Lectura GPS Satelital del Buque:</div>
-              <button type="button" class="action-btn primary" onclick="obtenerGpsYCalcularOcaso()" style="justify-content:center; font-size:12px; padding:10px; font-weight:800;">
-                <span>📡 Leer Coordenadas GPS y Calcular Ocaso</span>
-              </button>
-              <div style="font-size:11px; color:#94a3b8; text-align:center;" id="lblCoordenadasGps">Coordenadas no leídas aún</div>
-            </div>
-
-            <!-- OP 3: COORDENADAS MANUALES (LATITUD Y LONGITUD) -->
-            <div id="subBoxCoord" style="display:none; flex-direction:column; gap:8px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
-              <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Introducir Coordenadas Manuales:</div>
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <div>
-                  <div style="font-size:10.5px; color:#94a3b8; margin-bottom:2px;">Latitud (° N / -S):</div>
-                  <input type="number" step="0.0001" id="inputCoordLat" value="36.6200" placeholder="Ej: 36.6200"
-                    style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:14px; font-weight:800; padding:6px 8px; text-align:center;"
-                    oninput="calcularOcasoCoordManual()">
-                </div>
-                <div>
-                  <div style="font-size:10.5px; color:#94a3b8; margin-bottom:2px;">Longitud (° E / -W):</div>
-                  <input type="number" step="0.0001" id="inputCoordLon" value="-6.3500" placeholder="Ej: -6.3500"
-                    style="width:100%; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:14px; font-weight:800; padding:6px 8px; text-align:center;"
-                    oninput="calcularOcasoCoordManual()">
-                </div>
-              </div>
-              <div style="font-size:10px; color:#64748b; font-style:italic;">Formato decimal (ej. Rota: Lat 36.6200, Lon -6.3500).</div>
-            </div>
-
-            <!-- OP 4: ENTRADA DIRECTA POR ORDEN DIARIA -->
-            <div id="subBoxManual" style="display:none; flex-direction:column; gap:6px; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e3a8a;">
-              <div style="display:flex; align-items:center; justify-content:space-between;">
-                <div>
-                  <div style="font-size:11.5px; color:#cbd5e1; font-weight:700;">Hora fijada manualmente:</div>
-                  <div style="font-size:10px; color:#94a3b8;">Entrada horaria fija sin cálculo solar</div>
-                </div>
-                <input type="time" id="inputHoraArriadoManual" value="19:30" 
-                  style="background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:16px; font-weight:900; padding:6px 10px; text-align:center;"
-                  oninput="actualizarHoraObjetivo(); actualizarTickReloj();" onchange="actualizarHoraObjetivo(); actualizarTickReloj();">
-              </div>
-            </div>
-          </div>
-
-          <!-- TARJETA DESTACADA EN PANTALLA: POSICIÓN Y HORA DEL ARRIADO -->
-          <div style="margin-top:12px; background:#0b152d; border:1.5px solid #1e3a8a; border-radius:8px; padding:12px;">
-            <!-- LÍNEA 1: POSICIÓN EN PANTALLA (SOLICITUD EXPLÍCITA) -->
-            <div id="rowPosicionPantalla" style="display:flex; justify-content:space-between; align-items:center; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid #1e293b; flex-wrap:wrap; gap:4px;">
-              <span style="font-size:11px; font-weight:800; color:#94a3b8; display:flex; align-items:center; gap:4px;">
-                📍 POSICIÓN EN PANTALLA:
-              </span>
-              <span style="font-size:12px; font-weight:900; color:#38bdf8; text-align:right;" id="lblPosicionDisplay">
-                36°37.2'N, 006°21.0'W · Base Naval de Rota
-              </span>
-            </div>
-
-            <!-- LÍNEA 2: HORA DEL ARRIADO / OCASO Y CUENTA ATRÁS -->
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;" id="lblTituloHoraEfectiva">🎯 HORA DEL ARRIADO:</div>
-                <div style="font-size:22px; font-weight:900; color:#fbbf24; font-variant-numeric:tabular-nums;" id="lblHoraCeremonialDisplay">19:30h</div>
-              </div>
-              <div style="text-align:right;">
-                <div style="font-size:10.5px; font-weight:800; color:#94a3b8; text-transform:uppercase;">⏱️ HORA LOCAL SISTEMA:</div>
-                <div style="font-size:22px; font-weight:900; color:#38bdf8; font-variant-numeric:tabular-nums;" id="lblCuentaAtras">--:--:--</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- MODO DE EJECUCIÓN: AUTOMÁTICO VS MANUAL -->
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-bottom:14px;">
-          <button type="button" class="action-btn primary" id="btnDisparoAuto" class="action-btn" onclick="setModoDisparo('auto')" style="font-size:11px; padding:8px 4px; justify-content:center;">
-            ⏱️ Ejecución Automática
-          </button>
-          <button type="button" class="action-btn" id="btnDisparoManual" class="action-btn primary" onclick="setModoDisparo('manual')" style="font-size:11px; padding:8px 4px; justify-content:center;">
-            👆 Ejecución Manual
-          </button>
-        </div>
-
-        <!-- CONFIGURACIÓN CEREMONIAL Y CORTESÍA -->
-        <div style="background:#0f172a; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:14px; display:flex; flex-direction:column; gap:10px;">
-          <div style="font-size:12px; font-weight:800; color:#38bdf8;">⚙️ Opciones:</div>
-
-          <!-- ACOMPAÑAMIENTO AL MOVER LA BANDERA -->
-          <div id="boxOpcionesAudioBandera">
-            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">Audio:</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:4px;">
-              <button type="button" class="action-btn primary" id="btnAcompHimno" class="action-btn" onclick="setAcompBandera('himno')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
-                🎺 Himno Nacional
-              </button>
-              <button type="button" class="action-btn" id="btnAcompChifle" class="action-btn primary" onclick="setAcompBandera('chifle')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
-                📢 Solo Chifle
-              </button>
-              <button type="button" class="action-btn" id="btnAcompAmbos" onclick="setAcompBandera('ambos')" style="font-size:10.5px; padding:6px 2px; justify-content:center;">
-                🎺+📢 Ambos
-              </button>
-            </div>
-          </div>
-
-          <!-- BUQUES EXTRANJEROS EN PUERTO (CORTESÍA) -->
-          <div id="boxOpcionesBuquesCortesia">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Buques Extranjeros en Puerto:</div>
-              <span style="font-size:10.5px; color:#38bdf8; cursor:pointer;" onclick="toggleSelectorCortesia()">[+ Añadir País]</span>
-            </div>
-            
-            <div id="listaCortesiaPaises" style="display:flex; flex-wrap:wrap; gap:4px; min-height:24px;">
-              <span style="font-size:11px; color:#64748b; font-style:italic;" id="lblSinCortesia">Ningún buque extranjero añadido</span>
-            </div>
-            <!-- DESPLEGABLE RÁPIDO PARA AÑADIR CORTESÍA -->
-            <div id="boxSelectorCortesia" style="display:none; margin-top:6px; background:#070d1e; padding:6px; border-radius:6px; border:1px solid #334155;">
-              <select id="selPaisCortesia" style="width:75%; background:#0b152d; border:1px solid #38bdf8; border-radius:4px; color:#fff; font-size:11px; padding:4px;" onchange="agregarPaisCortesia(this.value)">
-                <option value="">Seleccione país presente...</option>
-              </select>
-              <button type="button" class="action-btn" onclick="limpiarPaisesCortesia()" style="font-size:10px; padding:4px 6px;">Borrar</button>
-            </div>
-          </div>
-
-          <!-- OPCIÓN EXCLUSIVA DEL ARRIADO: ORACIÓN -->
-          <div id="rowOpcionOracion" style="display:none; flex-direction:column; gap:6px;">
-            <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Modalidad de la Oración:</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:4px;">
-              <button type="button" class="action-btn primary" id="btnOracionVoz" onclick="setModalidadOracion('leida')" style="font-size:10px; padding:6px 2px; justify-content:center;">
-                📖 Leída
-              </button>
-              <button type="button" class="action-btn" id="btnOracionCantada" onclick="setModalidadOracion('cantada')" style="font-size:10px; padding:6px 2px; justify-content:center;">
-                🎶 Cantada
-              </button>
-              <button type="button" class="action-btn" id="btnOracionCorneta" onclick="setModalidadOracion('corneta')" style="font-size:10px; padding:6px 2px; justify-content:center;">
-                🎺 Corneta
-              </button>
-              <button type="button" class="action-btn" id="btnOracionNinguna" onclick="setModalidadOracion('ninguna')" style="font-size:10px; padding:6px 2px; justify-content:center;">
-                ✕ Ninguna
-              </button>
-            </div>
-          </div>
-
-          <!-- OPCIÓN EXCLUSIVA DEL ARRIADO: A LA BATERÍA (DOTACIÓN BUENAS NOCHES) -->
-          <div class="toggle-row" id="rowOpcionBuenasNoches" style="display:none; padding:4px 0;">
-            <div>
-              <div class="toggle-label" style="font-size:11.5px;">🌙 "Dotación, buenas noches"</div>
-              
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="chkBuenasNoches" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- PANEL DE EJECUCIÓN (AUTOMÁTICA O MANUAL) -->
-        <div id="panelEjecucionAuto" style="margin-bottom:10px;">
-          <button type="button" class="action-btn primary" id="btnArmarCeremonial" onclick="toggleArmadoCeremonial()" style="width:100%; justify-content:center; padding:12px; font-size:13px; font-weight:900;">
-            <span>🛡️ ACTIVAR SECUENCIA AUTOMÁTICA</span>
-          </button>
-        </div>
-
-        <!-- BOTONES DE CONTROL MANUAL (A LA ORDEN DEL OFICIAL DE GUARDIA) -->
-        <div id="panelEjecucionManual" style="display:none; flex-direction:column; gap:6px; margin-bottom:10px;">
-          <div style="font-size:11.5px; font-weight:800; color:#38bdf8; margin-bottom:2px;">BOTONES DE MANDO MANUAL:</div>
-          <div id="panelPasosBandera" style="display:flex; flex-direction:column; gap:6px;">
-          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(1)" style="justify-content:space-between;">
-            <span>1. 🗣️ Voz: "Señales a la bandera" (T-5 min)</span>
-            <span>📢</span>
-          </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(2)" style="justify-content:space-between;">
-            <span>2. 🗣️ Voz: "A la bandera frente a popa, presenten"</span>
-            <span>📢</span>
-          </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(3)" style="justify-content:space-between;">
-            <span>3. 🇪🇸 Himno / Chifle</span>
-            <span>🎺</span>
-          </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(4)" style="justify-content:space-between;">
-            <span>4. 🗣️ Voz: "Retirada de honores"</span>
-            <span>📢</span>
-          </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(5)" style="justify-content:space-between;">
-            <span>5. 📢 Chifle: Pitada de Retirada de Honores</span>
-            <span>⚓</span>
-          </button>
-          </div>
-          <button type="button" class="action-btn" id="btnManualPasoOracion" onclick="ejecutarPasoCeremonialManual(6)" style="display:none; justify-content:space-between;">
-            <span>6. ⚓ Oración de la Noche</span>
-            <span>🌙</span>
-          </button>
-          <button type="button" class="action-btn" id="btnManualPasoBuenasNoches" onclick="ejecutarPasoCeremonialManual(7)" style="display:none; justify-content:space-between;">
-            <span>7. 🌙 "Dotación, buenas noches"</span>
-            <span>🔊</span>
-          </button>
-        </div>
-
-        <!-- BOTÓN DE PARADA GENERAL -->
-        <button type="button" class="action-btn danger" id="btnDetenerSecuenciaGeneral" onclick="cancelarCeremonialIzado()" style="width:100%; justify-content:center; padding:8px; font-size:11px; margin-top:4px;">
-          <span>⏹️ DETENER SECUENCIA</span>
-        </button>
-      </div>
-    </div>
-  </main>
+    </main>
 
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792941759</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792942621</div>
 </footer>
 
   <script>
@@ -1259,6 +915,7 @@ function _legacy_execAuth() {
       document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
       if (event && event.target) event.target.classList.add('active');
       renderAuthList();
+      showView('portalon');
       try {
         actualizarHoraObjetivo();
         refrescarPosicionYHoraEnPantalla();
@@ -1434,6 +1091,7 @@ function _legacy_execAuth() {
       
 
       renderAuthList();
+      showView('portalon');
       try {
         actualizarHoraObjetivo();
         refrescarPosicionYHoraEnPantalla();
@@ -1768,6 +1426,7 @@ function _legacy_execAuth() {
 
     // Inicializar lista al arrancar
     renderAuthList();
+      showView('portalon');
       try {
         actualizarHoraObjetivo();
         refrescarPosicionYHoraEnPantalla();
@@ -2667,6 +2326,7 @@ function _legacy_execAuth() {
     // ==========================================
     try {
       renderAuthList();
+      showView('portalon');
       try {
         actualizarHoraObjetivo();
         refrescarPosicionYHoraEnPantalla();
