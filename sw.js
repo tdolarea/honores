@@ -1,4 +1,4 @@
-// SW Honores PWA v1792929550
+// SW Honores PWA v1792929575
 self.addEventListener('install', e => {
   self.skipWaiting();
 });
