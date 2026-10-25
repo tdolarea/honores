@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792911963';
+    const APP_VERSION = 'v1792912191';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -836,7 +836,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792911963</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792912191</div>
 </footer>
 
   <script>
@@ -2355,7 +2355,7 @@ function _legacy_execAuth() {
     }
 
         function restablecerConfiguracionPorDefecto() {
-      // 1. Desarmar automático y desactivar botón rojo
+      // 1. Desarmar automático y apagar botón rojo
       cerArmado = false;
       cerDisparoSenalesHecho = false;
       cerDisparoEjecutivaHecho = false;
@@ -2415,6 +2415,30 @@ function _legacy_execAuth() {
       }, 3000);
     }
 
+    function finalizarSecuenciaAutoCompleta(msgExito) {
+      actualizarStatus(msgExito || '✅ Ceremonial completado.');
+      setTimeout(() => {
+        cerrarStatus();
+        restablecerConfiguracionPorDefecto();
+      }, 3000);
+    }
+
+    function finalizarSecuenciaAutoCompleta(msgExito) {
+      actualizarStatus(msgExito || '✅ Ceremonial completado.');
+      setTimeout(() => {
+        cerrarStatus();
+        restablecerConfiguracionPorDefecto();
+      }, 3000);
+    }
+
+    function finalizarSecuenciaAutoCompleta(msgExito) {
+      actualizarStatus(msgExito || '✅ Ceremonial completado.');
+      setTimeout(() => {
+        cerrarStatus();
+        restablecerConfiguracionPorDefecto();
+      }, 3000);
+    }
+
     function iniciarSecuenciaCompletaAuto() {
       // 1. Si el buque está NAVEGANDO (EN LA MAR)
       if (cerSituacionBuque === 'mar') {
@@ -2440,7 +2464,6 @@ function _legacy_execAuth() {
           reproducirElementoCeremonial(el4, '4. 🗣️ Voz: Retirada de honores', () => {
             const el5 = (cerModo === 'izado') ? document.getElementById('audIzado5') : document.getElementById('audArriado5');
             reproducirElementoCeremonial(el5, '5. 📢 Chifle: Retirada de honores', () => {
-              // Si es Arriado en puerto: Oración de la Noche
               if (cerModo === 'arriado' && cerModalidadOracion !== 'ninguna') {
                 ejecutarOracion(() => {
                   const chkBN = document.getElementById('chkBuenasNoches');
