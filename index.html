@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792933902';
+    const APP_VERSION = 'v1792934656';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -1058,7 +1058,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792933902</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792934656</div>
 </footer>
 
   <script>
@@ -1108,9 +1108,13 @@
       if (typeof onBuqueAudioFin === 'function') onBuqueAudioFin();
     }
 
+    // --- MOTOR ROBUSTO DE CHIFLE (AUDIO DINÁMICO COMPATIBLE MÓVIL) ---
+    let canalChifleAudio = null;
+
     function tocarChifleMando() {
       detenerChifleGeneral();
       ultimoToque = 'mando';
+      mandoChifleActivo = true;
       bloquearTodosBotonesPortalon();
 
       const box = document.getElementById('playerChifleActivo');
@@ -1118,13 +1122,21 @@
       if (lbl) lbl.textContent = 'Almirante o Comandante (Entrada)';
       if (box) box.style.display = 'block';
 
-      currentActiveAudio = audMando;
-      if (audMando) {
-        audMando.currentTime = 0;
-        audMando.play().catch(e => {
-          console.error('Error audMando:', e);
+      try {
+        canalChifleAudio = new Audio('audio/ComteoAlmte.mp3');
+        currentActiveAudio = canalChifleAudio;
+        canalChifleAudio.play().then(() => {
+          console.log('Chifle Mando reproduciendo OK');
+        }).catch(err => {
+          console.error('Error al reproducir Chifle Mando:', err);
           onAudioTerminado();
         });
+        canalChifleAudio.onended = () => {
+          onAudioTerminado();
+        };
+      } catch(e) {
+        console.error('Excepción Chifle Mando:', e);
+        onAudioTerminado();
       }
     }
 
@@ -1138,13 +1150,21 @@
       if (lbl) lbl.textContent = 'Oficiales';
       if (box) box.style.display = 'block';
 
-      currentActiveAudio = audOficiales;
-      if (audOficiales) {
-        audOficiales.currentTime = 0;
-        audOficiales.play().catch(e => {
-          console.error('Error audOficiales:', e);
+      try {
+        canalChifleAudio = new Audio('audio/oficiales.mp3');
+        currentActiveAudio = canalChifleAudio;
+        canalChifleAudio.play().then(() => {
+          console.log('Chifle Oficiales reproduciendo OK');
+        }).catch(err => {
+          console.error('Error al reproducir Chifle Oficiales:', err);
           onAudioTerminado();
         });
+        canalChifleAudio.onended = () => {
+          onAudioTerminado();
+        };
+      } catch(e) {
+        console.error('Excepción Chifle Oficiales:', e);
+        onAudioTerminado();
       }
     }
 
@@ -1159,14 +1179,55 @@
       if (lbl) lbl.textContent = 'Retirada Almirante o Comandante';
       if (box) box.style.display = 'block';
 
-      currentActiveAudio = audRetirada;
-      if (audRetirada) {
-        audRetirada.currentTime = 0;
-        audRetirada.play().catch(e => {
-          console.error('Error audRetirada:', e);
+      try {
+        canalChifleAudio = new Audio('audio/retiradaComteoAlmte.mp3');
+        currentActiveAudio = canalChifleAudio;
+        canalChifleAudio.play().then(() => {
+          console.log('Chifle Retirada reproduciendo OK');
+        }).catch(err => {
+          console.error('Error al reproducir Chifle Retirada:', err);
           onAudioTerminado();
         });
+        canalChifleAudio.onended = () => {
+          onAudioTerminado();
+        };
+      } catch(e) {
+        console.error('Excepción Chifle Retirada:', e);
+        onAudioTerminado();
       }
+    }
+
+    function tocarChifleDirecto(url, nombre) {
+      detenerChifleGeneral();
+      const box = document.getElementById('playerChifleActivo');
+      const lbl = document.getElementById('lblChifleActivoTxt');
+      if (lbl) lbl.textContent = nombre;
+      if (box) box.style.display = 'block';
+
+      try {
+        canalChifleAudio = new Audio(url);
+        currentActiveAudio = canalChifleAudio;
+        canalChifleAudio.play().catch(e => console.warn('Error chifle directo:', e));
+        canalChifleAudio.onended = () => {
+          const b = document.getElementById('playerChifleActivo');
+          if (b) b.style.display = 'none';
+        };
+      } catch(e) {
+        const b = document.getElementById('playerChifleActivo');
+        if (b) b.style.display = 'none';
+      }
+    }
+
+    function detenerChifleGeneral() {
+      if (canalChifleAudio) {
+        try { canalChifleAudio.pause(); canalChifleAudio.currentTime = 0; } catch(e){}
+        canalChifleAudio = null;
+      }
+      stopAllAudio();
+      desbloquearSegunCeremonial();
+      const box = document.getElementById('playerChifleActivo');
+      if (box) box.style.display = 'none';
+      cerrarStatus();
     }
 
     function playAudio(src, label) {
@@ -1321,12 +1382,14 @@ function _legacy_execAuth() {
       actualizarEstadoBuques();
     }
 
+    let canalBuqueAudio = null;
+
     function tocarHonoresBabor() {
       if (buqueSonidoEnCurso || buqueHonorTocado) return;
       buqueSonidoEnCurso = true;
       buqueHonorTocado = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuque(audBuqueBabor, 'HONORES POR BABOR');
+      reproducirAudioBuqueDirecto('audio/Honoresporbabor_AudioDenoise.mp3', 'HONORES POR BABOR');
     }
 
     function tocarHonoresEstribor() {
@@ -1334,31 +1397,39 @@ function _legacy_execAuth() {
       buqueSonidoEnCurso = true;
       buqueHonorTocado = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuque(audBuqueEstribor, 'HONORES POR ESTRIBOR');
+      reproducirAudioBuqueDirecto('audio/Honoresporestribor_AudioDenoise.mp3', 'HONORES POR ESTRIBOR');
     }
 
     function tocarHonoresRetirada() {
       if (buqueSonidoEnCurso || !buqueHonorTocado) return;
       buqueSonidoEnCurso = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuque(audBuqueRetirada, 'RETIRADA DE HONORES');
-      buqueHonorTocado = false; // Consumada la retirada, el ciclo se reinicia
+      reproducirAudioBuqueDirecto('audio/Retiradadehonores_AudioDenoise.mp3', 'RETIRADA DE HONORES');
+      buqueHonorTocado = false;
     }
 
-    function reproducirAudioBuque(audioEl, label) {
+    function reproducirAudioBuqueDirecto(src, label) {
       stopAllAudio();
       const statusBox = document.getElementById('audioStatusBar');
       const statusText = document.getElementById('audioStatusText');
       if (statusBox) statusBox.style.display = 'flex';
       if (statusText) statusText.textContent = `▶️ ${label}`;
 
-      if (audioEl) {
-        audioEl.currentTime = 0;
-        audioEl.play().catch(e => {
-          console.error('Error reproducirAudioBuque:', e);
-          onBuqueAudioFin();
-        });
+      if (canalBuqueAudio) {
+        try { canalBuqueAudio.pause(); } catch(e){}
       }
+
+      canalBuqueAudio = new Audio(src);
+      currentActiveAudio = canalBuqueAudio;
+      canalBuqueAudio.play().then(() => {
+        console.log('Buque honor sonando:', label);
+      }).catch(e => {
+        console.error('Error buque audio:', e);
+        onBuqueAudioFin();
+      });
+      canalBuqueAudio.onended = () => {
+        onBuqueAudioFin();
+      };
     }
 
     function bloquearTodosBotonesBuques() {
