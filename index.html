@@ -153,9 +153,28 @@
 </head>
 <body>
 
-  <script>
+  
+  <!-- REPRODUCTORES CEREMONIAL IZADO Y ARRIADO (AISLADOS) -->
+  <audio id="audIzado1" src="audio/VOZELENASENALES.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado2" src="audio/VOZELENALABANDERAFRENTEAPOPA.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado3Himno" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado3Chifle" src="audio/chifleiniciohimno.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado4" src="audio/VOZELENARETIRADADEHONORES.mp3" preload="auto" playsinline></audio>
+  <audio id="audIzado5" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado1" src="audio/senalesalabandera.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado2" src="audio/alabanderafrenteapopapresenten.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado3Himno" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado3Chifle" src="audio/chifleiniciohimno.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado4" src="audio/VOZretiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado5" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado6Leida" src="audio/VOZORACION.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado6Cantada" src="audio/OraciondelaNoche.mp3" preload="auto" playsinline></audio>
+  <audio id="audArriado6Corneta" src="audio/CornetaToquedeOracion.wav" preload="auto" playsinline></audio>
+  <audio id="audArriado7" src="audio/dotacionbuenasnoches.mp3" preload="auto" playsinline></audio>
+
+<script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792938242';
+    const APP_VERSION = 'v1792941759';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -172,30 +191,6 @@
   </script>
 
 
-  
-    <!-- Reproductores dedicados para Izado y Arriado -->
-<!-- Reproductores estáticos precargados para Ceremonial de Izado y Arriado -->
-  <!-- Izado (Voces Elena + Himno + Chifle) -->
-  <audio id="audIzado1" src="audio/VOZELENASENALES.mp3" preload="auto" playsinline></audio>
-  <audio id="audIzado2" src="audio/VOZELENALABANDERAFRENTEAPOPA.mp3" preload="auto" playsinline></audio>
-  <audio id="audIzado3Himno" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
-  <audio id="audIzado3Chifle" src="audio/chifleiniciohimno.mp3" preload="auto" playsinline></audio>
-  <audio id="audIzado4" src="audio/VOZELENARETIRADADEHONORES.mp3" preload="auto" playsinline></audio>
-  <audio id="audIzado5" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
-
-  <!-- Arriado (Voces Carmen/Masculina + Himno + Chifle + Oraciones + Dotacion) -->
-  <audio id="audArriado1" src="audio/senalesalabandera.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado2" src="audio/alabanderafrenteapopapresenten.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado3Himno" src="audio/Espania_corto.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado3Chifle" src="audio/chifleiniciohimno.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado4" src="audio/VOZretiradadehonores.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado5" src="audio/retiradadehonores.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado6Leida" src="audio/VOZORACION.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado6Cantada" src="audio/OraciondelaNoche.mp3" preload="auto" playsinline></audio>
-  <audio id="audArriado6Corneta" src="audio/CornetaToquedeOracion.wav" preload="auto" playsinline></audio>
-  <audio id="audArriado7" src="audio/dotacionbuenasnoches.mp3" preload="auto" playsinline></audio>
-
-  <!-- Eliminar players dinámicos fallidos -->
   <!-- Reproductores estáticos precargados para Ceremonial de Autoridades -->
   <audio id="audFirmes" src="audio/CORNETAFIRMESAUTORIDADPRINCIPAL.mp3" preload="auto" playsinline></audio>
   <audio id="audPresenten" src="audio/cornetapresentenarmas.wav" preload="auto" playsinline></audio>
@@ -257,12 +252,11 @@
     </div>
   </header>
 
-  <div class="nav-bar">
-    <button class="nav-btn" id="navPortalon" onclick="showView('portalon')">🚪 Portalón</button>
+    <div class="nav-bar">
+    <button class="nav-btn active" id="navPortalon" onclick="showView('portalon')">🚪 Portalón</button>
     <button class="nav-btn" id="navBuques" onclick="showView('buques')">⚓ Buques</button>
-    <button class="nav-btn active" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
+    <button class="nav-btn" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
     <button class="nav-btn" id="navIzado" onclick="showView('izado')">🌅 Izado/Arriado</button>
-    <button class="nav-btn" id="navMusica" onclick="showView('musica')">🎺 Música / Himnos</button>
   </div>
 
   <main>
@@ -485,6 +479,56 @@
         </div>
       </div>
     </div>
+
+    <div class="view-section" id="viewIzado">
+      <div class="card">
+        <div class="card-title">Izado y Arriado de la Bandera</div>
+        <div class="btn-grid">
+          <button class="action-btn primary" onclick="playAudio('audio/CornetaHimnonacionalacorneta-reducido.wav', 'IZADO: Himno Nacional a Corneta')">
+            <span>🌅 IZADO DE BANDERA (08:00h)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn primary" onclick="playAudio('audio/CornetaToquedeOracion.wav', 'ARRIADO: Toque de Oración (Ocaso)')">
+            <span>🌇 ARRIADO AL OCASO (Oración)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/08Oraciondelanoche.mp3', 'Oración de la Noche')">
+            <span>Oración de la Noche</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
+            <span>Salve Marinera</span>
+            <span>🌊</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 5: MÚSICA Y HIMNOS -->
+    <div class="view-section" id="viewMusica">
+      <div class="card">
+        <div class="card-title">Música Militar e Himnos de las Fuerzas Armadas</div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="playAudio('audio/Himno_nacional_de_Espana.mp3', 'Himno Nacional de España (Completo)')">
+            <span>Himno Nacional (Banda)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/MarchadeInfantes.mp3', 'Marcha de Infantes')">
+            <span>Marcha de Infantes</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
+            <span>Salve Marinera</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/Espania_corto.mp3', 'Marcha Real (Versión Breve)')">
+            <span>Marcha Real (Breve)</span>
+            <span>🇪🇸</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  
 
     <div class="view-section" id="viewIzado">
       <div class="card">
@@ -767,32 +811,32 @@
         <div id="panelEjecucionManual" style="display:none; flex-direction:column; gap:6px; margin-bottom:10px;">
           <div style="font-size:11.5px; font-weight:800; color:#38bdf8; margin-bottom:2px;">BOTONES DE MANDO MANUAL:</div>
           <div id="panelPasosBandera" style="display:flex; flex-direction:column; gap:6px;">
-          <button type="button" class="action-btn" onclick="ejecutarPasoManual(1)" style="justify-content:space-between;">
+          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(1)" style="justify-content:space-between;">
             <span>1. 🗣️ Voz: "Señales a la bandera" (T-5 min)</span>
             <span>📢</span>
           </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoManual(2)" style="justify-content:space-between;">
+          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(2)" style="justify-content:space-between;">
             <span>2. 🗣️ Voz: "A la bandera frente a popa, presenten"</span>
             <span>📢</span>
           </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoManual(3)" style="justify-content:space-between;">
+          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(3)" style="justify-content:space-between;">
             <span>3. 🇪🇸 Himno / Chifle</span>
             <span>🎺</span>
           </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoManual(4)" style="justify-content:space-between;">
+          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(4)" style="justify-content:space-between;">
             <span>4. 🗣️ Voz: "Retirada de honores"</span>
             <span>📢</span>
           </button>
-          <button type="button" class="action-btn" onclick="ejecutarPasoManual(5)" style="justify-content:space-between;">
+          <button type="button" class="action-btn" onclick="ejecutarPasoCeremonialManual(5)" style="justify-content:space-between;">
             <span>5. 📢 Chifle: Pitada de Retirada de Honores</span>
             <span>⚓</span>
           </button>
           </div>
-          <button type="button" class="action-btn" id="btnManualPasoOracion" onclick="ejecutarPasoManual(6)" style="display:none; justify-content:space-between;">
+          <button type="button" class="action-btn" id="btnManualPasoOracion" onclick="ejecutarPasoCeremonialManual(6)" style="display:none; justify-content:space-between;">
             <span>6. ⚓ Oración de la Noche</span>
             <span>🌙</span>
           </button>
-          <button type="button" class="action-btn" id="btnManualPasoBuenasNoches" onclick="ejecutarPasoManual(7)" style="display:none; justify-content:space-between;">
+          <button type="button" class="action-btn" id="btnManualPasoBuenasNoches" onclick="ejecutarPasoCeremonialManual(7)" style="display:none; justify-content:space-between;">
             <span>7. 🌙 "Dotación, buenas noches"</span>
             <span>🔊</span>
           </button>
@@ -804,37 +848,12 @@
         </button>
       </div>
     </div>
-
-    <!-- VISTA 5::: MÚSICA Y HIMNOS -->
-    <div class="view-section" id="viewMusica">
-      <div class="card">
-        <div class="card-title">Música Militar e Himnos de las Fuerzas Armadas</div>
-        <div class="btn-grid">
-          <button class="action-btn" onclick="playAudio('audio/Himno_nacional_de_Espana.mp3', 'Himno Nacional de España (Completo)')">
-            <span>Himno Nacional (Banda)</span>
-            <span>🇪🇸</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/MarchadeInfantes.mp3', 'Marcha de Infantes')">
-            <span>Marcha de Infantes</span>
-            <span>🎺</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
-            <span>Salve Marinera</span>
-            <span>⚓</span>
-          </button>
-          <button class="action-btn" onclick="playAudio('audio/Espania_corto.mp3', 'Marcha Real (Versión Breve)')">
-            <span>Marcha Real (Breve)</span>
-            <span>🇪🇸</span>
-          </button>
-        </div>
-      </div>
-    </div>
   </main>
 
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792938242</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792941759</div>
 </footer>
 
   <script>
@@ -991,7 +1010,6 @@
       const targetBtn = document.getElementById(`nav${viewId.charAt(0).toUpperCase() + viewId.slice(1)}`);
       if (targetView) targetView.classList.add('active');
       if (targetBtn) targetBtn.classList.add('active');
-
       if (viewId === 'izado') {
         actualizarHoraObjetivo();
         actualizarTickReloj();
@@ -1240,8 +1258,12 @@ function _legacy_execAuth() {
       currentAuthCat = cat;
       document.querySelectorAll('#authCatPills .cat-pill').forEach(p => p.classList.remove('active'));
       if (event && event.target) event.target.classList.add('active');
-      cambiarHusoHorario('auto');
       renderAuthList();
+      try {
+        actualizarHoraObjetivo();
+        refrescarPosicionYHoraEnPantalla();
+        iniciarRelojCeremonial();
+      } catch(e){}
     }
 
     function seleccionarPosicionArma(pos) {
@@ -1412,6 +1434,11 @@ function _legacy_execAuth() {
       
 
       renderAuthList();
+      try {
+        actualizarHoraObjetivo();
+        refrescarPosicionYHoraEnPantalla();
+        iniciarRelojCeremonial();
+      } catch(e){}
     }
 
 
@@ -1703,7 +1730,7 @@ function _legacy_execAuth() {
       });
     }
 
-    function stopAllAudio() {
+    function stopCeremonialAudio() {
       secuenciaActiva = false;
       if (timerPasoSeguro) clearTimeout(timerPasoSeguro);
       const allAudios = document.querySelectorAll('audio');
@@ -1739,7 +1766,18 @@ function _legacy_execAuth() {
       if (btnEj) btnEj.style.display = 'flex';
     }
 
-    
+    // Inicializar lista al arrancar
+    renderAuthList();
+      try {
+        actualizarHoraObjetivo();
+        refrescarPosicionYHoraEnPantalla();
+        iniciarRelojCeremonial();
+      } catch(e){}
+
+  
+
+    // ==========================================
+    // MOTOR DE IZADO Y ARRIADO DE BANDERA (ENCAPSULADO)
     // ==========================================
     // VISTA 4: MOTOR DE IZADO Y ARRIADO DE BANDERA
     // ==========================================
@@ -2390,7 +2428,7 @@ function _legacy_execAuth() {
     }
 
     function cancelarCeremonialIzado() {
-      stopAllAudio();
+      stopCeremonialAudio();
       pararAudioCeremonial();
       restablecerConfiguracionPorDefecto();
       actualizarStatus('⏹️ Secuencia automática detenida. Sistema en configuración por defecto.');
@@ -2509,7 +2547,7 @@ function _legacy_execAuth() {
     }
 
     // BOTONES DE MANDO MANUAL PASO A PASO
-    function ejecutarPasoManual(paso) {
+    function ejecutarPasoCeremonialManual(paso) {
       if (paso === 1) {
         const el = (cerModo === 'izado') ? document.getElementById('audIzado1') : document.getElementById('audArriado1');
         reproducirElementoCeremonial(el, '1. 🗣️ Voz: "Señales a la bandera" (T-5 min)');
@@ -2629,6 +2667,11 @@ function _legacy_execAuth() {
     // ==========================================
     try {
       renderAuthList();
+      try {
+        actualizarHoraObjetivo();
+        refrescarPosicionYHoraEnPantalla();
+        iniciarRelojCeremonial();
+      } catch(e){}
     } catch(e) { console.error('Error renderAuthList init:', e); }
 
     try {
@@ -2637,17 +2680,8 @@ function _legacy_execAuth() {
       iniciarRelojCeremonial();
       actualizarTickReloj();
     } catch(e) { console.error('Error reloj init:', e); }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      try { renderAuthList(); } catch(e){}
-      try { restablecerConfiguracionPorDefecto(); } catch(e){}
-      try {
-        actualizarHoraObjetivo();
-        refrescarPosicionYHoraEnPantalla();
-        iniciarRelojCeremonial();
-      } catch(e){}
-    });
-
   </script>
 </body>
-</html>
+</html
+
+          >
