@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792934656';
+    const APP_VERSION = 'v1792935158';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -257,12 +257,12 @@
     </div>
   </header>
 
-    <div class="nav-bar">
-    <button class="nav-btn active" id="navPortalon" onclick="showView('portalon')">📢 Chifle</button>
+  <div class="nav-bar">
+    <button class="nav-btn" id="navPortalon" onclick="showView('portalon')">🚪 Portalón</button>
     <button class="nav-btn" id="navBuques" onclick="showView('buques')">⚓ Buques</button>
-    <button class="nav-btn" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
+    <button class="nav-btn active" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
     <button class="nav-btn" id="navIzado" onclick="showView('izado')">🌅 Izado/Arriado</button>
-    <button class="nav-btn" id="navMusica" onclick="showView('musica')">🎼 Música Militar</button>
+    <button class="nav-btn" id="navMusica" onclick="showView('musica')">🎺 Música / Himnos</button>
   </div>
 
   <main>
@@ -530,7 +530,7 @@
 
           <div class="toggle-row" id="rowMusica">
             <div>
-              <div class="toggle-label" id="lblMusica">🎼 Música Militar</div>
+              <div class="toggle-label" id="lblMusica">🎺 Música / Himnos</div>
               <div class="toggle-desc" id="descMusica">Himno Nacional de España</div>
             </div>
             <label class="switch">
@@ -1058,7 +1058,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792934656</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792935158</div>
 </footer>
 
   <script>
@@ -1088,7 +1088,6 @@
     });
 
     function onAudioTerminado() {
-      const bChifle = document.getElementById('playerChifleActivo'); if (bChifle) bChifle.style.display = 'none';
       const statusBox = document.getElementById('audioStatusBar');
       if (statusBox) statusBox.style.display = 'none';
       currentActiveAudio = null;
@@ -1108,114 +1107,100 @@
       if (typeof onBuqueAudioFin === 'function') onBuqueAudioFin();
     }
 
-    // --- MOTOR ROBUSTO DE CHIFLE (AUDIO DINÁMICO COMPATIBLE MÓVIL) ---
+    // --- REPRODUCTOR MAESTRO DE CHIFLE (DOBLE MOTOR DOM + DINÁMICO) ---
     let canalChifleAudio = null;
 
-    function tocarChifleMando() {
+    function reproducirAudioUniversal(elDOM, fallbackUrl, label, onEndCallback) {
       detenerChifleGeneral();
-      ultimoToque = 'mando';
-      mandoChifleActivo = true;
-      bloquearTodosBotonesPortalon();
-
       const box = document.getElementById('playerChifleActivo');
       const lbl = document.getElementById('lblChifleActivoTxt');
-      if (lbl) lbl.textContent = 'Almirante o Comandante (Entrada)';
+      if (lbl) lbl.textContent = label;
       if (box) box.style.display = 'block';
 
-      try {
-        canalChifleAudio = new Audio('audio/ComteoAlmte.mp3');
-        currentActiveAudio = canalChifleAudio;
-        canalChifleAudio.play().then(() => {
-          console.log('Chifle Mando reproduciendo OK');
-        }).catch(err => {
-          console.error('Error al reproducir Chifle Mando:', err);
-          onAudioTerminado();
-        });
-        canalChifleAudio.onended = () => {
-          onAudioTerminado();
-        };
-      } catch(e) {
-        console.error('Excepción Chifle Mando:', e);
-        onAudioTerminado();
+      let sonando = false;
+
+      // 1. Intentar con el elemento DOM existente
+      if (elDOM && typeof elDOM.play === 'function') {
+        try {
+          elDOM.currentTime = 0;
+          currentActiveAudio = elDOM;
+          const p = elDOM.play();
+          if (p !== undefined) {
+            p.then(() => {
+              sonando = true;
+              console.log('Audio sonando vía elemento DOM:', label);
+            }).catch(err => {
+              console.warn('DOM play falló, activando motor dinámico:', err);
+              iniciarMotorDinamico(fallbackUrl, onEndCallback);
+            });
+          }
+          elDOM.onended = () => {
+            if (box) box.style.display = 'none';
+            if (typeof onEndCallback === 'function') onEndCallback();
+          };
+        } catch(e) {
+          iniciarMotorDinamico(fallbackUrl, onEndCallback);
+        }
+      } else {
+        iniciarMotorDinamico(fallbackUrl, onEndCallback);
+      }
+
+      function iniciarMotorDinamico(url, cb) {
+        try {
+          if (canalChifleAudio) {
+            try { canalChifleAudio.pause(); } catch(e){}
+          }
+          canalChifleAudio = new Audio(url);
+          currentActiveAudio = canalChifleAudio;
+          canalChifleAudio.play().then(() => {
+            console.log('Audio sonando vía motor dinámico:', label);
+          }).catch(e => {
+            console.error('Error total al reproducir audio:', e);
+            if (box) box.style.display = 'none';
+            if (typeof cb === 'function') cb();
+          });
+          canalChifleAudio.onended = () => {
+            if (box) box.style.display = 'none';
+            if (typeof cb === 'function') cb();
+          };
+        } catch(err) {
+          console.error('Excepción crítica audio:', err);
+          if (box) box.style.display = 'none';
+          if (typeof cb === 'function') cb();
+        }
       }
     }
 
+    function tocarChifleMando() {
+      ultimoToque = 'mando';
+      bloquearTodosBotonesPortalon();
+      reproducirAudioUniversal(audMando, 'audio/ComteoAlmte.mp3', 'Almirante o Comandante (Entrada)', onAudioTerminado);
+    }
+
     function tocarChifleOficiales() {
-      detenerChifleGeneral();
       ultimoToque = 'oficiales';
       bloquearTodosBotonesPortalon();
-
-      const box = document.getElementById('playerChifleActivo');
-      const lbl = document.getElementById('lblChifleActivoTxt');
-      if (lbl) lbl.textContent = 'Oficiales';
-      if (box) box.style.display = 'block';
-
-      try {
-        canalChifleAudio = new Audio('audio/oficiales.mp3');
-        currentActiveAudio = canalChifleAudio;
-        canalChifleAudio.play().then(() => {
-          console.log('Chifle Oficiales reproduciendo OK');
-        }).catch(err => {
-          console.error('Error al reproducir Chifle Oficiales:', err);
-          onAudioTerminado();
-        });
-        canalChifleAudio.onended = () => {
-          onAudioTerminado();
-        };
-      } catch(e) {
-        console.error('Excepción Chifle Oficiales:', e);
-        onAudioTerminado();
-      }
+      reproducirAudioUniversal(audOficiales, 'audio/oficiales.mp3', 'Oficiales', onAudioTerminado);
     }
 
     function tocarChifleRetirada() {
       if (!mandoChifleActivo) return;
-      detenerChifleGeneral();
       ultimoToque = 'retirada';
       bloquearTodosBotonesPortalon();
-
-      const box = document.getElementById('playerChifleActivo');
-      const lbl = document.getElementById('lblChifleActivoTxt');
-      if (lbl) lbl.textContent = 'Retirada Almirante o Comandante';
-      if (box) box.style.display = 'block';
-
-      try {
-        canalChifleAudio = new Audio('audio/retiradaComteoAlmte.mp3');
-        currentActiveAudio = canalChifleAudio;
-        canalChifleAudio.play().then(() => {
-          console.log('Chifle Retirada reproduciendo OK');
-        }).catch(err => {
-          console.error('Error al reproducir Chifle Retirada:', err);
-          onAudioTerminado();
-        });
-        canalChifleAudio.onended = () => {
-          onAudioTerminado();
-        };
-      } catch(e) {
-        console.error('Excepción Chifle Retirada:', e);
-        onAudioTerminado();
-      }
+      reproducirAudioUniversal(audRetirada, 'audio/retiradaComteoAlmte.mp3', 'Retirada Almirante o Comandante', onAudioTerminado);
     }
 
     function tocarChifleDirecto(url, nombre) {
-      detenerChifleGeneral();
-      const box = document.getElementById('playerChifleActivo');
-      const lbl = document.getElementById('lblChifleActivoTxt');
-      if (lbl) lbl.textContent = nombre;
-      if (box) box.style.display = 'block';
-
-      try {
-        canalChifleAudio = new Audio(url);
-        currentActiveAudio = canalChifleAudio;
-        canalChifleAudio.play().catch(e => console.warn('Error chifle directo:', e));
-        canalChifleAudio.onended = () => {
-          const b = document.getElementById('playerChifleActivo');
-          if (b) b.style.display = 'none';
-        };
-      } catch(e) {
+      reproducirAudioUniversal(null, url, nombre, () => {
         const b = document.getElementById('playerChifleActivo');
         if (b) b.style.display = 'none';
-      }
+      });
+    }
+
+    function tocarChifleJSE() {
+      const sel = document.getElementById('selChifleJSE');
+      if (!sel || !sel.value) return;
+      tocarChifleDirecto(sel.value, sel.options[sel.selectedIndex].text);
     }
 
     function detenerChifleGeneral() {
@@ -1389,7 +1374,7 @@ function _legacy_execAuth() {
       buqueSonidoEnCurso = true;
       buqueHonorTocado = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuqueDirecto('audio/Honoresporbabor_AudioDenoise.mp3', 'HONORES POR BABOR');
+      reproducirAudioBuqueUniversal(audBuqueBabor, 'audio/Honoresporbabor_AudioDenoise.mp3', 'HONORES POR BABOR');
     }
 
     function tocarHonoresEstribor() {
@@ -1397,39 +1382,52 @@ function _legacy_execAuth() {
       buqueSonidoEnCurso = true;
       buqueHonorTocado = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuqueDirecto('audio/Honoresporestribor_AudioDenoise.mp3', 'HONORES POR ESTRIBOR');
+      reproducirAudioBuqueUniversal(audBuqueEstribor, 'audio/Honoresporestribor_AudioDenoise.mp3', 'HONORES POR ESTRIBOR');
     }
 
     function tocarHonoresRetirada() {
       if (buqueSonidoEnCurso || !buqueHonorTocado) return;
       buqueSonidoEnCurso = true;
       bloquearTodosBotonesBuques();
-      reproducirAudioBuqueDirecto('audio/Retiradadehonores_AudioDenoise.mp3', 'RETIRADA DE HONORES');
+      reproducirAudioBuqueUniversal(audBuqueRetirada, 'audio/Retiradadehonores_AudioDenoise.mp3', 'RETIRADA DE HONORES');
       buqueHonorTocado = false;
     }
 
-    function reproducirAudioBuqueDirecto(src, label) {
+    function reproducirAudioBuqueUniversal(audioEl, fallbackUrl, label) {
       stopAllAudio();
       const statusBox = document.getElementById('audioStatusBar');
       const statusText = document.getElementById('audioStatusText');
       if (statusBox) statusBox.style.display = 'flex';
       if (statusText) statusText.textContent = `▶️ ${label}`;
 
-      if (canalBuqueAudio) {
-        try { canalBuqueAudio.pause(); } catch(e){}
+      let ok = false;
+      if (audioEl && typeof audioEl.play === 'function') {
+        try {
+          audioEl.currentTime = 0;
+          currentActiveAudio = audioEl;
+          const p = audioEl.play();
+          if (p !== undefined) {
+            p.then(() => { ok = true; }).catch(err => {
+              reintentarBuqueDinamico(fallbackUrl);
+            });
+          }
+        } catch(e) {
+          reintentarBuqueDinamico(fallbackUrl);
+        }
+      } else {
+        reintentarBuqueDinamico(fallbackUrl);
       }
 
-      canalBuqueAudio = new Audio(src);
-      currentActiveAudio = canalBuqueAudio;
-      canalBuqueAudio.play().then(() => {
-        console.log('Buque honor sonando:', label);
-      }).catch(e => {
-        console.error('Error buque audio:', e);
-        onBuqueAudioFin();
-      });
-      canalBuqueAudio.onended = () => {
-        onBuqueAudioFin();
-      };
+      function reintentarBuqueDinamico(url) {
+        if (canalBuqueAudio) { try { canalBuqueAudio.pause(); } catch(e){} }
+        canalBuqueAudio = new Audio(url);
+        currentActiveAudio = canalBuqueAudio;
+        canalBuqueAudio.play().catch(e => {
+          console.error('Error buque dinámico:', e);
+          onBuqueAudioFin();
+        });
+        canalBuqueAudio.onended = () => { onBuqueAudioFin(); };
+      }
     }
 
     function bloquearTodosBotonesBuques() {
@@ -2960,7 +2958,7 @@ function _legacy_execAuth() {
 
   
     // ==========================================
-    // EXTENSIONES CHIFLE, MÚSICA MILITAR Y PLAYLISTS
+    // EXTENSIONES MÚSICA MILITAR Y PLAYLISTS
     // ==========================================
     const CATALOGO_CHIFLE_JSE = [{"name": "MANIOBRA GENERAL", "file": "JSE_MANIOBRA_GENERAL.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_MANIOBRA_GENERAL.mp3"}, {"name": "Baldeo", "file": "JSE_Baldeo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_Baldeo.mp3"}, {"name": "Baupres", "file": "JSE_baupres.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_baupres.mp3"}, {"name": "Braceo", "file": "JSE_braceo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo.mp3"}, {"name": "Braceo vergas simultaneo a BR", "file": "JSE_braceo_vergas_simultaneo_a_br.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo_vergas_simultaneo_a_br.mp3"}, {"name": "Braceo vergas simultaneo a ER", "file": "JSE_braceo_vergas_simultaneo_a_ER.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo_vergas_simultaneo_a_ER.mp3"}, {"name": "Contramaestre", "file": "JSE_contramaestre.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_contramaestre.mp3"}, {"name": "Dentro y abajo", "file": "JSE_dentro_y_abajo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_dentro_y_abajo.mp3"}, {"name": "Descubierta", "file": "JSE_descubierta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_descubierta.mp3"}, {"name": "Descubierta gaviero listo", "file": "JSE_descubierta_gaviero_listo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_descubierta_gaviero_listo.mp3"}, {"name": "Gaviero", "file": "JSE_gaviero.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gaviero.mp3"}, {"name": "Gavieros arriba", "file": "JSE_gavieros_arriba.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gavieros_arriba.mp3"}, {"name": "Gavieros fuera", "file": "JSE_gavieros_fuera.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gavieros_fuera.mp3"}, {"name": "Juanete", "file": "JSE_juanete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_juanete.mp3"}, {"name": "Llamada a la guardia de cubierta", "file": "JSE_llamada_a_la_guardia_de_cubierta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_llamada_a_la_guardia_de_cubierta.mp3"}, {"name": "Mayor popel", "file": "JSE_mayor_popel.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mayor_popel.mp3"}, {"name": "Mayor proel", "file": "JSE_mayor_proel.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mayor_proel.mp3"}, {"name": "Mesana", "file": "JSE_mesana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mesana.mp3"}, {"name": "Trinquete", "file": "JSE_trinquete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_trinquete.mp3"}, {"name": "Velacho alto", "file": "JSE_velacho_alto.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_velacho_alto.mp3"}, {"name": "Velacho bajo", "file": "JSE_velacho_bajo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_velacho_bajo.mp3"}, {"name": "Verga trinquete", "file": "JSE_verga_trinquete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_verga_trinquete.mp3"}];
     const CATALOGO_MARCHAS_CLASICAS = [{"file": "Bajo La Doble Aguila.mp3", "name": "Bajo La Doble Aguila", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Bajo La Doble Aguila.mp3"}, {"file": "Cantinera.mp3", "name": "Cantinera", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Cantinera.mp3"}, {"file": "El abanico.mp3", "name": "El abanico", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El abanico.mp3"}, {"file": "El turuta.mp3", "name": "El turuta", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El turuta.mp3"}, {"file": "El viejo almirante.mp3", "name": "El viejo almirante", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El viejo almirante.mp3"}, {"file": "Ganando Barlovento.mp3", "name": "Ganando Barlovento", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Ganando Barlovento.mp3"}, {"file": "Heroina.mp3", "name": "Heroina", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Heroina.mp3"}, {"file": "La Orgia Dorada.mp3", "name": "La Orgia Dorada", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La Orgia Dorada.mp3"}, {"file": "La guardia de alabarderos.mp3", "name": "La guardia de alabarderos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La guardia de alabarderos.mp3"}, {"file": "La vuelta de los voluntarios.mp3", "name": "La vuelta de los voluntarios", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La vuelta de los voluntarios.mp3"}, {"file": "Las corsarias.mp3", "name": "Las corsarias", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Las corsarias.mp3"}, {"file": "Legionarios del aire.mp3", "name": "Legionarios del aire", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Legionarios del aire.mp3"}, {"file": "Los Generales.mp3", "name": "Los Generales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Generales.mp3"}, {"file": "Los Quintos.mp3", "name": "Los Quintos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Quintos.mp3"}, {"file": "Marcha de infantes.mp3", "name": "Marcha de infantes", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Marcha de infantes.mp3"}, {"file": "Mares y vientos.mp3", "name": "Mares y vientos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Mares y vientos.mp3"}, {"file": "Paso ligero.mp3", "name": "Paso ligero", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Paso ligero.mp3"}, {"file": "Proa a la mar.mp3", "name": "Proa a la mar", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Proa a la mar.mp3"}, {"file": "San Marcial.mp3", "name": "San Marcial", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Marcial.mp3"}, {"file": "San Quintin.mp3", "name": "San Quintin", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Quintin.mp3"}, {"file": "Vuelos triunfales.mp3", "name": "Vuelos triunfales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Vuelos triunfales.mp3"}];
@@ -2969,41 +2967,6 @@ function _legacy_execAuth() {
     const CATALOGO_MARCHAS = [...CATALOGO_MARCHAS_CLASICAS, ...CATALOGO_HIMNOS_CUERPOS, ...CATALOGO_RELIGIOSA];
     const CATALOGO_CORNETAS = [{"file": "ALTO.mp3", "name": "ALTO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ALTO.mp3"}, {"file": "ARMEN.mp3", "name": "ARMEN", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ARMEN.mp3"}, {"file": "ATENCION.mp3", "name": "ATENCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ATENCION.mp3"}, {"file": "CAMBIO DE HOMBRO.mp3", "name": "CAMBIO DE HOMBRO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/CAMBIO DE HOMBRO.mp3"}, {"file": "CUBRIRSE.mp3", "name": "CUBRIRSE", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/CUBRIRSE.mp3"}, {"file": "DEFRENTE PASO FUNERALA.mp3", "name": "DEFRENTE PASO FUNERALA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE PASO FUNERALA.mp3"}, {"file": "DEFRENTE PASO LIGERO.mp3", "name": "DEFRENTE PASO LIGERO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE PASO LIGERO.mp3"}, {"file": "DEFRENTE.mp3", "name": "DEFRENTE", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE.mp3"}, {"file": "DERECHA.mp3", "name": "DERECHA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DERECHA.mp3"}, {"file": "DESCANSO.mp3", "name": "DESCANSO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DESCANSO.mp3"}, {"file": "DIANA.mp3", "name": "DIANA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DIANA.mp3"}, {"file": "DISCRECCION.mp3", "name": "DISCRECCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DISCRECCION.mp3"}, {"file": "FIN_DISCRECCION.mp3", "name": "FIN DISCRECCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIN_DISCRECCION.mp3"}, {"file": "FIRMES AUTORIDAD PRINCIPAL.mp3", "name": "FIRMES AUTORIDAD PRINCIPAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIRMES AUTORIDAD PRINCIPAL.mp3"}, {"file": "FIRMES.mp3", "name": "FIRMES", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIRMES.mp3"}, {"file": "HIMNOMACIONAL.mp3", "name": "HIMNOMACIONAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/HIMNOMACIONAL.mp3"}, {"file": "IZQUIERDA.mp3", "name": "IZQUIERDA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/IZQUIERDA.mp3"}, {"file": "LLAMADA GENERAL.mp3", "name": "LLAMADA GENERAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/LLAMADA GENERAL.mp3"}, {"file": "LLAMADA_MANDOS.mp3", "name": "LLAMADA MANDOS", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/LLAMADA_MANDOS.mp3"}, {"file": "MEDIA_VUELTA_AR.mp3", "name": "MEDIA VUELTA AR", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/MEDIA_VUELTA_AR.mp3"}, {"file": "ORACION_CORNETA.mp3", "name": "ORACION CORNETA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ORACION_CORNETA.mp3"}, {"file": "PRESENTEN_ARMAS.mp3", "name": "PRESENTEN ARMAS", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/PRESENTEN_ARMAS.mp3"}, {"file": "RETRETA.mp3", "name": "RETRETA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/RETRETA.mp3"}, {"file": "SOBRE EL HOMBRO DERECHO.mp3", "name": "SOBRE EL HOMBRO DERECHO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/SOBRE EL HOMBRO DERECHO.mp3"}, {"file": "SOBRE EL HOMBRO.mp3", "name": "SOBRE EL HOMBRO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/SOBRE EL HOMBRO.mp3"}];
     const DICCIONARIO_LETRAS = {"Salve Marinera": "¡Salve, Estrella de los mares,\nde los mares iris de eterna ventura!\n¡Salve, fénix de hermosura,\nMadre del Amor Hermoso!\n\nA ti clamamos,\na ti suspiramos,\ngimiendo y llorando\nen este valle de lágrimas.\n\nEa, pues, Señora,\nAbogada nuestra,\nvuelve a nosotros esos tus ojos\nmisericordiosos.\n\nY después de este destierro,\nmuéstranos a Jesús,\nfruto bendito de tu vientre.\n\n¡Oh clementísima!\n¡Oh piadosa!\n¡Oh dulce Virgen María!\n\nSálvanos, Virgen del Carmen,\nMadre del Amor Hermoso,\nReina de los mares,\nReina de la Armada.", "Himno ARMADA": "De la patria el orgullo y grandeza\npor las rutas del mar a cantar,\ncon las velas al viento y la proa\nrumbo a España trazando en el mar.\n\nNoble Armada que al cielo levanta\nsu estandarte de gloria inmortal,\nen las olas tu nombre agiganta\nnuestra fe en el destino naval.\n\n¡Viva España! la voz que nos guía,\n¡Viva el Rey! nuestro grito de honor,\nque en la mar nuestra estirpe porfía\ncon coraje, victoria y valor.", "Himno INF MARINA": "Infantes de marina marchemos a luchar,\nla Patria engrandezcamos y su alta nombradía,\nsirviendo leales al suelo y a la mar.\n\nGloria a los valientes que supieron morir\npor España y su honor combatir.\n\nEmpuñad las armas con firmeza y valor,\nque la Infantería de Marina es pundonor.\n\n¡Valientes por tierra y por mar!", "La muerte no es el final": "Tú nos dijiste que la muerte\nno es el final del camino,\nque aunque de nuevo el polvo vuelve,\nla vida empieza en tu amor.\n\nCuando la pena nos alcanza\ndel compañero perdido,\ncuando el adiós dolorido\nbusca en la fe su esperanza.\n\nEn tu palabra confiamos\ncon la certeza que Tú\nya le has devuelto a la vida,\nya le has llevado a la luz.\n\nYa le has devuelto a la vida,\nya le has llevado a la luz.", "Novio de la muerte": "Nadie en el Tercio sabía\nquién era aquel legionario\ntan audaz y temerario\nque a la Legión se alistó.\n\nNadie sabía su historia,\nmas la Legión suponía\nque un gran dolor le mordía\ncomo un lobo el corazón.\n\nMas si alguno quién era le preguntaba,\ncon dolor y rudeza le contestaba:\n«Soy un hombre a quien la suerte\nhirió con zarpa de fiera;\nsoy un novio de la muerte\nque va a unirse en lazo fuerte\ncon tal leal compañera».\n\n¡Legionarios a luchar,\nlegionarios a morir!", "Himno LEGION": "El clarín de la Legión\nsuena ya en el horizonte,\nbrava estirpe de leones\nque combaten con honor.\n\nLegionarios a luchar,\ncon valor y disciplina,\npor España combatir\nhasta vencer o morir.\n\n¡Viva España! ¡Viva el Rey!\n¡Viva la Legión!", "Himno GUARDIA CIVIL": "Instituto, gloria a ti,\npor tu honor quiero vivir.\nViva España, Viva el Rey,\nViva el Orden y la Ley,\nViva la Honrada Guardia Civil.\n\nBenemérito Instituto,\nguarda fiel de España entera,\nque en el monte y la trinchera\ndas tu vida por cumplir.\n\nViva España, Viva el Rey,\nViva el Orden y la Ley,\nViva la Honrada Guardia Civil.", "Himno GUARDIA REAL": "Guardia Real de España,\nlealtad hasta morir,\nal Rey y a la Corona\ndispuestos a servir.\n\nCon paso firme y noble,\ncustodios del honor,\nmarchemos siempre unidos\ncon fe y con pundonor.\n\n¡Por España y por el Rey!", "Himno EJERCITO AIRE ESPACIO": "Alcen los ojos a las alturas,\nque en el azul de nuestro cielo\nvuelan las alas de la victoria\nguardando a España con gran denuedo.\n\nVolad, pilotos, rumbo a la gloria,\nque en vuestras alas late la historia.\n¡Viva España, viva el Rey!", "Himno INFANTERIA": "Ardor guerrero vibra en nuestras voces,\nmarchemos firmes a vencer o morir,\nque los infantes no temen la muerte\nsi por España nos toca rendir.\n\n¡Infantería, noble y valiente!\n¡Por la Patria y por el Rey!", "Himno ARTILLERIA": "Artilleros, en pie de combate,\ncon las piezas apuntando al honor,\nque el estruendo de nuestros cañones\nes la voz de la Patria y su ardor.\n\n¡Fuego al cañón por España!", "Himno CABALLERIA": "Jinetes de noble estirpe,\nal galope con valor,\nla lanza firme en la mano\npor España y por su honor.\n\n¡Santiago y cierra España!", "Himno INGENIEROS": "Con el pico y con la pala,\ncon la pólvora y el puente,\nlos ingenieros marchemos\nsiempre firmes y al frente.\n\n¡Por la Patria y el honor!", "Himno UME": "Cuando el desastre asola nuestra tierra\ny el dolor clama auxilio y hermandad,\nallí está la Unidad Militar de Emergencias\ncon coraje, entrega y lealtad.\n\nPara servir a España y a su gente.", "Himno BRIPAC": "Paracaidistas en el cielo,\nsaltando al viento sin temor,\nalas de honor en nuestro pecho\ndispuestos siempre con valor.\n\n¡Sobre la tierra y el cielo, por España!", "Oracion de la Noche": "Tú que velas por nosotros en las sombras,\nguía nuestro rumbo por la mar serena,\nSeñor de los ejércitos y mares,\nacoge a los que velan y a los que descansan.\n\nDanos tu paz en la noche.", "Ganando Barlovento": "Bravos marinos de España,\nrumbo trazado en la mar,\ncon gallardía y coraje\nganando barlovento van.\n\nRuge la ola y el viento,\nfirme el timón al compás,\ngloria y honor a la Armada\nque nunca cederá jamás.", "El turuta": "Al son del clarín y el parche,\nmarchemos con gallardía,\nque la tropa va cantando\ncon valor y nombradía.\n\n¡Viva la marcha ligera!", "Las corsarias": "Banderita tú eres roja,\nbanderita tú eres gualda,\nllevas sangre, llevas oro\nen el fondo de tu alma.\n\nEl día que yo me muera\nsi estoy lejos de mi patria,\nsólo quiero que me cubran\ncon la Bandera de España.", "Cantinera": "Cantinera de la tropa,\nlleva el vino y la alegría,\nque en la marcha y en el puesto\ntu sonrisa es compañía.", "Marcha de infantes": "Marchan los infantes\ncon marcial compás,\npaso decidido\nsin mirar atrás.\n\n¡Por la Patria, marcha ya!"};
-
-    let playerChifleAudio = null;
-
-    function tocarChifleDirecto(url, nombre) {
-      detenerChifleGeneral();
-      const box = document.getElementById('playerChifleActivo');
-      const lbl = document.getElementById('lblChifleActivoTxt');
-      if (lbl) lbl.textContent = nombre;
-      if (box) box.style.display = 'block';
-
-      playerChifleAudio = new Audio(url);
-      playerChifleAudio.play().catch(e => console.warn('Error chifle audio:', e));
-      playerChifleAudio.onended = () => {
-        const b = document.getElementById('playerChifleActivo');
-        if (b) b.style.display = 'none';
-      };
-    }
-
-    function tocarChifleJSE() {
-      const sel = document.getElementById('selChifleJSE');
-      if (!sel || !sel.value) return;
-      tocarChifleDirecto(sel.value, sel.options[sel.selectedIndex].text);
-    }
-
-    function detenerChifleGeneral() {
-      if (playerChifleAudio) {
-        try { playerChifleAudio.pause(); playerChifleAudio.currentTime = 0; } catch(e){}
-        playerChifleAudio = null;
-      }
-      stopAllAudio();
-      desbloquearSegunCeremonial();
-      const box = document.getElementById('playerChifleActivo');
-      if (box) box.style.display = 'none';
-      cerrarStatus();
-    }
 
     // --- CANALES SIMULTÁNEOS BANDA Y CORNETA ---
     let canalAudioBanda = null;
