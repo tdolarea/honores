@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
   <meta charset="UTF-8">
   <title>Honores de Ordenanza · Armada Española</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -28,13 +25,11 @@
 
     .nav-bar {
       display: flex; background: #0b152d; border-bottom: 1px solid #1e3a8a; overflow-x: auto;
-      padding: 6px 8px; gap: 6px; -webkit-overflow-scrolling: touch; position: relative; z-index: 101;
-      touch-action: pan-x;
+      padding: 4px 8px; gap: 6px; -webkit-overflow-scrolling: touch;
     }
     .nav-btn {
-      background: transparent; border: none; color: #94a3b8; padding: 10px 14px; font-size: 12px;
+      background: transparent; border: none; color: #94a3b8; padding: 8px 12px; font-size: 11px;
       font-weight: 800; border-radius: 6px; cursor: pointer; white-space: nowrap; text-transform: uppercase;
-      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     }
     .nav-btn.active { background: #0284c7; color: white; box-shadow: 0 2px 6px rgba(2,132,199,0.4); }
 
@@ -153,63 +148,7 @@
 </head>
 <body>
 
-  <script>
-    // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792950289';
-    if (localStorage.getItem('app_ver') !== APP_VERSION) {
-      localStorage.setItem('app_ver', APP_VERSION);
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          for (let name of names) caches.delete(name);
-        });
-      }
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(regs => {
-          for (let reg of regs) reg.unregister();
-        });
-      }
-    }
-  </script>
-
-
-  <!-- Reproductores estáticos precargados para Ceremonial de Autoridades -->
-  
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-
-
-  
-
-
-  
-
-
   <!-- Reproductores de audio estáticos predefinidos para Portalón -->
-
-  
-
 
   <!-- Reproductores estáticos para Honores entre Buques -->
   <audio id="audBuqueBabor" src="audio/Honoresporbabor_AudioDenoise.mp3" preload="auto" playsinline></audio>
@@ -225,7 +164,7 @@
 
   <header style="justify-content:center; text-align:center;">
     <div class="brand" style="justify-content:center;">
-      <img src="img/banderaespana.jpg" alt="🇪🇸" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 3 2\'%3E%3Crect width=\'3\' height=\'2\' fill=\'%23c60b1e\'/%3E%3Crect width=\'3\' height=\'1\' y=\'0.5\' fill=\'%23ffc400\'/%3E%3C/svg%3E';" style="width:40px; height:28px; border-radius:4px; object-fit:cover;" />
+      <img src="img/banderaespana.jpg" alt="Honores" />
       <div>
         <div class="brand-title">Honores de Ordenanza</div>
         <div class="brand-sub">PWA Web App</div>
@@ -233,9 +172,12 @@
     </div>
   </header>
 
-    <div class="nav-bar">
+  <div class="nav-bar">
     <button class="nav-btn active" id="navPortalon" onclick="showView('portalon')">🚪 Portalón</button>
     <button class="nav-btn" id="navBuques" onclick="showView('buques')">⚓ Buques</button>
+    <button class="nav-btn" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
+    <button class="nav-btn" id="navIzado" onclick="showView('izado')">🌅 Izado/Arriado</button>
+    <button class="nav-btn" id="navMusica" onclick="showView('musica')">🎺 Música / Himnos</button>
   </div>
 
   <main>
@@ -246,7 +188,13 @@
     </div>
 
     <!-- ESTADO DE AUDIO -->
-    
+    <div class="status-bar" id="audioStatusBar" style="display:none;">
+      <span id="audioStatusText" style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:16px;">🔊</span>
+        <span>Reproduciendo toque...</span>
+      </span>
+      <button class="status-bar-stop-btn" onclick="stopAllAudio()">🛑 PARAR SONIDO</button>
+    </div>
 
     <!-- VISTA 1: PORTALÓN -->
     <div class="view-section active" id="viewPortalon">
@@ -311,18 +259,152 @@
 
     <!-- VISTA 3: HONORES A AUTORIDADES -->
         <!-- VISTA 3: HONORES A AUTORIDADES (REDISEÑADA Y LIMPIA) -->
-        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
-        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
-        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
-        <!-- VISTA 3: HONORES A AUTORIDADES (CEREMONIAL COMPLETO) -->
-    
+    <div class="view-section" id="viewAuth">
+      <div class="card">
+        <div class="card-title">
+          <span>👑 Honores a Autoridades</span>
+          <span style="font-size:11px; color:#94a3b8; font-weight:600;" id="authStepLabel">Seleccione Autoridad</span>
+        </div>
+
+        <!-- FILTROS POR CATEGORÍA -->
+        <div class="category-pills" id="authCatPills">
+          <button class="cat-pill active" onclick="filterAuthCat('todas')">Todas</button>
+          <button class="cat-pill" onclick="filterAuthCat('corona')">👑 Corona</button>
+          <button class="cat-pill" onclick="filterAuthCat('gobierno')">🏛️ Gobierno / Estado</button>
+          <button class="cat-pill" onclick="filterAuthCat('mando')">⚓ Mando Naval</button>
+          <button class="cat-pill" onclick="filterAuthCat('extranjeras')">🌍 Extranjeras</button>
+        </div>
+
+        <!-- LISTA DE AUTORIDADES EN TARJETAS LIMPIAS (SIN DESPLEGABLE) -->
+        <div id="authListContainer" style="max-height:340px; overflow-y:auto; padding-right:4px;">
+          <!-- Generado dinámicamente -->
+        </div>
+
+        <!-- PANEL DE CONTROL REGLAMENTARIO DE LA AUTORIDAD SELECCIONADA -->
+        <div id="authConfigPanel" style="display:none; margin-top:14px; border-top:1.5px solid #1e3a8a; padding-top:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+              <div style="font-size:14px; font-weight:900; color:#38bdf8;" id="cfgAuthName">SM El Rey</div>
+              <div style="font-size:11px; color:#94a3b8;" id="cfgAuthSub">Honores reglamentarios de Ordenanza</div>
+            </div>
+            <button class="action-btn" style="min-height:30px; padding:4px 10px; font-size:11px;" onclick="resetAuthSelection()">
+              ↩️ Cambiar
+            </button>
+          </div>
+
+          <!-- INTERRUPTORES ON/OFF PARA CADA TIPO DE SALUDO -->
+          <div class="toggle-row" id="rowSalvas">
+            <div>
+              <div class="toggle-label" id="lblSalvas">💥 Salvas de Ordenanza</div>
+              <div class="toggle-desc" id="descSalvas">21 cañonazos de salva</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkSalvas" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row" id="rowVivas">
+            <div>
+              <div class="toggle-label" id="lblVivas">🗣️ Vivas a España</div>
+              <div class="toggle-desc" id="descVivas">7 «¡Viva España!» reglamentarios</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkVivas" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row" id="rowMusica">
+            <div>
+              <div class="toggle-label" id="lblMusica">🎺 Música / Himno</div>
+              <div class="toggle-desc" id="descMusica">Himno Nacional de España</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkMusica" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row" id="rowCorneta">
+            <div>
+              <div class="toggle-label">🎺 Toques de Corneta / Voz</div>
+              <div class="toggle-desc">Firmes y Presenten Armas</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chkCorneta" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- BOTONES DE DISPARO -->
+          <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+            <button class="action-btn primary" style="background:#0284c7; border-color:#38bdf8; justify-content:center; font-size:13.5px; padding:14px;" onclick="executeConfiguredAuth()">
+              <span>▶️ DISPARAR HONORES SELECCIONADOS</span>
+            </button>
+            <button class="action-btn danger" style="justify-content:center;" onclick="stopAllAudio()">
+              <span>🛑 PARAR TODO EN SECO</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="view-section" id="viewIzado">
+      <div class="card">
+        <div class="card-title">Izado y Arriado de la Bandera</div>
+        <div class="btn-grid">
+          <button class="action-btn primary" onclick="playAudio('audio/CornetaHimnonacionalacorneta-reducido.wav', 'IZADO: Himno Nacional a Corneta')">
+            <span>🌅 IZADO DE BANDERA (08:00h)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn primary" onclick="playAudio('audio/CornetaToquedeOracion.wav', 'ARRIADO: Toque de Oración (Ocaso)')">
+            <span>🌇 ARRIADO AL OCASO (Oración)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/08Oraciondelanoche.mp3', 'Oración de la Noche')">
+            <span>Oración de la Noche</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
+            <span>Salve Marinera</span>
+            <span>🌊</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 5: MÚSICA Y HIMNOS -->
+    <div class="view-section" id="viewMusica">
+      <div class="card">
+        <div class="card-title">Música Militar e Himnos de las Fuerzas Armadas</div>
+        <div class="btn-grid">
+          <button class="action-btn" onclick="playAudio('audio/Himno_nacional_de_Espana.mp3', 'Himno Nacional de España (Completo)')">
+            <span>Himno Nacional (Banda)</span>
+            <span>🇪🇸</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/MarchadeInfantes.mp3', 'Marcha de Infantes')">
+            <span>Marcha de Infantes</span>
+            <span>🎺</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/SalveMarinera.mp3', 'Salve Marinera')">
+            <span>Salve Marinera</span>
+            <span>⚓</span>
+          </button>
+          <button class="action-btn" onclick="playAudio('audio/Espania_corto.mp3', 'Marcha Real (Versión Breve)')">
+            <span>Marcha Real (Breve)</span>
+            <span>🇪🇸</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792950289</div>
-</footer>
+  </footer>
 
   <script>
     // Audio Player Controller
@@ -358,16 +440,24 @@
     }
 
     function stopAllAudio() {
-      const allAudios = document.querySelectorAll('audio');
+      const allAudios = [
+        document.getElementById('audMando'),
+        document.getElementById('audOficiales'),
+        document.getElementById('audRetirada'),
+        document.getElementById('audGeneral'),
+        document.getElementById('audBuqueBabor'),
+        document.getElementById('audBuqueEstribor'),
+        document.getElementById('audBuqueRetirada')
+      ];
       allAudios.forEach(a => {
         if (a) {
           try { a.pause(); a.currentTime = 0; } catch(e){}
         }
       });
-      const statusBox = document.getElementById('audioStatusBar');
-      if (statusBox) statusBox.style.display = 'none';
-      if (typeof onAudioTerminado === 'function') onAudioTerminado();
-      if (typeof onBuqueAudioFin === 'function') onBuqueAudioFin();
+      onAudioTerminado();
+      if (typeof onBuqueAudioFin === 'function') {
+        onBuqueAudioFin();
+      }
     }
 
     function tocarChifleMando() {
@@ -454,21 +544,17 @@
       const btnMando = document.getElementById('btnChifleMando');
       const btnOficiales = document.getElementById('btnChifleOficiales');
       const btnRet = document.getElementById('btnChifleRetirada');
-
-      // Siempre rehabilitar los botones principales
-      if (btnMando) { btnMando.classList.remove('disabled'); btnMando.disabled = false; }
-      if (btnOficiales) { btnOficiales.classList.remove('disabled'); btnOficiales.disabled = false; }
-
-      // Ceremonial naval del chifle en portalón:
-      // Si se tocó chifle de Mando, se activa el botón de Retirada de honores
       if (ultimoToque === 'mando') {
         mandoChifleActivo = true;
         if (btnRet) { btnRet.classList.remove('disabled'); btnRet.disabled = false; }
+        
       } else {
         mandoChifleActivo = false;
         if (btnRet) { btnRet.classList.add('disabled'); btnRet.disabled = true; }
+        
       }
     }
+
 
     function showView(viewId) {
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -641,17 +727,6 @@ function _legacy_execAuth() {
       }
     }
 
-  
-    
-    // ==========================================
-    // INICIALIZACIÓN
-    // ==========================================
-    window.addEventListener('DOMContentLoaded', () => {
-      showView('portalon');
-    });
-
   </script>
 </body>
-</html
-
-          >
+</html>
