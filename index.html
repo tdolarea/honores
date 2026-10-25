@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792912191';
+    const APP_VERSION = 'v1792912435';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -711,9 +711,7 @@
               <div style="font-size:11.5px; font-weight:700; color:#f8fafc;">Buques Extranjeros en Puerto:</div>
               <span style="font-size:10.5px; color:#38bdf8; cursor:pointer;" onclick="toggleSelectorCortesia()">[+ Añadir País]</span>
             </div>
-            <div style="font-size:10.5px; color:#94a3b8; margin-bottom:4px;">
-              Regla naval: suenan primero los himnos extranjeros y el <strong>Himno de España siempre de último</strong>.
-            </div>
+            
             <div id="listaCortesiaPaises" style="display:flex; flex-wrap:wrap; gap:4px; min-height:24px;">
               <span style="font-size:11px; color:#64748b; font-style:italic;" id="lblSinCortesia">Ningún buque extranjero añadido</span>
             </div>
@@ -836,7 +834,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792912191</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792912435</div>
 </footer>
 
   <script>
