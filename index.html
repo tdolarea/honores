@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792918659';
+    const APP_VERSION = 'v1792918886';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -910,31 +910,61 @@
         <!-- BLOQUE 1: BANDA DE MÚSICA                  -->
         <!-- ========================================== -->
         <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
+                  <!-- ========================================== -->
+        <!-- BLOQUE 1: BANDA DE MÚSICA                  -->
+        <!-- ========================================== -->
+        <div style="background:#070d1e; border:1px solid #1e3a8a; border-radius:8px; padding:12px; margin-bottom:12px;">
           <div style="font-size:12.5px; font-weight:800; color:#fbbf24; margin-bottom:8px;">
             🎺 BLOQUE 1: BANDA DE MÚSICA
           </div>
 
-          <!-- 1.1 HIMNOS NACIONALES -->
+          <!-- 1.1 MARCHAS MILITARES CLÁSICAS -->
           <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b; margin-bottom:8px;">
-            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">🌍 Himnos Nacionales (156 países):</div>
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">🎺 Marchas Militares (21 obras):</div>
             <div style="display:flex; gap:6px;">
-              <select id="selHimnosNacionales" style="flex:1; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;">
-                <option value="">Seleccione país...</option>
+              <select id="selMarchasClasicas" style="flex:1; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;">
+                <option value="">Seleccione marcha...</option>
               </select>
-              <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selHimnosNacionales', 'Himno')" style="padding:6px 10px; font-size:11.5px;">
+              <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selMarchasClasicas', 'Marcha Militar')" style="padding:6px 10px; font-size:11.5px;">
                 ▶️ Tocar
               </button>
             </div>
           </div>
 
-          <!-- 1.2 MARCHAS Y CUERPOS -->
-          <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
-            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">🇪🇸 Marchas Militares, Himnos de Cuerpos y Religiosa (40 obras):</div>
+          <!-- 1.2 HIMNOS DE ARMAS Y CUERPOS -->
+          <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b; margin-bottom:8px;">
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">🎖️ Himnos de Armas y Cuerpos (14 himnos):</div>
             <div style="display:flex; gap:6px;">
-              <select id="selMarchasMilitares" style="flex:1; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;">
-                <option value="">Seleccione marcha u obra...</option>
+              <select id="selHimnosCuerpos" style="flex:1; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;">
+                <option value="">Seleccione himno de cuerpo...</option>
               </select>
-              <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selMarchasMilitares', 'Marcha')" style="padding:6px 10px; font-size:11.5px;">
+              <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selHimnosCuerpos', 'Himno de Cuerpo')" style="padding:6px 10px; font-size:11.5px;">
+                ▶️ Tocar
+              </button>
+            </div>
+          </div>
+
+          <!-- 1.3 MÚSICA RELIGIOSA Y FÚNEBRE MILITAR -->
+          <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b; margin-bottom:8px;">
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">⚓ Música Religiosa y Fúnebre Militar:</div>
+            <div style="display:flex; gap:6px;">
+              <select id="selMusicaReligiosa" style="flex:1; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;">
+                <option value="">Seleccione obra religiosa o fúnebre...</option>
+              </select>
+              <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selMusicaReligiosa', 'Música Religiosa / Fúnebre')" style="padding:6px 10px; font-size:11.5px;">
+                ▶️ Tocar
+              </button>
+            </div>
+          </div>
+
+          <!-- 1.4 HIMNOS NACIONALES -->
+          <div style="background:#0b152d; padding:8px 10px; border-radius:6px; border:1px solid #1e293b;">
+            <div style="font-size:11.5px; font-weight:700; color:#f8fafc; margin-bottom:4px;">🌍 Himnos Nacionales (156 países):</div>
+            <div style="display:flex; gap:6px;">
+              <select id="selHimnosNacionales" style="flex:1; background:#070d1e; border:1.5px solid #38bdf8; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;">
+                <option value="">Seleccione país...</option>
+              </select>
+              <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selHimnosNacionales', 'Himno Nacional')" style="padding:6px 10px; font-size:11.5px;">
                 ▶️ Tocar
               </button>
             </div>
@@ -1008,10 +1038,12 @@
 
             <!-- AGREGADOR RÁPIDO DE PISTA -->
             <div style="display:flex; gap:6px; margin-bottom:8px;">
-              <select id="selTipoPistaAdd" style="width:35%; background:#070d1e; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:11px; padding:6px;" onchange="actualizarOpcionesAddPista()">
+              <select id="selTipoPistaAdd" style="width:38%; background:#070d1e; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:11px; padding:6px;" onchange="actualizarOpcionesAddPista()">
                 <option value="corneta">📯 Corneta</option>
                 <option value="marcha">🎺 Marcha</option>
-                <option value="himno">🌍 Himno</option>
+                <option value="cuerpo">🎖️ Himno Cuerpo</option>
+                <option value="religiosa">⚓ Religiosa / Fúnebre</option>
+                <option value="himno">🌍 Himno Nacional</option>
               </select>
               <select id="selPistaEspecificaAdd" style="flex:1; background:#070d1e; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:11px; padding:6px;">
               </select>
@@ -1186,7 +1218,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792918659';
+    const APP_VERSION = 'v1792918886';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -2014,7 +2046,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792918659</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792918886</div>
 </footer>
 
   <script>
@@ -3843,10 +3875,12 @@ function _legacy_execAuth() {
     // ==========================================
     const CATALOGO_CHIFLE_JSE = [{"name": "JSE Baldeo", "file": "JSE_Baldeo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_Baldeo.mp3"}, {"name": "JSE MANIOBRA GENERAL", "file": "JSE_MANIOBRA_GENERAL.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_MANIOBRA_GENERAL.mp3"}, {"name": "JSE baupres", "file": "JSE_baupres.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_baupres.mp3"}, {"name": "JSE braceo", "file": "JSE_braceo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo.mp3"}, {"name": "JSE braceo vergas simultaneo a ER", "file": "JSE_braceo_vergas_simultaneo_a_ER.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo_vergas_simultaneo_a_ER.mp3"}, {"name": "JSE braceo vergas simultaneo a br", "file": "JSE_braceo_vergas_simultaneo_a_br.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_braceo_vergas_simultaneo_a_br.mp3"}, {"name": "JSE contramaestre", "file": "JSE_contramaestre.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_contramaestre.mp3"}, {"name": "JSE dentro y abajo", "file": "JSE_dentro_y_abajo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_dentro_y_abajo.mp3"}, {"name": "JSE descubierta", "file": "JSE_descubierta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_descubierta.mp3"}, {"name": "JSE descubierta gaviero listo", "file": "JSE_descubierta_gaviero_listo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_descubierta_gaviero_listo.mp3"}, {"name": "JSE gaviero", "file": "JSE_gaviero.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gaviero.mp3"}, {"name": "JSE gavieros arriba", "file": "JSE_gavieros_arriba.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gavieros_arriba.mp3"}, {"name": "JSE gavieros fuera", "file": "JSE_gavieros_fuera.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_gavieros_fuera.mp3"}, {"name": "JSE juanete", "file": "JSE_juanete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_juanete.mp3"}, {"name": "JSE llamada a la guardia de cubierta", "file": "JSE_llamada_a_la_guardia_de_cubierta.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_llamada_a_la_guardia_de_cubierta.mp3"}, {"name": "JSE mayor popel", "file": "JSE_mayor_popel.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mayor_popel.mp3"}, {"name": "JSE mayor proel", "file": "JSE_mayor_proel.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mayor_proel.mp3"}, {"name": "JSE mesana", "file": "JSE_mesana.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_mesana.mp3"}, {"name": "JSE trinquete", "file": "JSE_trinquete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_trinquete.mp3"}, {"name": "JSE velacho alto", "file": "JSE_velacho_alto.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_velacho_alto.mp3"}, {"name": "JSE velacho bajo", "file": "JSE_velacho_bajo.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_velacho_bajo.mp3"}, {"name": "JSE verga trinquete", "file": "JSE_verga_trinquete.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/JSE_verga_trinquete.mp3"}, {"name": "RAS listo y a cubierto", "file": "RAS_listo_y_a_cubierto.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_listo_y_a_cubierto.mp3"}, {"name": "RAS pasada la maniobra", "file": "RAS_pasada_la_maniobra.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_pasada_la_maniobra.mp3"}, {"name": "RAS voy a lanzar guias", "file": "RAS_voy a lanzar guias.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_voy a lanzar guias.mp3"}, {"name": "RAS voy a lanzar guias", "file": "RAS_voy_a_lanzar_guias.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/RAS_voy_a_lanzar_guias.mp3"}];
     const CATALOGO_CHIFLE_MANIOBRA = [{"name": "Entra (Entrar)", "file": "MAN_entrar.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/MAN_entrar.mp3"}, {"name": "Forte", "file": "MAN_forte.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/MAN_forte.mp3"}, {"name": "Largar", "file": "MAN_largar.mp3", "url": "https://raw.githubusercontent.com/tdolarea/chifle/main/MAN_largar.mp3"}];
-    const CATALOGO_MARCHAS = [{"file": "Bajo La Doble Aguila.mp3", "name": "Bajo La Doble Aguila", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Bajo La Doble Aguila.mp3"}, {"file": "Cantinera.mp3", "name": "Cantinera", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Cantinera.mp3"}, {"file": "El abanico.mp3", "name": "El abanico", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El abanico.mp3"}, {"file": "El turuta.mp3", "name": "El turuta", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El turuta.mp3"}, {"file": "El viejo almirante.mp3", "name": "El viejo almirante", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El viejo almirante.mp3"}, {"file": "Espania_corto.mp3", "name": "Espania corto", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Espania_corto.mp3"}, {"file": "Espania_largo.mp3", "name": "Espania largo", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Espania_largo.mp3"}, {"file": "Ganando Barlovento.mp3", "name": "Ganando Barlovento", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Ganando Barlovento.mp3"}, {"file": "Heroina.mp3", "name": "Heroina", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Heroina.mp3"}, {"file": "Himno ARMADA.mp3", "name": "Himno ARMADA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno ARMADA.mp3"}, {"file": "Himno ARTILLERIA.mp3", "name": "Himno ARTILLERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno ARTILLERIA.mp3"}, {"file": "Himno BRIPAC.mp3", "name": "Himno BRIPAC", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno BRIPAC.mp3"}, {"file": "Himno CABALLERIA.mp3", "name": "Himno CABALLERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno CABALLERIA.mp3"}, {"file": "Himno EJERCITO AIRE ESPACIO.mp3", "name": "Himno EJERCITO AIRE ESPACIO", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno EJERCITO AIRE ESPACIO.mp3"}, {"file": "Himno GUARDIA CIVIL.mp3", "name": "Himno GUARDIA CIVIL", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno GUARDIA CIVIL.mp3"}, {"file": "Himno GUARDIA REAL.mp3", "name": "Himno GUARDIA REAL", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno GUARDIA REAL.mp3"}, {"file": "Himno INF MARINA.mp3", "name": "Himno INF MARINA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INF MARINA.mp3"}, {"file": "Himno INFANTERIA.mp3", "name": "Himno INFANTERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INFANTERIA.mp3"}, {"file": "Himno INGENIEROS.mp3", "name": "Himno INGENIEROS", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INGENIEROS.mp3"}, {"file": "Himno LEGION.mp3", "name": "Himno LEGION", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno LEGION.mp3"}, {"file": "Himno UME.mp3", "name": "Himno UME", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno UME.mp3"}, {"file": "La Orgia Dorada.mp3", "name": "La Orgia Dorada", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La Orgia Dorada.mp3"}, {"file": "La guardia de alabarderos.mp3", "name": "La guardia de alabarderos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La guardia de alabarderos.mp3"}, {"file": "La muerte no es el final.mp3", "name": "La muerte no es el final", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La muerte no es el final.mp3"}, {"file": "La vuelta de los voluntarios.mp3", "name": "La vuelta de los voluntarios", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La vuelta de los voluntarios.mp3"}, {"file": "Las corsarias.mp3", "name": "Las corsarias", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Las corsarias.mp3"}, {"file": "Legionarios del aire.mp3", "name": "Legionarios del aire", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Legionarios del aire.mp3"}, {"file": "Los Generales.mp3", "name": "Los Generales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Generales.mp3"}, {"file": "Los Quintos.mp3", "name": "Los Quintos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Quintos.mp3"}, {"file": "Marcha de infantes.mp3", "name": "Marcha de infantes", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Marcha de infantes.mp3"}, {"file": "Mares y vientos.mp3", "name": "Mares y vientos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Mares y vientos.mp3"}, {"file": "Novio de la muerte.mp3", "name": "Novio de la muerte", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Novio de la muerte.mp3"}, {"file": "Oracion de la Noche.mp3", "name": "Oracion de la Noche", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Oracion de la Noche.mp3"}, {"file": "Oracion.mp3", "name": "Oracion", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Oracion.mp3"}, {"file": "Paso ligero.mp3", "name": "Paso ligero", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Paso ligero.mp3"}, {"file": "Proa a la mar.mp3", "name": "Proa a la mar", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Proa a la mar.mp3"}, {"file": "Salve Marinera.mp3", "name": "Salve Marinera", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Salve Marinera.mp3"}, {"file": "San Marcial.mp3", "name": "San Marcial", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Marcial.mp3"}, {"file": "San Quintin.mp3", "name": "San Quintin", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Quintin.mp3"}, {"file": "Vuelos triunfales.mp3", "name": "Vuelos triunfales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Vuelos triunfales.mp3"}];
+    const CATALOGO_MARCHAS_CLASICAS = [{"file": "Bajo La Doble Aguila.mp3", "name": "Bajo La Doble Aguila", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Bajo La Doble Aguila.mp3"}, {"file": "Cantinera.mp3", "name": "Cantinera", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Cantinera.mp3"}, {"file": "El abanico.mp3", "name": "El abanico", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El abanico.mp3"}, {"file": "El turuta.mp3", "name": "El turuta", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El turuta.mp3"}, {"file": "El viejo almirante.mp3", "name": "El viejo almirante", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/El viejo almirante.mp3"}, {"file": "Ganando Barlovento.mp3", "name": "Ganando Barlovento", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Ganando Barlovento.mp3"}, {"file": "Heroina.mp3", "name": "Heroina", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Heroina.mp3"}, {"file": "La Orgia Dorada.mp3", "name": "La Orgia Dorada", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La Orgia Dorada.mp3"}, {"file": "La guardia de alabarderos.mp3", "name": "La guardia de alabarderos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La guardia de alabarderos.mp3"}, {"file": "La vuelta de los voluntarios.mp3", "name": "La vuelta de los voluntarios", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La vuelta de los voluntarios.mp3"}, {"file": "Las corsarias.mp3", "name": "Las corsarias", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Las corsarias.mp3"}, {"file": "Legionarios del aire.mp3", "name": "Legionarios del aire", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Legionarios del aire.mp3"}, {"file": "Los Generales.mp3", "name": "Los Generales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Generales.mp3"}, {"file": "Los Quintos.mp3", "name": "Los Quintos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Los Quintos.mp3"}, {"file": "Marcha de infantes.mp3", "name": "Marcha de infantes", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Marcha de infantes.mp3"}, {"file": "Mares y vientos.mp3", "name": "Mares y vientos", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Mares y vientos.mp3"}, {"file": "Paso ligero.mp3", "name": "Paso ligero", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Paso ligero.mp3"}, {"file": "Proa a la mar.mp3", "name": "Proa a la mar", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Proa a la mar.mp3"}, {"file": "San Marcial.mp3", "name": "San Marcial", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Marcial.mp3"}, {"file": "San Quintin.mp3", "name": "San Quintin", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/San Quintin.mp3"}, {"file": "Vuelos triunfales.mp3", "name": "Vuelos triunfales", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Vuelos triunfales.mp3"}];
+    const CATALOGO_HIMNOS_CUERPOS = [{"file": "Espania_corto.mp3", "name": "Espania corto", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Espania_corto.mp3"}, {"file": "Espania_largo.mp3", "name": "Espania largo", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Espania_largo.mp3"}, {"file": "Himno ARMADA.mp3", "name": "Himno ARMADA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno ARMADA.mp3"}, {"file": "Himno ARTILLERIA.mp3", "name": "Himno ARTILLERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno ARTILLERIA.mp3"}, {"file": "Himno BRIPAC.mp3", "name": "Himno BRIPAC", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno BRIPAC.mp3"}, {"file": "Himno CABALLERIA.mp3", "name": "Himno CABALLERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno CABALLERIA.mp3"}, {"file": "Himno EJERCITO AIRE ESPACIO.mp3", "name": "Himno EJERCITO AIRE ESPACIO", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno EJERCITO AIRE ESPACIO.mp3"}, {"file": "Himno GUARDIA CIVIL.mp3", "name": "Himno GUARDIA CIVIL", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno GUARDIA CIVIL.mp3"}, {"file": "Himno GUARDIA REAL.mp3", "name": "Himno GUARDIA REAL", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno GUARDIA REAL.mp3"}, {"file": "Himno INF MARINA.mp3", "name": "Himno INF MARINA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INF MARINA.mp3"}, {"file": "Himno INFANTERIA.mp3", "name": "Himno INFANTERIA", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INFANTERIA.mp3"}, {"file": "Himno INGENIEROS.mp3", "name": "Himno INGENIEROS", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno INGENIEROS.mp3"}, {"file": "Himno LEGION.mp3", "name": "Himno LEGION", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno LEGION.mp3"}, {"file": "Himno UME.mp3", "name": "Himno UME", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Himno UME.mp3"}];
+    const CATALOGO_RELIGIOSA = [{"file": "La muerte no es el final.mp3", "name": "La muerte no es el final", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/La muerte no es el final.mp3"}, {"file": "Novio de la muerte.mp3", "name": "Novio de la muerte", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Novio de la muerte.mp3"}, {"file": "Oracion de la Noche.mp3", "name": "Oracion de la Noche", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Oracion de la Noche.mp3"}, {"file": "Oracion.mp3", "name": "Oracion", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Oracion.mp3"}, {"file": "Salve Marinera.mp3", "name": "Salve Marinera", "url": "https://raw.githubusercontent.com/tdolarea/musicamilitaresp/main/Salve Marinera.mp3"}];
+    const CATALOGO_MARCHAS = [...CATALOGO_MARCHAS_CLASICAS, ...CATALOGO_HIMNOS_CUERPOS, ...CATALOGO_RELIGIOSA];
     const CATALOGO_CORNETAS = [{"file": "ALTO.mp3", "name": "ALTO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ALTO.mp3"}, {"file": "ARMEN.mp3", "name": "ARMEN", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ARMEN.mp3"}, {"file": "ATENCION.mp3", "name": "ATENCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ATENCION.mp3"}, {"file": "CAMBIO DE HOMBRO.mp3", "name": "CAMBIO DE HOMBRO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/CAMBIO DE HOMBRO.mp3"}, {"file": "CUBRIRSE.mp3", "name": "CUBRIRSE", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/CUBRIRSE.mp3"}, {"file": "DEFRENTE PASO FUNERALA.mp3", "name": "DEFRENTE PASO FUNERALA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE PASO FUNERALA.mp3"}, {"file": "DEFRENTE PASO LIGERO.mp3", "name": "DEFRENTE PASO LIGERO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE PASO LIGERO.mp3"}, {"file": "DEFRENTE.mp3", "name": "DEFRENTE", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DEFRENTE.mp3"}, {"file": "DERECHA.mp3", "name": "DERECHA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DERECHA.mp3"}, {"file": "DESCANSO.mp3", "name": "DESCANSO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DESCANSO.mp3"}, {"file": "DIANA.mp3", "name": "DIANA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DIANA.mp3"}, {"file": "DISCRECCION.mp3", "name": "DISCRECCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/DISCRECCION.mp3"}, {"file": "FIN_DISCRECCION.mp3", "name": "FIN DISCRECCION", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIN_DISCRECCION.mp3"}, {"file": "FIRMES AUTORIDAD PRINCIPAL.mp3", "name": "FIRMES AUTORIDAD PRINCIPAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIRMES AUTORIDAD PRINCIPAL.mp3"}, {"file": "FIRMES.mp3", "name": "FIRMES", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/FIRMES.mp3"}, {"file": "HIMNOMACIONAL.mp3", "name": "HIMNOMACIONAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/HIMNOMACIONAL.mp3"}, {"file": "IZQUIERDA.mp3", "name": "IZQUIERDA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/IZQUIERDA.mp3"}, {"file": "LLAMADA GENERAL.mp3", "name": "LLAMADA GENERAL", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/LLAMADA GENERAL.mp3"}, {"file": "LLAMADA_MANDOS.mp3", "name": "LLAMADA MANDOS", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/LLAMADA_MANDOS.mp3"}, {"file": "MEDIA_VUELTA_AR.mp3", "name": "MEDIA VUELTA AR", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/MEDIA_VUELTA_AR.mp3"}, {"file": "ORACION_CORNETA.mp3", "name": "ORACION CORNETA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/ORACION_CORNETA.mp3"}, {"file": "PRESENTEN_ARMAS.mp3", "name": "PRESENTEN ARMAS", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/PRESENTEN_ARMAS.mp3"}, {"file": "RETRETA.mp3", "name": "RETRETA", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/RETRETA.mp3"}, {"file": "SOBRE EL HOMBRO DERECHO.mp3", "name": "SOBRE EL HOMBRO DERECHO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/SOBRE EL HOMBRO DERECHO.mp3"}, {"file": "SOBRE EL HOMBRO.mp3", "name": "SOBRE EL HOMBRO", "url": "https://raw.githubusercontent.com/tdolarea/cornetas/main/SOBRE EL HOMBRO.mp3"}];
 
-    // --- REPRODUCTOR DEL MÓDULO CHIFLE ---
     let playerChifleAudio = null;
 
     function tocarChifleUrl(url, nombre) {
@@ -4053,7 +4087,21 @@ function _legacy_execAuth() {
           selItems.appendChild(opt);
         });
       } else if (tipo === 'marcha') {
-        CATALOGO_MARCHAS.forEach(m => {
+        CATALOGO_MARCHAS_CLASICAS.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.url;
+          opt.textContent = m.name;
+          selItems.appendChild(opt);
+        });
+      } else if (tipo === 'cuerpo') {
+        CATALOGO_HIMNOS_CUERPOS.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.url;
+          opt.textContent = m.name;
+          selItems.appendChild(opt);
+        });
+      } else if (tipo === 'religiosa') {
+        CATALOGO_RELIGIOSA.forEach(m => {
           const opt = document.createElement('option');
           opt.value = m.url;
           opt.textContent = m.name;
@@ -4237,14 +4285,36 @@ function _legacy_execAuth() {
         });
       }
 
-      // 3. Marchas Militares
-      const selM = document.getElementById('selMarchasMilitares');
-      if (selM && selM.options.length <= 1) {
-        CATALOGO_MARCHAS.forEach(item => {
+      // 3.1 Marchas Militares Clásicas
+      const selMClas = document.getElementById('selMarchasClasicas');
+      if (selMClas && selMClas.options.length <= 1) {
+        CATALOGO_MARCHAS_CLASICAS.forEach(item => {
           const opt = document.createElement('option');
           opt.value = item.url;
           opt.textContent = item.name;
-          selM.appendChild(opt);
+          selMClas.appendChild(opt);
+        });
+      }
+
+      // 3.2 Himnos de Armas y Cuerpos
+      const selHCuerpo = document.getElementById('selHimnosCuerpos');
+      if (selHCuerpo && selHCuerpo.options.length <= 1) {
+        CATALOGO_HIMNOS_CUERPOS.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.url;
+          opt.textContent = item.name;
+          selHCuerpo.appendChild(opt);
+        });
+      }
+
+      // 3.3 Música Religiosa y Fúnebre
+      const selRel = document.getElementById('selMusicaReligiosa');
+      if (selRel && selRel.options.length <= 1) {
+        CATALOGO_RELIGIOSA.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.url;
+          opt.textContent = item.name;
+          selRel.appendChild(opt);
         });
       }
 
