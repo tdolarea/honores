@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792932586';
+    const APP_VERSION = 'v1792933835';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -258,9 +258,9 @@
   </header>
 
   <div class="nav-bar">
-    <button class="nav-btn" id="navPortalon" onclick="showView('portalon')">📢 Chifle</button>
+    <button class="nav-btn active" id="navPortalon" onclick="showView('portalon')">📢 Chifle</button>
     <button class="nav-btn" id="navBuques" onclick="showView('buques')">⚓ Buques</button>
-    <button class="nav-btn active" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
+    <button class="nav-btn" id="navAuth" onclick="showView('auth')">👑 Autoridades</button>
     <button class="nav-btn" id="navIzado" onclick="showView('izado')">🌅 Izado/Arriado</button>
     <button class="nav-btn" id="navMusica" onclick="showView('musica')">🎼 Música Militar</button>
   </div>
@@ -1058,7 +1058,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792932586</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792933835</div>
 </footer>
 
   <script>
@@ -1474,6 +1474,7 @@ function _legacy_execAuth() {
       cambiarHusoHorario('auto');
       renderAuthList();
       inicializarTodosLosSelectores();
+      showView('portalon');
     }
 
     function seleccionarPosicionArma(pos) {
@@ -1645,6 +1646,7 @@ function _legacy_execAuth() {
 
       renderAuthList();
       inicializarTodosLosSelectores();
+      showView('portalon');
     }
 
 
@@ -2863,6 +2865,7 @@ function _legacy_execAuth() {
     try {
       renderAuthList();
       inicializarTodosLosSelectores();
+      showView('portalon');
     } catch(e) { console.error('Error renderAuthList init:', e); }
 
     try {
@@ -2874,7 +2877,8 @@ function _legacy_execAuth() {
 
     window.addEventListener('DOMContentLoaded', () => {
       try { renderAuthList();
-      inicializarTodosLosSelectores(); } catch(e){}
+      inicializarTodosLosSelectores();
+      showView('portalon'); } catch(e){}
       try { restablecerConfiguracionPorDefecto(); } catch(e){}
       try {
         actualizarHoraObjetivo();
