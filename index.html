@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792923728';
+    const APP_VERSION = 'v1792923818';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -988,83 +988,73 @@
             </select>
           </div>
           <!-- BOTONES DEBAJO DE LA BARRA: Play | Añadir a Playlist -->
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="action-btn primary" onclick="reproducirCornetaSeleccionada()" style="flex:1; justify-content:center; padding:8px; font-size:12px; font-weight:800;">
-              ▶️ Play
-            </button>
-            <button type="button" class="action-btn" onclick="anadirCornetaAPlaylist()" style="flex:1; justify-content:center; padding:8px; font-size:12px; font-weight:800;">
-              ➕ Playlist
-            </button>
-          </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- BLOQUE 3: PLAYLISTS PARA ENSAYOS Y DESFILES-->
+                  <!-- ========================================== -->
+        <!-- BLOQUE 3: LISTAS DE REPRODUCCIÓN (PLAYLISTS)-->
         <!-- ========================================== -->
         <div style="background:#070d1e; border:1.5px solid #1e3a8a; border-radius:8px; padding:12px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12.5px; font-weight:800; color:#10b981;">📋 BLOQUE 3: PLAYLISTS DE DESFILE Y ENSAYOS</span>
-            <span style="font-size:10.5px; color:#10b981; font-weight:700;" id="lblPlaylistCountBadge">0 Playlists</span>
+            <span style="font-size:12.5px; font-weight:800; color:#10b981;">📋 BLOQUE 3: LISTAS DE REPRODUCCIÓN</span>
+            <span style="font-size:10.5px; color:#10b981; font-weight:700;" id="lblPlaylistCountBadge">0 Listas</span>
           </div>
           <div style="font-size:11px; color:#94a3b8; line-height:1.4; margin-bottom:10px;">
-            Cree secuencias concatenadas combinando toques de corneta y marchas militares. Se conservan guardadas permanentemente.
+            Añada toques y marchas desde los bloques de arriba con <strong>➕ Playlist</strong>. Ensayos y desfiles guardados de forma permanente.
           </div>
 
-          <!-- SELECTOR DE PLAYLIST GUARDADA Y CONTROLES -->
-          <div style="background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e293b; margin-bottom:10px;">
-            <div style="display:flex; gap:6px; margin-bottom:8px;">
-              <select id="selPlaylistsGuardadas" style="flex:1; background:#070d1e; border:1.5px solid #10b981; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:6px 8px;" onchange="cargarPlaylistSeleccionada()">
-                <option value="">Seleccione playlist guardada...</option>
-              </select>
-              <button type="button" class="action-btn" onclick="crearNuevaPlaylistPrompt()" style="padding:6px 8px; font-size:11px;">
-                ➕ Nueva
-              </button>
-              <button type="button" class="action-btn danger" onclick="borrarPlaylistActiva()" style="padding:6px 8px; font-size:11px;" title="Borrar Playlist">
-                🗑️
-              </button>
-            </div>
-
-            <!-- CONTROLES DE REPRODUCCIÓN DE LA PLAYLIST -->
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-              <button type="button" class="action-btn primary" id="btnPlayPlaylist" onclick="iniciarReproduccionPlaylist()" style="flex:1; justify-content:center; padding:8px; font-size:12px;">
-                ▶️ Reproducir Playlist
-              </button>
-              <button type="button" class="action-btn danger" id="btnStopPlaylist" onclick="detenerReproduccionPlaylist()" style="display:none; flex:1; justify-content:center; padding:8px; font-size:12px;">
-                ⏹️ Detener Playlist
-              </button>
-            </div>
+          <!-- FILA 1: SELECTOR DE LISTA Y CREACIÓN -->
+          <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <select id="selPlaylistsGuardadas" style="flex:1; background:#0b152d; border:1.5px solid #10b981; border-radius:6px; color:#fff; font-size:12px; font-weight:700; padding:7px 8px;" onchange="cargarPlaylistSeleccionada()">
+              <option value="">Seleccione una lista existente...</option>
+            </select>
+            <button type="button" class="action-btn" onclick="crearNuevaPlaylistPrompt()" style="padding:6px 10px; font-size:11.5px; white-space:nowrap;">
+              ➕ Nueva Lista
+            </button>
+            <button type="button" class="action-btn danger" onclick="borrarPlaylistActiva()" style="padding:6px 8px; font-size:11.5px;" title="Eliminar lista completa">
+              🗑️
+            </button>
           </div>
 
-          <!-- EDITOR DE ITEMS DE LA PLAYLIST ACTIVA -->
+          <!-- CONTROLES PRINCIPALES DE LA LISTA: REPRODUCIR / DETENER -->
+          <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <button type="button" class="action-btn primary" id="btnPlayPlaylist" onclick="iniciarReproduccionPlaylist()" style="flex:1; justify-content:center; padding:9px; font-size:12.5px; font-weight:800;">
+              ▶️ Reproducir Lista
+            </button>
+            <button type="button" class="action-btn danger" id="btnStopPlaylist" onclick="detenerReproduccionPlaylist()" style="display:none; flex:1; justify-content:center; padding:9px; font-size:12.5px; font-weight:800;">
+              ⏹️ Detener Lista
+            </button>
+          </div>
+
+          <!-- VENTANA DE PISTAS DE LA LISTA ACTIVA -->
           <div id="boxEditorPlaylist" style="display:none; background:#0b152d; padding:10px; border-radius:6px; border:1px solid #1e293b;">
-            <div style="font-size:11.5px; font-weight:800; color:#f8fafc; margin-bottom:6px; display:flex; justify-content:space-between;">
-              <span id="lblTituloPlaylistActiva">Editando: --</span>
+            <div style="font-size:11.5px; font-weight:800; color:#f8fafc; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span id="lblTituloPlaylistActiva">Lista: --</span>
               <span style="font-size:10.5px; color:#94a3b8;" id="lblItemsCount">0 pistas</span>
             </div>
 
-            <!-- AGREGADOR RÁPIDO DE PISTA -->
-            <div style="display:flex; gap:6px; margin-bottom:8px;">
-              <select id="selTipoPistaAdd" style="width:38%; background:#070d1e; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:11px; padding:6px;" onchange="actualizarOpcionesAddPista()">
-                <option value="corneta">📯 Corneta</option>
-                <option value="marcha">🎺 Marcha</option>
-                <option value="cuerpo">🎖️ Himno Cuerpo</option>
-                <option value="religiosa">⚓ Religiosa / Fúnebre</option>
-                <option value="himno">🌍 Himno Nacional</option>
-              </select>
-              <select id="selPistaEspecificaAdd" style="flex:1; background:#070d1e; border:1px solid #38bdf8; border-radius:6px; color:#fff; font-size:11px; padding:6px;">
-              </select>
-              <button type="button" class="action-btn primary" onclick="agregarPistaAPlaylist()" style="padding:6px 10px; font-size:11px;">
-                ➕
-              </button>
+            <!-- CONTENEDOR DE PISTAS CON SELECCIÓN -->
+            <div id="listaPistasPlaylist" style="display:flex; flex-direction:column; gap:4px; max-height:220px; overflow-y:auto; margin-bottom:10px; border:1px solid #1e293b; border-radius:4px; padding:4px; background:#070d1e;">
+              <!-- Elementos dinámicos -->
             </div>
 
-            <!-- LISTA DE PISTAS ORDENADAS -->
-            <div id="listaPistasPlaylist" style="display:flex; flex-direction:column; gap:4px; max-height:220px; overflow-y:auto;">
-              <!-- Elementos dinámicos -->
+            <!-- BOTONES DE EDICIÓN DE ORDEN, BORRADO Y GUARDADO -->
+            <div style="display:flex; gap:6px; justify-content:space-between; align-items:center;">
+              <div style="display:flex; gap:4px;">
+                <button type="button" class="action-btn" onclick="moverPistaSeleccionada(-1)" style="padding:6px 10px; font-size:11.5px; font-weight:700;">
+                  ▲ Subir
+                </button>
+                <button type="button" class="action-btn" onclick="moverPistaSeleccionada(1)" style="padding:6px 10px; font-size:11.5px; font-weight:700;">
+                  ▼ Bajar
+                </button>
+                <button type="button" class="action-btn danger" onclick="borrarPistaSeleccionada()" style="padding:6px 10px; font-size:11.5px; font-weight:700;">
+                  🗑️ Borrar Pista
+                </button>
+              </div>
+              <button type="button" class="action-btn" onclick="guardarListaBotonManual()" style="background:#065f46; border-color:#10b981; color:#fff; padding:6px 12px; font-size:11.5px; font-weight:800;">
+                💾 Guardar Lista
+              </button>
             </div>
           </div>
 
-        </div>
+        </div></div>
 
       </div>
     </div>html>
@@ -1224,7 +1214,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792923728';
+    const APP_VERSION = 'v1792923818';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -2309,7 +2299,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792923728';
+    const APP_VERSION = 'v1792923818';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -3142,7 +3132,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792923728</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792923818</div>
 </footer>
 
   <script>
@@ -5442,6 +5432,9 @@ function _legacy_execAuth() {
       renderizarPistasPlaylist();
     }
 
+    // --- GESTIÓN AVANZADA DE LISTAS DE REPRODUCCIÓN ---
+    let pistaSeleccionadaIndex = null;
+
     function renderizarPistasPlaylist() {
       const cont = document.getElementById('listaPistasPlaylist');
       const badgeCount = document.getElementById('lblItemsCount');
@@ -5453,7 +5446,8 @@ function _legacy_execAuth() {
       cont.innerHTML = '';
 
       if (pl.pistas.length === 0) {
-        cont.innerHTML = '<div style="font-size:11px; color:#64748b; font-style:italic; padding:6px; text-align:center;">Playlist vacía. Añada toques o marchas arriba.</div>';
+        cont.innerHTML = '<div style="font-size:11px; color:#64748b; font-style:italic; padding:12px; text-align:center;">Lista vacía. Añada toques de corneta o marchas con el botón [➕ Playlist] de arriba.</div>';
+        pistaSeleccionadaIndex = null;
         return;
       }
 
@@ -5461,20 +5455,68 @@ function _legacy_execAuth() {
         const row = document.createElement('div');
         const icon = p.tipo === 'corneta' ? '📯' : (p.tipo === 'himno' ? '🌍' : '🎺');
         const esActual = playlistEnReproduccion && playlistIndexActual === idx;
-        row.style.cssText = 'background:' + (esActual ? '#1e3a8a' : '#070d1e') + '; border:1px solid ' + (esActual ? '#38bdf8' : '#1e293b') + '; border-radius:4px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center; font-size:11.5px;';
-        
-        row.innerHTML = '<div style="display:flex; align-items:center; gap:6px; overflow:hidden;">' +
-            '<span style="font-weight:800; color:#38bdf8;">' + (idx + 1) + '.</span>' +
-            '<span>' + icon + '</span>' +
-            '<span style="font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + p.nombre + '</span>' +
-          '</div>' +
-          '<div style="display:flex; gap:4px; align-items:center;">' +
-            '<button type="button" class="action-btn" onclick="moverPistaPlaylist(' + idx + ', -1)" style="padding:2px 5px; font-size:10px; min-height:20px;">▲</button>' +
-            '<button type="button" class="action-btn" onclick="moverPistaPlaylist(' + idx + ', 1)" style="padding:2px 5px; font-size:10px; min-height:20px;">▼</button>' +
-            '<button type="button" class="action-btn danger" onclick="eliminarPistaDePlaylist(' + idx + ')" style="padding:2px 5px; font-size:10px; min-height:20px;">✕</button>' +
-          '</div>';
+        const esSeleccionado = pistaSeleccionadaIndex === idx;
+
+        let bg = esActual ? '#1e3a8a' : (esSeleccionado ? '#1e293b' : '#0b152d');
+        let border = esActual ? '#38bdf8' : (esSeleccionado ? '#10b981' : '#1e3a8a');
+
+        row.style.cssText = `background:${bg}; border:1.5px solid ${border}; border-radius:4px; padding:7px 9px; display:flex; justify-content:space-between; align-items:center; font-size:12px; cursor:pointer;`;
+        row.onclick = () => {
+          pistaSeleccionadaIndex = idx;
+          renderizarPistasPlaylist();
+        };
+
+        row.innerHTML = `<div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+            <span style="font-weight:900; color:${esSeleccionado ? '#10b981' : '#38bdf8'}; font-size:11px;">${idx + 1}.</span>
+            <span>${icon}</span>
+            <span style="font-weight:700; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.nombre}</span>
+          </div>
+          <div>
+            ${esSeleccionado ? '<span style="font-size:10px; color:#10b981; font-weight:800;">✓ Seleccionada</span>' : ''}
+          </div>`;
         cont.appendChild(row);
       });
+    }
+
+    function moverPistaSeleccionada(dir) {
+      if (!activePlaylistId || !appPlaylists[activePlaylistId] || pistaSeleccionadaIndex === null) {
+        alert('Haga clic sobre una pista para seleccionarla primero.');
+        return;
+      }
+      const pistas = appPlaylists[activePlaylistId].pistas;
+      const target = pistaSeleccionadaIndex + dir;
+      if (target < 0 || target >= pistas.length) return;
+
+      const temp = pistas[pistaSeleccionadaIndex];
+      pistas[pistaSeleccionadaIndex] = pistas[target];
+      pistas[target] = temp;
+      pistaSeleccionadaIndex = target;
+
+      guardarPlaylistsEnStorage();
+      renderizarPistasPlaylist();
+    }
+
+    function borrarPistaSeleccionada() {
+      if (!activePlaylistId || !appPlaylists[activePlaylistId] || pistaSeleccionadaIndex === null) {
+        alert('Haga clic sobre una pista para seleccionarla primero.');
+        return;
+      }
+      const nombre = appPlaylists[activePlaylistId].pistas[pistaSeleccionadaIndex]?.nombre;
+      if (!confirm(`¿Eliminar de la lista "${nombre}"?`)) return;
+
+      appPlaylists[activePlaylistId].pistas.splice(pistaSeleccionadaIndex, 1);
+      pistaSeleccionadaIndex = null;
+      guardarPlaylistsEnStorage();
+      renderizarPistasPlaylist();
+    }
+
+    function guardarListaBotonManual() {
+      if (!activePlaylistId || !appPlaylists[activePlaylistId]) {
+        alert('No hay ninguna lista seleccionada para guardar.');
+        return;
+      }
+      guardarPlaylistsEnStorage();
+      alert(`💾 Lista "${appPlaylists[activePlaylistId].nombre}" guardada correctamente.`);
     }
 
     // --- MOTOR DE REPRODUCCIÓN SECUENCIAL DE LA PLAYLIST ---
