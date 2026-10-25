@@ -155,7 +155,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792918886';
+    const APP_VERSION = 'v1792919538';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -928,6 +928,9 @@
               <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selMarchasClasicas', 'Marcha Militar')" style="padding:6px 10px; font-size:11.5px;">
                 ▶️ Tocar
               </button>
+              <button type="button" class="action-btn" onclick="verLetraDesdeSelect('selMarchasClasicas')" style="padding:6px 8px; font-size:11.5px;" title="Ver Letra">
+                📜 Letra
+              </button>
             </div>
           </div>
 
@@ -941,6 +944,9 @@
               <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selHimnosCuerpos', 'Himno de Cuerpo')" style="padding:6px 10px; font-size:11.5px;">
                 ▶️ Tocar
               </button>
+              <button type="button" class="action-btn" onclick="verLetraDesdeSelect('selHimnosCuerpos')" style="padding:6px 8px; font-size:11.5px;" title="Ver Letra">
+                📜 Letra
+              </button>
             </div>
           </div>
 
@@ -953,6 +959,9 @@
               </select>
               <button type="button" class="action-btn primary" onclick="tocarCanalBandaDesdeSelect('selMusicaReligiosa', 'Música Religiosa / Fúnebre')" style="padding:6px 10px; font-size:11.5px;">
                 ▶️ Tocar
+              </button>
+              <button type="button" class="action-btn" onclick="verLetraDesdeSelect('selMusicaReligiosa')" style="padding:6px 8px; font-size:11.5px;" title="Ver Letra">
+                📜 Letra
               </button>
             </div>
           </div>
@@ -1218,7 +1227,7 @@
 
   <script>
     // Forzar purga de caché vieja en móviles
-    const APP_VERSION = 'v1792918886';
+    const APP_VERSION = 'v1792919538';
     if (localStorage.getItem('app_ver') !== APP_VERSION) {
       localStorage.setItem('app_ver', APP_VERSION);
       if ('caches' in window) {
@@ -1948,9 +1957,14 @@
         <div id="playerMusicaActivo" style="display:none; background:#0b152d; border:1.5px solid #38bdf8; border-radius:8px; padding:12px; margin-bottom:14px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <div style="font-size:10.5px; font-weight:800; color:#38bdf8; text-transform:uppercase;">▶️ REPRODUCIENDO AHORA:</div>
-            <button type="button" class="action-btn danger" onclick="detenerMusicaMilitar()" style="padding:4px 8px; font-size:11px; min-height:24px;">
-              ⏹️ Detener
-            </button>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="action-btn primary" id="btnVerLetraActiva" onclick="mostrarLetraActiva()" style="display:none; padding:4px 8px; font-size:11px; min-height:24px;">
+                📜 Ver Letra
+              </button>
+              <button type="button" class="action-btn danger" onclick="detenerCanalBanda()" style="padding:4px 8px; font-size:11px; min-height:24px;">
+                ⏹️ Detener
+              </button>
+            </div>
           </div>
           <div style="font-size:14px; font-weight:800; color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="lblMusicaObraActiva">
             --
@@ -2046,7 +2060,7 @@
   <footer style="text-align:center; padding:18px 12px; font-size:11px; color:#64748b; line-height:1.8;">
     <div>Honores de Ordenanza · Ceremonial Militar</div>
     <div style="margin-top:6px; color:#94a3b8; font-weight:600;">© TDF 2026</div>
-  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792918886</div>
+  <div style="text-align:center; font-size:10px; color:#475569; margin:10px 0;">Versión v1792919538</div>
 </footer>
 
   <script>
@@ -3911,6 +3925,72 @@ function _legacy_execAuth() {
     }
 
     // --- CANALES SIMULTÁNEOS BANDA Y CORNETA ---
+    
+    // ==========================================
+    // REPOSITORIO DE LETRAS DE HIMNOS Y CANCIONES MILITARES
+    // ==========================================
+    const DICCIONARIO_LETRAS = {"Salve Marinera": "¡Salve, Estrella de los mares,\nde los mares iris de eterna ventura!\n¡Salve, fénix de hermosura,\nMadre del Amor Hermoso!\n\nA ti clamamos,\na ti suspiramos,\ngimiendo y llorando\nen este valle de lágrimas.\n\nEa, pues, Señora,\nAbogada nuestra,\nvuelve a nosotros esos tus ojos\nmisericordiosos.\n\nY después de este destierro,\nmuéstranos a Jesús,\nfruto bendito de tu vientre.\n\n¡Oh clementísima!\n¡Oh piadosa!\n¡Oh dulce Virgen María!\n\nSálvanos, Virgen del Carmen,\nMadre del Amor Hermoso,\nReina de los mares,\nReina de la Armada.", "Himno ARMADA": "De la patria el orgullo y grandeza\npor las rutas del mar a cantar,\ncon las velas al viento y la proa\nrumbo a España trazando en el mar.\n\nNoble Armada que al cielo levanta\nsu estandarte de gloria inmortal,\nen las olas tu nombre agiganta\nnuestra fe en el destino naval.\n\n¡Viva España! la voz que nos guía,\n¡Viva el Rey! nuestro grito de honor,\nque en la mar nuestra estirpe porfía\ncon coraje, victoria y valor.", "Himno INF MARINA": "Infantes de marina marchemos a luchar,\nla Patria engrandezcamos y su alta nombradía,\nsirviendo leales al suelo y a la mar.\n\nGloria a los valientes que supieron morir\npor España y su honor combatir.\n\nEmpuñad las armas con firmeza y valor,\nque la Infantería de Marina es pundonor.\n\n¡Valientes por tierra y por mar!", "La muerte no es el final": "Tú nos dijiste que la muerte\nno es el final del camino,\nque aunque de nuevo el polvo vuelve,\nla vida empieza en tu amor.\n\nCuando la pena nos alcanza\ndel compañero perdido,\ncuando el adiós dolorido\nbusca en la fe su esperanza.\n\nEn tu palabra confiamos\ncon la certeza que Tú\nya le has devuelto a la vida,\nya le has llevado a la luz.\n\nYa le has devuelto a la vida,\nya le has llevado a la luz.", "Novio de la muerte": "Nadie en el Tercio sabía\nquién era aquel legionario\ntan audaz y temerario\nque a la Legión se alistó.\n\nNadie sabía su historia,\nmas la Legión suponía\nque un gran dolor le mordía\ncomo un lobo el corazón.\n\nMas si alguno quién era le preguntaba,\ncon dolor y rudeza le contestaba:\n«Soy un hombre a quien la suerte\nhirió con zarpa de fiera;\nsoy un novio de la muerte\nque va a unirse en lazo fuerte\ncon tal leal compañera».\n\n¡Legionarios a luchar,\nlegionarios a morir!", "Himno LEGION": "El clarín de la Legión\nsuena ya en el horizonte,\nbrava estirpe de leones\nque combaten con honor.\n\nLegionarios a luchar,\ncon valor y disciplina,\npor España combatir\nhasta vencer o morir.\n\n¡Viva España! ¡Viva el Rey!\n¡Viva la Legión!", "Himno GUARDIA CIVIL": "Instituto, gloria a ti,\npor tu honor quiero vivir.\nViva España, Viva el Rey,\nViva el Orden y la Ley,\nViva la Honrada Guardia Civil.\n\nBenemérito Instituto,\nguarda fiel de España entera,\nque en el monte y la trinchera\ndas tu vida por cumplir.\n\nViva España, Viva el Rey,\nViva el Orden y la Ley,\nViva la Honrada Guardia Civil.", "Himno GUARDIA REAL": "Guardia Real de España,\nlealtad hasta morir,\nal Rey y a la Corona\ndispuestos a servir.\n\nCon paso firme y noble,\ncustodios del honor,\nmarchemos siempre unidos\ncon fe y con pundonor.\n\n¡Por España y por el Rey!", "Himno EJERCITO AIRE ESPACIO": "Alcen los ojos a las alturas,\nque en el azul de nuestro cielo\nvuelan las alas de la victoria\nguardando a España con gran denuedo.\n\nVolad, pilotos, rumbo a la gloria,\nque en vuestras alas late la historia.\n¡Viva España, viva el Rey!", "Himno INFANTERIA": "Ardor guerrero vibra en nuestras voces,\nmarchemos firmes a vencer o morir,\nque los infantes no temen la muerte\nsi por España nos toca rendir.\n\n¡Infantería, noble y valiente!\n¡Por la Patria y por el Rey!", "Himno ARTILLERIA": "Artilleros, en pie de combate,\ncon las piezas apuntando al honor,\nque el estruendo de nuestros cañones\nes la voz de la Patria y su ardor.\n\n¡Fuego al cañón por España!", "Himno CABALLERIA": "Jinetes de noble estirpe,\nal galope con valor,\nla lanza firme en la mano\npor España y por su honor.\n\n¡Santiago y cierra España!", "Himno INGENIEROS": "Con el pico y con la pala,\ncon la pólvora y el puente,\nlos ingenieros marchemos\nsiempre firmes y al frente.\n\n¡Por la Patria y el honor!", "Himno UME": "Cuando el desastre asola nuestra tierra\ny el dolor clama auxilio y hermandad,\nallí está la Unidad Militar de Emergencias\ncon coraje, entrega y lealtad.\n\nPara servir a España y a su gente.", "Himno BRIPAC": "Paracaidistas en el cielo,\nsaltando al viento sin temor,\nalas de honor en nuestro pecho\ndispuestos siempre con valor.\n\n¡Sobre la tierra y el cielo, por España!", "Oracion de la Noche": "Tú que velas por nosotros en las sombras,\nguía nuestro rumbo por la mar serena,\nSeñor de los ejércitos y mares,\nacoge a los que velan y a los que descansan.\n\nDanos tu paz en la noche.", "Ganando Barlovento": "Bravos marinos de España,\nrumbo trazado en la mar,\ncon gallardía y coraje\nganando barlovento van.\n\nRuge la ola y el viento,\nfirme el timón al compás,\ngloria y honor a la Armada\nque nunca cederá jamás.", "El turuta": "Al son del clarín y el parche,\nmarchemos con gallardía,\nque la tropa va cantando\ncon valor y nombradía.\n\n¡Viva la marcha ligera!", "Las corsarias": "Banderita tú eres roja,\nbanderita tú eres gualda,\nllevas sangre, llevas oro\nen el fondo de tu alma.\n\nEl día que yo me muera\nsi estoy lejos de mi patria,\nsólo quiero que me cubran\ncon la Bandera de España.", "Cantinera": "Cantinera de la tropa,\nlleva el vino y la alegría,\nque en la marcha y en el puesto\ntu sonrisa es compañía.", "Marcha de infantes": "Marchan los infantes\ncon marcial compás,\npaso decidido\nsin mirar atrás.\n\n¡Por la Patria, marcha ya!"};
+    let letraObraActivaKey = null;
+
+    function normalizarNombreParaLetra(nombre) {
+      if (!nombre) return '';
+      return nombre.replace(/\.mp3|\.wav/gi, '').trim();
+    }
+
+    function buscarLetra(nombre) {
+      if (!nombre) return null;
+      const limpio = normalizarNombreParaLetra(nombre);
+      // Búsqueda directa
+      if (DICCIONARIO_LETRAS[limpio]) return { titulo: limpio, texto: DICCIONARIO_LETRAS[limpio] };
+
+      // Búsqueda flexible por subcadena
+      const keys = Object.keys(DICCIONARIO_LETRAS);
+      for (let k of keys) {
+        if (limpio.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(limpio.toLowerCase())) {
+          return { titulo: k, texto: DICCIONARIO_LETRAS[k] };
+        }
+      }
+      return null;
+    }
+
+    function verLetraDesdeSelect(selId) {
+      const sel = document.getElementById(selId);
+      if (!sel || !sel.value) {
+        alert('Seleccione primero una canción o himno.');
+        return;
+      }
+      const nombre = sel.options[sel.selectedIndex].text;
+      const res = buscarLetra(nombre);
+      if (res) {
+        abrirModalLetra(res.titulo, res.texto);
+      } else {
+        alert(`No hay letra registrada para "${nombre}". Esta obra es estrictamente instrumental o no dispone de texto oficial registrado.`);
+      }
+    }
+
+    function mostrarLetraActiva() {
+      if (!letraObraActivaKey) return;
+      const res = buscarLetra(letraObraActivaKey);
+      if (res) {
+        abrirModalLetra(res.titulo, res.texto);
+      }
+    }
+
+    function abrirModalLetra(titulo, texto) {
+      const modal = document.getElementById('modalLetraMilitar');
+      const lblT = document.getElementById('lblModalTituloLetra');
+      const lblC = document.getElementById('lblModalCuerpoLetra');
+      if (lblT) lblT.textContent = titulo;
+      if (lblC) lblC.textContent = texto;
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function cerrarModalLetra() {
+      const modal = document.getElementById('modalLetraMilitar');
+      if (modal) modal.style.display = 'none';
+    }
+
+
     let canalAudioBanda = null;
     let canalAudioCorneta = null;
 
@@ -3922,10 +4002,17 @@ function _legacy_execAuth() {
 
     function tocarCanalBanda(url, titulo) {
       detenerCanalBanda();
+      letraObraActivaKey = titulo;
       const lbl = document.getElementById('lblCanalBandaTxt');
       const btn = document.getElementById('btnStopBanda');
+      const btnLetra = document.getElementById('btnVerLetraActiva');
+
       if (lbl) lbl.textContent = titulo;
       if (btn) btn.style.display = 'block';
+
+      // Comprobar si dispone de letra para mostrar botón
+      const tieneLetra = buscarLetra(titulo);
+      if (btnLetra) btnLetra.style.display = tieneLetra ? 'inline-flex' : 'none';
 
       canalAudioBanda = new Audio(url);
       canalAudioBanda.play().catch(e => console.warn('Banda play err:', e));
@@ -3941,6 +4028,7 @@ function _legacy_execAuth() {
       const btn = document.getElementById('btnStopBanda');
       if (lbl) lbl.textContent = 'En silencio';
       if (btn) btn.style.display = 'none';
+      const btnL = document.getElementById('btnVerLetraActiva'); if (btnL) btnL.style.display = 'none'; letraObraActivaKey = null;
     }
 
     function tocarCanalCornetaDesdeSelect(selId) {
@@ -3970,6 +4058,7 @@ function _legacy_execAuth() {
       const btn = document.getElementById('btnStopCorneta');
       if (lbl) lbl.textContent = 'En silencio';
       if (btn) btn.style.display = 'none';
+      const btnL = document.getElementById('btnVerLetraActiva'); if (btnL) btnL.style.display = 'none'; letraObraActivaKey = null;
     }
 
     // --- PLAYLISTS PERSISTENTES (LOCALSTORAGE) ---
@@ -4334,5 +4423,23 @@ function _legacy_execAuth() {
     }
 
   </script>
+
+    <!-- MODAL POPUP PARA VISUALIZAR LETRAS MILITARES -->
+    <div id="modalLetraMilitar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2,6,23,0.85); backdrop-filter:blur(4px); z-index:99999; justify-content:center; align-items:center; padding:16px;">
+      <div style="background:#0b152d; border:1.5px solid #38bdf8; border-radius:10px; width:100%; max-width:480px; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+        <div style="padding:12px 14px; border-bottom:1px solid #1e3a8a; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:10px; font-weight:800; color:#38bdf8; text-transform:uppercase;">📜 LETRA OFICIAL</div>
+            <div style="font-size:14px; font-weight:800; color:#fff;" id="lblModalTituloLetra">--</div>
+          </div>
+          <button type="button" class="action-btn danger" onclick="cerrarModalLetra()" style="padding:4px 10px; font-size:12px; min-height:28px;">
+            ✕ Cerrar
+          </button>
+        </div>
+        <div style="padding:14px; overflow-y:auto; font-size:13px; color:#e2e8f0; line-height:1.6; white-space:pre-wrap; font-family:inherit;" id="lblModalCuerpoLetra">
+        </div>
+      </div>
+    </div>
+
 </body>
 </html>

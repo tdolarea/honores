@@ -1,4 +1,4 @@
-// SW Honores PWA v1792918886
+// SW Honores PWA v1792919538
 self.addEventListener('install', e => {
   self.skipWaiting();
 });
@@ -9,5 +9,16 @@ self.addEventListener('activate', e => {
   );
 });
 self.addEventListener('fetch', e => {
-  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+  // Estrategia: Cache First para archivos embebidos (audio/, img/, html, css, js)
+  // Network First / On Demand para música remota (raw.githubusercontent.com)
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(resp => {
+        return resp;
+      }).catch(() => {
+        return cached;
+      });
+    })
+  );
 });
